@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/Test.md",
+                "file": "_TASKS_/Test.md",
                 "mode": "source",
                 "source": false
               },
@@ -183,6 +183,9 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "hvigor/Test.md",
+    "_TASKS_/Test.md",
+    "rollup/Test.md",
     "tsgo/Test.md",
     "Без названия.md",
     "_TASKS_",
