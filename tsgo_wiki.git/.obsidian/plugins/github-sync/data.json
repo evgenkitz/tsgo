@@ -1,0 +1,9 @@
+{
+  "remoteURL": "https://github.com/evgenkitz/tsgo_wiki",
+  "gitLocation": "",
+  "syncinterval": 60,
+  "isSyncOnLoad": true,
+  "checkStatusOnLoad": true,
+  "noticeLevel": "ERROR",
+  "showSyncSuccessNotice": false
+}
