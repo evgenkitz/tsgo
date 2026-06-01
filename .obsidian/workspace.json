@@ -20,8 +20,37 @@
               "icon": "lucide-file",
               "title": "Test"
             }
+          },
+          {
+            "id": "aa0eca485c064355",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
+          },
+          {
+            "id": "e62abffccc28f46e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -181,10 +210,14 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "a916b289f022d0a3",
+  "active": "e62abffccc28f46e",
   "lastOpenFiles": [
-    "Untitled.canvas",
+    "tsgo/AST.json/Исследование.md",
+    "Untitled.md",
+    "Untitled 1.md",
     "tsgo/Test.md",
+    "tsgo/AST.json",
+    "Untitled.canvas",
     "hvigor/Test.md",
     "_TASKS_/Test.md",
     "rollup/Test.md",
