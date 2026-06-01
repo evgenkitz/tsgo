@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_TASKS_/Test.md",
+                "file": "tsgo/AST.json/Исследование.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Test"
+              "title": "Исследование"
             }
           }
         ]
@@ -183,8 +183,10 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
-    "hvigor/Test.md",
     "_TASKS_/Test.md",
+    "tsgo/AST.json/Исследование.md",
+    "tsgo/AST.json",
+    "hvigor/Test.md",
     "rollup/Test.md",
     "tsgo/Test.md",
     "Без названия.md",
