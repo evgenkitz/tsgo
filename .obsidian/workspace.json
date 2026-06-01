@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_TASKS_/Test.md",
+                "file": "tsgo/Test.md",
                 "mode": "source",
                 "source": false
               },
@@ -177,15 +177,17 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "github-sync:Sync with Remote": false
     }
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "Untitled.canvas",
+    "tsgo/Test.md",
     "hvigor/Test.md",
     "_TASKS_/Test.md",
     "rollup/Test.md",
-    "tsgo/Test.md",
     "Без названия.md",
     "_TASKS_",
     "tsgo",
