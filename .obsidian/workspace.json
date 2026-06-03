@@ -11,12 +11,14 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "Extend TSGO/Sugestions on organizational desigin of labor.png"
+                "file": "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-image",
-              "title": "Sugestions on organizational desigin of labor"
+              "icon": "lucide-file",
+              "title": "tsgo Integration Analysis of Rollup Solution Options"
             }
           }
         ]
@@ -181,9 +183,12 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "Extend TSGO/build-system-design.md",
+    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
+    "Extend TSGO/Sugestions on organizational desigin of labor.png",
+    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
     "tsgo/Test.md",
     "tsgo/AST.json/Исследование.md",
-    "Extend TSGO/Sugestions on organizational desigin of labor.png",
     "Extend TSGO/Sugestions on organizational desigin of labor.png.png",
     "Extend TSGO/Sugestions.png",
     "Extend TSGO/Sugestion.png",
