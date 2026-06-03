@@ -11,14 +11,12 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "tsgo/AST.json/Исследование.md",
-                "mode": "source",
-                "source": false
+                "file": "Extend TSGO/Sugestions on organizational desigin of labor.png"
               },
-              "icon": "lucide-file",
-              "title": "Исследование"
+              "icon": "lucide-image",
+              "title": "Sugestions on organizational desigin of labor"
             }
           }
         ]
@@ -183,12 +181,17 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
-    "_TASKS_/Test.md",
+    "tsgo/Test.md",
     "tsgo/AST.json/Исследование.md",
+    "Extend TSGO/Sugestions on organizational desigin of labor.png",
+    "Extend TSGO/Sugestions on organizational desigin of labor.png.png",
+    "Extend TSGO/Sugestions.png",
+    "Extend TSGO/Sugestion.png",
+    "Extend TSGO",
+    "_TASKS_/Test.md",
     "tsgo/AST.json",
     "hvigor/Test.md",
     "rollup/Test.md",
-    "tsgo/Test.md",
     "Без названия.md",
     "_TASKS_",
     "tsgo",
