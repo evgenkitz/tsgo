@@ -11,10 +11,14 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Specifications/Links.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Links"
             }
           }
         ]
@@ -179,8 +183,9 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
-    "tsgo/ArkTS/arkui-spec/ui-state-storages.md",
+    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/arkui-core-specification.md",
+    "tsgo/ArkTS/arkui-spec/ui-state-storages.md",
     "tsgo/ArkTS/arkui-spec/swiftui-feature-comparison.md",
     "tsgo/ArkTS/arkui-spec/rendering-control-syntax.md",
     "tsgo/ArkTS/arkui-spec/other-state-mgmt.md",
@@ -190,7 +195,6 @@
     "tsgo/ArkTS/arkui-spec/arkui-core-spec.md",
     "Specifications/Links.md",
     "tsgo/ArkTS/arkui-spec",
-    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
     "Specifications/ArkTSSpecification.pdf",
     "tsgo/ArkTS",
