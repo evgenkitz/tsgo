@@ -11,14 +11,12 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
-                "mode": "source",
-                "source": false
+                "file": "Specifications/ArkTSSpecification.pdf"
               },
-              "icon": "lucide-file",
-              "title": "arkts-1.1-specification-analysis"
+              "icon": "lucide-file-text",
+              "title": "ArkTSSpecification"
             }
           }
         ]
@@ -181,7 +179,7 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "a916b289f022d0a3",
   "lastOpenFiles": [
     "Без названия.md",
     "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
