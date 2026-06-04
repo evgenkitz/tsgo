@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
+                "file": "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ETS_COMPILER_ANALYSIS"
+              "title": "arkts-1.1-specification-analysis"
             }
           }
         ],
@@ -196,10 +196,10 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "aa0eca485c064355",
   "lastOpenFiles": [
-    "Untitled.md",
     "Untitled 1.md",
+    "Untitled.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
