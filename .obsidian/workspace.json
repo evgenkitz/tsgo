@@ -11,14 +11,12 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "Specifications/Links.md",
-                "mode": "source",
-                "source": false
+                "file": "Specifications/ArkTSSpecification.pdf"
               },
-              "icon": "lucide-file",
-              "title": "Links"
+              "icon": "lucide-file-text",
+              "title": "ArkTSSpecification"
             }
           }
         ]
@@ -181,12 +179,12 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "Specifications/Links.md",
     "Specifications/ArkTSSpecification.pdf",
     "Specifications/Не подтвержден 835671.crdownload",
     "Extend TSGO/build-system-design.md",
-    "Specifications/Links.md",
     "Specifications",
     "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
     "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
