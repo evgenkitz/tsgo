@@ -27,19 +27,19 @@ Based on scope analysis from [[arkts-1.1-specification-analysis]].
 
 ## Phase 2 — Basic Parsing (Parser)
 
-| Task | Effort |
-|---|---|
-| Annotation parsing (`@interface`, `@Anno(...)`) | 5d |
-| Lambda expressions (reworked from arrow functions) | 5d |
-| Package declaration (`package P`) | 2d |
-| `struct` keyword class handling | 1d |
-| New modifiers (`final`, `override`, `native`, `internal`) | 2d |
-| Node definitions in `_scripts/ast.json` + regeneration | 3d |
-| Parser dispatch updates (`parseStatement`, `parseExpression`, etc.) | 2d |
-| Type-level parsing (`readonly` prefix, `T!`, function type with receiver) | 2d |
-| Import/export directive updates (`import type`, `export default`, `export type`) | 2d |
-| Tests | 5d |
-| **Subtotal** | **25–29 days** |
+| Task                                                                             | Effort         |
+| -------------------------------------------------------------------------------- | -------------- |
+| Annotation parsing (`@interface`, `@Anno(...)`)                                  | 5d             |
+| Lambda expressions (reworked from arrow functions)                               | 5d             |
+| Package declaration (`package P`)                                                | 2d             |
+| `struct` keyword class handling                                                  | 1d             |
+| New modifiers (`final`, `override`, `native`, `internal`)                        | 2d             |
+| Node definitions in `_scripts/ast.json` + regeneration                           | 3d             |
+| Parser dispatch updates (`parseStatement`, `parseExpression`, etc.)              | 2d             |
+| Type-level parsing (`readonly` prefix, `T!`, function type with receiver)        | 2d             |
+| Import/export directive updates (`import type`, `export default`, `export type`) | 2d             |
+| Tests                                                                            | 5d             |
+| **Subtotal**                                                                     | **25–29 days** |
 
 ---
 
@@ -98,14 +98,14 @@ Based on scope analysis from [[arkts-1.1-specification-analysis]].
 
 ## Summary
 
-| Phase | Scope | Effort |
-|---|---|---|
-| 1 — Scanner | Keywords, literals, LanguageVariant | **7–9 days** |
-| 2 — Parser | Annotations, lambdas, package, struct, modifiers | **25–29 days** |
-| 3 — Binder | Primitive types, scopes, annotation binding | **24–27 days** |
-| 4 — Experimental | Coroutines, receivers, trailing lambdas, operator methods | **48–53 days** |
-| 5 — Full Semantics | Boxing, conversions, type hierarchy | **31–36 days** |
-| **Total** | | **135–154 days** |
+| Phase              | Scope                                                     | Effort           |
+| ------------------ | --------------------------------------------------------- | ---------------- |
+| 1 — Scanner        | Keywords, literals, LanguageVariant                       | **7–9 days**     |
+| 2 — Parser         | Annotations, lambdas, package, struct, modifiers          | **25–29 days**   |
+| 3 — Binder         | Primitive types, scopes, annotation binding               | **24–27 days**   |
+| 4 — Experimental   | Coroutines, receivers, trailing lambdas, operator methods | **48–53 days**   |
+| 5 — Full Semantics | Boxing, conversions, type hierarchy                       | **31–36 days**   |
+| **Total**          |                                                           | **135–154 days** |
 
 ---
 
