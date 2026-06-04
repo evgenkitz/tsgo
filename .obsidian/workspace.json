@@ -11,14 +11,10 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Specifications/Links.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Links"
+              "title": "Новая вкладка"
             }
           }
         ]
@@ -183,10 +179,20 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "tsgo/ArkTS/arkui-spec/ui-state-storages.md",
+    "tsgo/ArkTS/arkui-core-specification.md",
+    "tsgo/ArkTS/arkui-spec/swiftui-feature-comparison.md",
+    "tsgo/ArkTS/arkui-spec/rendering-control-syntax.md",
+    "tsgo/ArkTS/arkui-spec/other-state-mgmt.md",
+    "tsgo/ArkTS/arkui-spec/manage-state-component.md",
+    "tsgo/ArkTS/arkui-spec/intro-state-mgmt.md",
+    "tsgo/ArkTS/arkui-spec/general-ui-spec.md",
+    "tsgo/ArkTS/arkui-spec/arkui-core-spec.md",
+    "Specifications/Links.md",
+    "tsgo/ArkTS/arkui-spec",
     "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
     "Specifications/ArkTSSpecification.pdf",
-    "Specifications/Links.md",
     "tsgo/ArkTS",
     "Без названия",
     "Specifications/ArkTSSpecification.txt",
@@ -207,7 +213,6 @@
     "hvigor/Test.md",
     "rollup/Test.md",
     "Без названия.md",
-    "_TASKS_",
-    "tsgo"
+    "_TASKS_"
   ]
 }
