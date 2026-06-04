@@ -496,21 +496,21 @@ Additional validation rules that span both parser and binder:
 
 ## Combined Estimate: ArkTS 1.1 + ArkUI eDSL
 
-> ArkTS 1.1 numbers updated per [[arkts-1.1-implementation-estimation]] cross-reference with tsgo codebase (Jun 2026). 30.5 days removed: 20.5d already-supported features + 10d checker/SDK-level items.
+> ArkTS 1.1 numbers updated per [[arkts-1.1-implementation-estimation]] cross-reference with tsgo codebase (Jun 2026). 38.5 days removed: 20.5d already-supported features + 10d checker/SDK + 8d already-parsed receiver syntax.
 
 | Component | ArkTS 1.1 (corrected) | ArkUI eDSL | Combined |
 |---|---|---|---|
 | Scanner | 7.5d | 3.5d | **11d** |
-| Parser | 56d (24 + 32 experimental) | 57d | **113d** |
-| Binder | 47.5d (15.5 + 32 shared) | 56d | **103.5d** |
+| Parser | 48d (24 + 24 experimental) | 57d | **105d** |
+| Binder | 39.5d (15.5 + 24 shared) | 56d | **95.5d** |
 | Shared diagnostics | — | 15d | **15d** |
-| **Total** | **79d** | **131.5d** | **242.5d** |
+| **Total** | **71d** | **131.5d** | **226.5d** |
 
 | Team Size | Duration (Combined) |
 |---|---|
-| **One engineer** | **11–12 months** |
-| **Two engineers** | **6 months** |
-| **Three engineers** | **3.5–4 months** |
+| **One engineer** | **10–11 months** |
+| **Two engineers** | **5–6 months** |
+| **Three engineers** | **3–3.5 months** |
 
 > Note: These are Scanner + Parser + Binder only. Checker, Emitter, and LSP are additional major efforts not included here.
 
