@@ -12,16 +12,16 @@ Based on scope analysis from [[arkts-1.1-specification-analysis]].
 
 ## Phase 1 — Basic Recognition (Scanner)
 
-| Task | Effort |
-|---|---|
-| ~40 new keywords in `textToKeyword` map + Kind constants | 1d |
-| Character literal scanning (`c'...'`) | 2d |
-| Float suffix scanning (`3.14f`) | 1d |
-| `LanguageVariant` plumbing (ArkTS mode switch) | 1d |
-| Regenerate/update `kind_generated.go` ranges | 1d |
-| Classification helpers (`IsPrimitiveTypeKind`, etc.) | 0.5d |
-| Unit tests | 2d |
-| **Subtotal** | **7–9 days** |
+| Task                                                     | Effort       |
+| -------------------------------------------------------- | ------------ |
+| ~40 new keywords in `textToKeyword` map + Kind constants | 1d           |
+| Character literal scanning (`c'...'`)                    | 2d           |
+| Float suffix scanning (`3.14f`)                          | 1d           |
+| `LanguageVariant` plumbing (ArkTS mode switch)           | 1d           |
+| Regenerate/update `kind_generated.go` ranges             | 1d           |
+| Classification helpers (`IsPrimitiveTypeKind`, etc.)     | 0.5d         |
+| Unit tests                                               | 2d           |
+| **Subtotal**                                             | **7–9 days** |
 
 ---
 
