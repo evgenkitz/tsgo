@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
+                "file": "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "arkts-1.1-implementation-estimation"
+              "title": "ETS_COMPILER_ANALYSIS"
             }
           }
         ],
@@ -196,13 +196,13 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "aa0eca485c064355",
   "lastOpenFiles": [
+    "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
+    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "Untitled.md",
-    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/arkui-core-specification.md",
-    "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
     "tsgo/AST.json/Исследование.md",
     "tsgo/ArkTS",
     "Specifications/Links.md",
