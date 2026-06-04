@@ -11,12 +11,14 @@
             "id": "a916b289f022d0a3",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Specifications/ArkTSSpecification.pdf"
+                "file": "Specifications/Links.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-file-text",
-              "title": "ArkTSSpecification"
+              "icon": "lucide-file",
+              "title": "Links"
             }
           }
         ]
@@ -179,10 +181,14 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "a916b289f022d0a3",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
-    "Specifications/Links.md",
+    "tsgo/ArkTS/arkts-analysis.md",
+    "tsgo/ArkTS",
+    "Без названия",
     "Specifications/ArkTSSpecification.pdf",
+    "Specifications/ArkTSSpecification.txt",
+    "Specifications/Links.md",
     "Specifications/Не подтвержден 835671.crdownload",
     "Extend TSGO/build-system-design.md",
     "Specifications",
@@ -201,8 +207,6 @@
     "rollup/Test.md",
     "Без названия.md",
     "_TASKS_",
-    "tsgo",
-    "rollup",
-    "hvigor"
+    "tsgo"
   ]
 }
