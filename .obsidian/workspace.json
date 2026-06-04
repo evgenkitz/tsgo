@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Extend TSGO/build-system-design.md",
+                "file": "Specifications/Links.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "build-system-design"
+              "title": "Links"
             }
           }
         ]
@@ -181,10 +181,14 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "a916b289f022d0a3",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
-    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
+    "Specifications/ArkTSSpecification.pdf",
+    "Specifications/Не подтвержден 835671.crdownload",
     "Extend TSGO/build-system-design.md",
+    "Specifications/Links.md",
+    "Specifications",
+    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
     "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
     "tsgo/Test.md",
