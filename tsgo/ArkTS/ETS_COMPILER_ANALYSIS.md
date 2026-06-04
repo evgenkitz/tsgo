@@ -34,9 +34,11 @@
 |-----------|--------|----------|
 | `setEtsContext(isEtsContext: boolean)` | 109, 1044, 1059-1061 | Новый метод интерфейса сканера для включения/выключения ETS-режима |
 | `struct` как ключевое слово | 176 | Добавлено в `textToKeywordObj` → `SyntaxKind.StructKeyword` |
-| `require` как ключевое слово | 169 | Добавлено в `textToKeywordObj` → `SyntaxKind.RequireKeyword` (для `import x = require("mod")`) |
+| `lazy` как ключевое слово | 185 | Добавлено в `textToKeywordObj` → `SyntaxKind.LazyKeyword` (для `import lazy X from "..."`) |
 | `inEtsContext` флаг | 996 | Внутренняя переменная состояния, по умолчанию `false` |
-| Условное распознавание `struct` | 1587-1589 | **Критическая логика:** `struct` распознаётся как ключевое слово только когда `inEtsContext === true`. В обычных `.ts` файлах `struct` — обычный идентификатор. Это гарантирует обратную совместимость. |
+| Условное распознавание `struct` | 1587-1589 | **Критическая логика:** `struct` распознаётся как ключевое слово только когда `inEtsContext === true`. В обычных `.ts` файлах `struct` — обычный идентификатор. |
+
+**Gating:** Только `struct` имеет ETS-контекстное gating (`!inEtsContext`). Ключевое слово `lazy` распознаётся **безусловно** — синтаксис `import lazy X from "..."` не существует в стандартном TypeScript, поэтому коллизий не возникает.
 
 ### Затрагиваемые этапы конвейера:
 Scanner — только этап сканирования. Влияет на все последующие этапы через токены.
@@ -51,11 +53,12 @@ Scanner — только этап сканирования. Влияет на в
 ### 2.1 Новые AST-узлы (определены в `types.ts`)
 
 ```typescript
-SyntaxKind.StructDeclaration = 334        // struct MyComponent { ... }
-SyntaxKind.AnnotationDeclaration = 335     // @interface MyAnnotation { ... }
+SyntaxKind.StructKeyword = 140              // ключевое слово struct (ETS-добавление, с gating)
+SyntaxKind.LazyKeyword = 213                 // ключевое слово lazy (ETS-добавление)
 SyntaxKind.AnnotationPropertyDeclaration = 235  // свойство внутри @interface
-SyntaxKind.EtsComponentExpression = 286    // Column() { ... }
-SyntaxKind.StructKeyword = 140             // ключевое слово struct
+SyntaxKind.EtsComponentExpression = 286     // Column() { ... }
+SyntaxKind.StructDeclaration = 334          // struct MyComponent { ... }
+SyntaxKind.AnnotationDeclaration = 335      // @interface MyAnnotation { ... }
 ```
 
 ### 2.2 Система ETS-флагов контекста (`EtsFlags`)
@@ -106,10 +109,7 @@ SyntaxKind.StructKeyword = 140             // ключевое слово struct
 
 Аннотации парсятся когда `@` стоит перед `interface`:
 ```
-@Interface MyAnnotation {      → @interface MyAnnotation { ... }
-  prop1: number
-  prop2: string = "default"
-}
+@interface MyAnnotation { ... }
 ```
 
 **Валидация членов** (`isAnnotationMemberStart`, строка 8256):
@@ -409,7 +409,8 @@ Emitter напрямую (финальный этап).
 
 | Синтаксическая конструкция | Scanner | Parser | Binder | Checker | Transformer | Emitter |
 |---------------------------|---------|--------|--------|---------|-------------|---------|
-| `struct` keyword | ✓ token | ✓ AST node | ✓ symbols | ✓ type check | — | ✓ emit |
+| `struct` keyword | ✓ token (ETS-добавление, с gating) | ✓ AST node | ✓ symbols | ✓ type check | — | ✓ emit |
+| `lazy` keyword | ✓ token (ETS-добавление) | — импорт | — | — | — | — |
 | `@interface` annotations | — | ✓ AST node | ✓ symbols | ✓ full validation | ✓ rename+defaults | ✓ emit |
 | EtsComponentExpression | — | ✓ AST node | — | ✓ type/context check | — | ✓ skip body |
 | @Builder decorator | — | ✓ context flags | — | ✓ grammar relax | — | ✓ emit via decorators |
@@ -493,7 +494,9 @@ Emitter напрямую (финальный этап).
 Новый код:
 - `setEtsContext(isEtsContext: boolean)` — метод интерфейса + реализация
 - `inEtsContext` — внутренняя переменная состояния
-- `struct` в `textToKeywordObj` с условным распознаванием (ключевое слово только в ETS-режиме)
+- 2 новых ключевых слова в `textToKeywordObj`:
+  - `struct` → `StructKeyword` — **с ETS-контекстным gating** (только когда `inEtsContext === true`)
+  - `lazy` → `LazyKeyword` — безусловно (для `import lazy X from "..."`)
 
 #### ohApi.ts (подмножество) — ~970 строк из 1915
 
