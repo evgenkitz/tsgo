@@ -181,10 +181,11 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "a916b289f022d0a3",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
-    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
+    "Без названия.md",
     "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
+    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
@@ -221,7 +222,6 @@
     "tsgo/AST.json",
     "hvigor/Test.md",
     "rollup/Test.md",
-    "Без названия.md",
     "_TASKS_"
   ]
 }
