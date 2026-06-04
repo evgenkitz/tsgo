@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/AST.json/Исследование.md",
+                "file": "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Исследование"
+              "title": "arkts-1.1-implementation-estimation"
             }
           }
         ],
@@ -198,10 +198,22 @@
   },
   "active": "aa0eca485c064355",
   "lastOpenFiles": [
-    "_TASKS_/Test.md",
     "tsgo/AST.json/Исследование.md",
-    "Untitled 1.md",
     "Untitled.md",
+    "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
+    "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
+    "tsgo/ArkTS",
+    "Specifications/Links.md",
+    "Specifications/ArkTSSpecification.txt",
+    "Specifications/ArkTSSpecification.pdf",
+    "Specifications",
+    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
+    "Extend TSGO/build-system-design.md",
+    "Extend TSGO/Sugestions on organizational desigin of labor.png",
+    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
+    "Extend TSGO",
+    "_TASKS_/Test.md",
+    "Untitled 1.md",
     "tsgo/Test.md",
     "tsgo/AST.json",
     "Untitled.canvas",

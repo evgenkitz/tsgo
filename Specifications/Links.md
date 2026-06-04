@@ -1,0 +1,2 @@
+ArkTS Specification： https://gitee.com/igelhaus/arkcompiler_runtime_core/releases/  
+ArkUI Declarative Core Language Specification: https://gitee.com/arkui-finland/arkui-edsl-core-spec/blob/master/arkui-core-spec.md
