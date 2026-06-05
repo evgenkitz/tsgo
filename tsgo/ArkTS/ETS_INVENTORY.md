@@ -251,7 +251,19 @@
 | `hasAsyncErrorCallbacks` (34110) | Проверка AsyncCallback/ErrorCallback |
 | `checkThrowableFunction` (34090) | Предупреждение о необработанных @throws |
 
-### 4.11. Linter-режим
+### 4.11. Расширяемая система проверки JSDoc-тегов (@form)
+
+Форк добавляет plugin-подобную инфраструктуру для пользовательской валидации JSDoc-тегов (используется `@form`-фреймворком):
+
+- `JsDocNodeCheckConfig` / `JsDocNodeCheckConfigItem` (types.ts:7545-7560) — конфигурация проверок с callback'ами:
+  - `checkValidCallback` — валидация отдельного JSDoc-тега
+  - `checkJsDocSuppressorValidCallback` — проверка необходимости валидации
+  - `checkConditionValidCallback` — условная валидация
+- `FileCheckModuleInfo` (types.ts:7538) — информация о модуле для проверки
+- `getJsDocNodeCheckedConfig` / `getJsDocNodeConditionCheckedResult` / `getFileCheckedModuleInfo` — коллбэки на Program/EmitResolver/CustomTransformers
+- Интеграция в `checker.ts` (стр. 34475-34489) — вызов коллбэков при обработке JSDoc
+
+### 4.12. Linter-режим
 
 - `isTypeCheckerForLinter` параметр (1393) — форсирует strict-режимы
 - `strictCheckerOnly` — опция для разделения strict-проверок
@@ -431,7 +443,7 @@
 
 - Расширение списка расширений: `.ets`, `.d.ets`
 - Поддержка `oh_modules` директорий
-- Разрешение `oh-package.json5` вместо `package.json`
+- Разрешение `oh-package.json5` вместо `package.json` с использованием библиотеки `json5` для парсинга JSON5-формата
 - Приоритет `.d.ets` над `.d.ts` при наличии `compilerOptions.ets`
 
 ### 6.9. `commandLineParser.ts`
@@ -473,6 +485,40 @@
 - 28018-28045: Аннотации
 - 28046: Специальные отметки API
 
+### 6.13. Инфраструктура профилирования
+
+**`performanceDotting.ts`** (новый файл, ~200 строк) — инфраструктура замера производительности компилятора:
+- `PerformanceDotting.start`/`stop` — иерархический замер времени операций (start/stop с поддержкой вложенности до 5 уровней)
+- Режимы: `DEFAULT`, `VERBOSE`, `TRACE` (через `AnalyzeMode` enum)
+- `getEventData()` — агрегация собранных метрик
+- Используется в `checker.ts`, `binder.ts`, `parser.ts`, `emitter.ts`, `program.ts`
+
+**`memorydotting/memoryDotting.ts`** (новый файл) — инфраструктура профилирования потребления памяти:
+- Добавлен коммитом `d0e4d9fa6c Add memoryDotting`
+- Используется для мониторинга аллокаций памяти в режиме сборки
+
+### 6.14. Реорганизация `_namespaces/`
+
+Коммит `183292ce68 Convert codebase from namespace into module` разделил монолитный namespace TypeScript на модульные файлы:
+- `_namespaces/ts.ts` — основные типы и утилиты
+- `_namespaces/ts.moduleSpecifiers.ts` — спецификаторы модулей
+- `_namespaces/ts.performance.ts` — performance API
+
+Структурное изменение, облегчающее поддержку и навигацию по коду.
+
+### 6.15. `parser.ts` — arkguard-режим
+
+- `createSourceFile` принимает опциональный параметр `isArkguardInput?: boolean` (стр. 1378)
+- `isArkguardInputSourceFile` — глобальный флаг парсера (стр. 1377)
+- Расширяет `inAllowAnnotationContext()`: аннотации разрешены не только в `.ets` файлах, но и при входе из arkguard (стр. 2324)
+
+### 6.16. `@Concurrent` декоратор
+
+Декоратор ArkTS для пометки функций, выполняемых в параллельном режиме:
+- `hasEtsConcurrentDecoratorNames` в `ohApi.ts` (стр. 368) — проверка наличия `@Concurrent`
+- Поддержка в `EtsOptions.concurrent.decorator`
+- Добавлен коммитом `6987d740bd Support concurrent decorator`
+
 ---
 
 ## Сводная статистика
@@ -497,3 +543,5 @@
 | Visitor-функции | 8 |
 | CompilerOptions | 20+ |
 | Модульная система (oh_modules) | Полная поддержка ohpm |
+| Инфраструктура профилирования | 2 новых файла (performanceDotting.ts, memorydotting/) |
+| Новые файлы компилятора | 4 (ohApi.ts, performanceDotting.ts, memorydotting/, _namespaces/ts*) |
