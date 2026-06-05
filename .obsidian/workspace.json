@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
+                "file": "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ARKTS_SPECIFICATION"
+              "title": "ARKTS_SCANNER_PARSER_BINDER"
             }
           }
         ]
@@ -181,7 +181,7 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "a916b289f022d0a3",
   "lastOpenFiles": [
     "Без названия.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
