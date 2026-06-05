@@ -329,6 +329,147 @@ function testFunc(): void {
 
 ---
 
+### 2.12. Импорт `lazy`
+
+**Назначение:** Ленивый импорт модулей — модуль загружается только при первом обращении к его экспортам. Ключевое слово `lazy` распознаётся сканером как `SyntaxKind.LazyKeyword` (scanner.ts:185) **безусловно** (в отличие от `struct`, которое контекстно-зависимо).
+
+**Синтаксис:**
+```arkts
+import lazy { Component } from '@kit.ArkUI';
+import lazy defaultExport from './module';
+```
+
+**Реализация:**
+- `SyntaxKind.LazyKeyword` (types.ts:213) — новое ключевое слово
+- Сканер: `lazy` → `LazyKeyword` (scanner.ts:185), распознаётся всегда, без ETS-контекстного gating
+- Эмиттер: `emitImportClause` (emitter.ts:4046) выводит ключевое слово `lazy` перед импортом
+
+**Первый PR:** !421 (2024-10) — "enable import lazy with lazy keyword"
+
+---
+
+### 2.13. Декоратор `@AnimatableExtend`
+
+**Назначение:** Расширение `@Extend` для анимируемых свойств компонентов. `@AnimatableExtend(ComponentName)` аналогичен `@Extend`, но применяется к анимируемым стилям.
+
+**Синтаксис:**
+```arkts
+@AnimatableExtend(Text)
+function animatableFancy(fontSize: number) {
+  .fontSize(fontSize)
+  .opacity(0.5)
+}
+```
+
+**Первый PR:** !88 (2023-05) — "Support tsc compiling for ets @AnimatableExtend syntax"
+
+---
+
+### 2.14. Декоратор `@LocalBuilder`
+
+**Назначение:** Вариант `@Builder`, который создаёт локальный builder, не экспортируемый наружу. Распознаётся наравне с `@Builder` через `compilerOptions.ets.render.decorator` (по умолчанию `["Builder", "LocalBuilder"]`).
+
+**Синтаксис:**
+```arkts
+@Component
+struct MyComponent {
+  @LocalBuilder
+  myLocalBuilder() {
+    Text('Local builder content')
+  }
+}
+```
+
+**Реализация:**
+- `hasEtsBuilderDecoratorNames()` (ohApi.ts:349) — проверяет и `Builder`, и `LocalBuilder`
+- Функционально идентичен `@Builder`, но ограничен областью видимости компонента
+
+---
+
+### 2.15. Декораторы `@Param` и `@Once`
+
+**Назначение:**
+- **`@Param`** — помечает свойство struct как параметр, передаваемый извне. Свойства с `@Param` без `@Once` автоматически получают `readonly`.
+- **`@Once`** — разрешает свойству с `@Param` быть мутабельным (без `readonly`). Используется только вместе с `@Param`.
+
+**Синтаксис:**
+```arkts
+@Component
+struct MyComponent {
+  @Param title: string;           // auto-readonly — не может быть изменено
+  @Param @Once mutableCounter: number = 0;  // мутабельное — может изменяться
+}
+```
+
+**Реализация:**
+- `hasParamAndNoOnceDecorator()` (parser.ts:8471) — проверка `@Param` без `@Once`
+- `parseClassElement` (parser.ts:8557) — авто-добавление `readonly` модификатора
+- `parseModifiers` (parser.ts:8517) — инжекция виртуального `readonly`
+
+---
+
+### 2.16. Декораторы `@Env` и `@CustomEnv`
+
+**Назначение:** Внедрение значений из окружения (environment) в свойства компонента.
+- **`@Env`** — стандартные переменные окружения ArkUI
+- **`@CustomEnv`** — пользовательские переменные окружения (добавлен в PR !855, апрель 2026)
+
+Свойства с `@Env`/`@CustomEnv` автоматически получают `readonly`.
+
+**Синтаксис:**
+```arkts
+@Component
+struct MyComponent {
+  @Env language: string;           // auto-readonly из системного окружения
+  @CustomEnv mySetting: number;    // auto-readonly из пользовательского окружения
+}
+```
+
+**Реализация:**
+- `hasEnvDecorator()` (parser.ts:8488) — проверка `@Env`/`@CustomEnv`
+- `parseClassElement` / `parseModifiers` — авто-добавление `readonly`
+
+**Первый PR:** !855 (2026-04) — "merge customEnv into master"
+
+---
+
+### 2.17. Синтаксис stateStyles
+
+**Назначение:** stateStyles — специальный синтаксис внутри UI-компонентов для определения стилей, зависящих от состояния компонента (pressed, focused, disabled и т.д.).
+
+**Синтаксис:**
+```arkts
+Button('Submit')
+  .stateStyles({
+    pressed: () => {
+      .backgroundColor(Color.Grey)
+    },
+    focused: () => {
+      .borderWidth(2)
+    }
+  })
+```
+
+**Реализация:**
+- `EtsFlags.EtsStateStylesContext` (types.ts:854) — флаг контекста
+- `stateStylesRootNode` (parser.ts:1622) — имя корневого узла в stateStyles-контексте
+- При входе в stateStyles-контекст: `.prop` транслируется в виртуальный доступ к `rootNodeInstance.prop` (parser.ts:6237-6248)
+- `parseExpected` обход (parser.ts:2520): в stateStyles-контексте отсутствующие токены молча принимаются
+- `parseIdentifier` (parser.ts:2850): создание виртуального идентификатора `${rootNode}Instance`
+
+---
+
+### 2.18. Изолированные декларации (`isolateDeclarations`)
+
+**Назначение:** Режим компиляции, при котором декларации типов генерируются изолированно от исходного кода. Поддерживает пошаговую миграцию на строгую типизацию ArkTS.
+
+**Реализация:**
+- `Support isolateDeclarations step1` (PR !709, 2025-12)
+
+**Первый PR:** !709 (2025-12)
+
+---
+
 ## 3. ArkTS Linter
 
 ### 3.1. Архитектура

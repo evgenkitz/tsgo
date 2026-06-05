@@ -8,14 +8,19 @@
 
 ## 1. Сканер (`src/compiler/scanner.ts`)
 
-**Единственное изменение:** условное распознавание `struct` как ключевого слова.
+Два новых ключевых слова: `struct` (контекстно-зависимое) и `lazy` (безусловное).
 
-### 1.1. Регистрация ключевого слова (строка 176)
+### 1.1. Регистрация ключевых слов
 
 ```typescript
-struct: SyntaxKind.StructKeyword,
+struct: SyntaxKind.StructKeyword,   // строка 176 — между string и super
+lazy: SyntaxKind.LazyKeyword,       // строка 185 — для import lazy X from "..."
 ```
-`struct` добавлен в карту `textToKeyword` между `string` и `super`.
+`struct` и `lazy` добавлены в карту `textToKeyword`.
+
+**Разница в поведении:**
+- `struct` — **контекстно-зависимый**: распознаётся как ключевое слово только в `.ets` файлах (см. 1.3). Вне ETS-контекста — `Identifier`.
+- `lazy` — **безусловный**: всегда распознаётся как `LazyKeyword`. Синтаксис `import lazy X from "..."` не существует в стандартном TypeScript, поэтому коллизий нет.
 
 ### 1.2. Флаг ETS-контекста (строки 109, 996, 1044, 1059-1061)
 
@@ -39,13 +44,14 @@ if (keyword === SyntaxKind.StructKeyword && !inEtsContext) {
 }
 ```
 
-**Это ВСЁ изменение в сканере.** Вне `.ets`-файлов `struct` — обычный идентификатор. Никаких новых токенов для декораторов (`@Builder`, `@Extend` и т.д.) не добавлялось — они используют стандартный механизм декораторов.
+**Это все изменения в сканере.** Два новых ключевых слова (`struct`, `lazy`) + флаг ETS-контекста. Вне `.ets`-файлов `struct` — обычный идентификатор. Никаких новых токенов для декораторов (`@Builder`, `@Extend` и т.д.) не добавлялось — они используют стандартный механизм декораторов.
 
 ### Резюме для tsgo
 
-- Добавить `struct` в карту ключевых слов
+- Добавить `struct` и `lazy` в карту ключевых слов
 - Хранить флаг `inEtsContext` в сканере
-- При lookup'е: если найдено `StructKeyword` но `!inEtsContext` → вернуть `Identifier`
+- При lookup: если найдено `StructKeyword` но `!inEtsContext` → вернуть `Identifier`
+- `LazyKeyword` — без условий
 
 ---
 
@@ -130,6 +136,8 @@ var currentStructName: string | undefined;                           // стро
 var structStylesComponents: Map<string, { structName, kind }>;       // строка 1620
 var stateStylesRootNode: string | undefined;                         // строка 1622
 var fileStylesComponents: Map<string, SyntaxKind>;                   // строка 1624
+var _firstArgumentExpression: boolean;    // getter/setter для отслеживания первого аргумента ForEach
+var _repeatEachRest: boolean;            // getter/setter для отслеживания Repeat.each rest
 ```
 
 Очистка при сбросе состояния (строки 1816-1821):
@@ -141,7 +149,30 @@ fileStylesComponents.clear();
 structStylesComponents.clear();
 ```
 
-### 2.4. `parseStructDeclaration` (строки 8670-8742)
+**`firstArgumentExpression`** и **`repeatEachRest`** — геттеры/сеттеры, используемые при парсинге аргументов синтаксических компонентов (ForEach, Repeat) для определения контекста источника данных.
+
+### 2.4. `doInDecoratorContext` — детект ETS-декораторов (строки 2210-2219)
+
+При входе в контекст декоратора проверяется, является ли декоратор `@Extend` или `@Styles`:
+
+```typescript
+function doInDecoratorContext(decorators, func) {
+    // Если это @Extend(ComponentName) → установка EtsExtendComponentsContext
+    if (hasEtsExtendDecoratorNames(decorators, opts)) {
+        extendEtsComponentDeclaration = getEtsExtendDecoratorsComponentNames(decorators, opts);
+        setEtsExtendComponentsContext(true);
+    }
+    // Если это @Styles → установка EtsStylesComponentsContext
+    if (hasEtsStylesDecoratorNames(decorators, opts)) {
+        stylesEtsComponentDeclaration = getEtsStylesDecoratorComponentNames(decorators, opts);
+        setEtsStylesComponentsContext(true);
+    }
+    func();
+    // сброс контекстов после выхода
+}
+```
+
+### 2.5. `parseStructDeclaration` (строки 8670-8742)
 
 ```typescript
 function parseStructDeclarationOrExpression(pos, hasJSDoc, decorators, modifiers) {
@@ -183,6 +214,35 @@ function parseStructDeclarationOrExpression(pos, hasJSDoc, decorators, modifiers
 // Автоматически генерируется конструктор:
 // constructor(value?: { count?: number }, ##storage?: LocalStorage)
 ```
+
+**`createVirtualHeritageClauses`** (строка 8732): создаёт синтетический `extends CustomComponent`, если struct не имеет явного наследования.
+
+**`finishVirtualNode`** (строка 8851): обёртка над `finishNode` с `virtual: true` для создания виртуальных AST-узлов.
+
+### 2.6. Struct/Builder-хелперы и auto-readonly
+
+**`isTokenInsideStructBuild`** (строка 8095): проверяет, что имя метода совпадает с настроенным render-методом (по умолчанию `build`).
+
+**`isTokenInsideStructPageTransition`** (строка 8108): проверяет, что имя метода == `pageTransition`.
+
+**`isTokenInsideStructBuilder`**: проверяет, что метод находится внутри struct и имеет `@Builder`.
+
+**`tryParseConstructorDeclaration`**: пытается парсить объявление конструктора struct (если пользователь объявил свой конструктор, виртуальный не генерируется).
+
+**`parseConstructorName`**: парсинг имени конструктора для struct.
+
+**`hasParamAndNoOnceDecorator`** (строка 8471): проверка `@Param` без `@Once` → свойство должно автоматически получить `readonly`.
+
+**`hasEnvDecorator`** (строка 8488): проверка `@Env`/`@CustomEnv` → свойство должно автоматически получить `readonly`.
+
+**`parseClassElement`** (строки 8557-8560): в struct для свойств с `@Param`/`@Env` без `@Once` автоматически добавляется `readonly`:
+```typescript
+if (inStructContext() && isPropertyDeclaration(node) && hasParamAndNoOnceDecorator(node)) {
+    addVirtualReadonlyModifier(node);
+}
+```
+
+**`parseModifiers`** (строки 8517-8529): инжекция виртуального `readonly` модификатора в список модификаторов свойства.
 
 ### 2.6. `EtsComponentExpression` — выражения UI-компонентов (строки 6865-6930)
 
@@ -366,6 +426,8 @@ if (isParamUICallback(...)) setSyntaxComponentContext(true);
 setEtsStateStylesContext(false);
 ```
 
+**`isValidVirtualTypeArgumentsContext`** (строка 6808): проверяет, что текущий контекст допускает виртуальные type arguments (ETS-компоненты или @Extend/@Styles).
+
 ### 2.12. Стрелочные функции (строки 5429-5441, 5724-5735)
 
 При парсинге стрелочных функций:
@@ -391,7 +453,38 @@ if (inSyntaxComponentContext() && firstArgumentExpression) {
 }
 ```
 
-### 2.14. Аннотации (`@interface`) — строки 7706-7729, 8188-8201
+### 2.14. `parseNewExpressionOrNewDotTarget` — сохранение EtsNewExpressionContext (строки 7098, 7117)
+
+```typescript
+// Сохранение контекста new-выражения, чтобы предотвратить интерпретацию
+// имени компонента как EtsComponentExpression внутри new
+const savedEtsNewExpressionContext = inEtsNewExpressionContext();
+setEtsNewExpressionContext(true);
+// ... парсинг new-выражения ...
+setEtsNewExpressionContext(savedEtsNewExpressionContext);
+```
+
+### 2.15. `parseArrowFunctionExpressionBody` — исключение struct из ASI (строка 5774)
+
+```typescript
+// struct не должен провоцировать automatic semicolon insertion
+// внутри стрелочной функции
+// (!inEtsContext() || token() !== SyntaxKind.StructKeyword)
+```
+
+### 2.16. `forEachChild`-функции для новых узлов
+
+Три новые функции обхода дочерних узлов:
+
+| Функция | Для узла |
+|---------|----------|
+| `forEachChildInAnnotationPropertyDeclaration` | `AnnotationPropertyDeclaration` |
+| `forEachChildInEtsComponentExpression` | `EtsComponentExpression` |
+| `forEachChildInAnnotationDeclaration` | `AnnotationDeclaration` |
+
+### 2.17. `setLanguageVersionByFilePath` — ETS-версия языка
+
+### 2.18. Аннотации (`@interface`) — строки 7706-7729, 8188-8201, 8621, 8256
 
 ```typescript
 // parseAnnotationDeclaration
@@ -411,9 +504,22 @@ function parseAnnotationPropertyDeclaration(pos, hasJSDoc, decorators, modifiers
     const initializer = parseOptionalInitializer();
     return factory.createAnnotationPropertyDeclaration(...);
 }
+
+// parseAnnotationElement (строка 8621) — диспетчер элементов аннотации
+// parseAnnotationMembers (строка 8802) — обёртка для списка членов
 ```
 
+**`isAnnotationMemberStart`** (строка 8256) — валидация членов `@interface`:
+- Статические блоки **запрещены**
+- Геттеры/сеттеры **запрещены**
+- Конструкторы **запрещены**
+- Индексные сигнатуры **запрещены**
+- Вычисляемые имена свойств **запрещены**
+- Разрешены только: `name: type` или `name: type = value`
+
 Аннотации активируются когда `inAllowAnnotationContext()` = true (т.е. ETS-контекст + `etsAnnotationsEnable`).
+
+**`tryParseDecorator`** (строки 8418-8420): пропускает `@interface` в контексте аннотаций (чтобы не парсить аннотацию как декоратор).
 
 В `parseDeclarationWorker` (строка 7805):
 ```typescript
@@ -422,7 +528,12 @@ if (token() === AtToken && inAllowAnnotationContext() && nextToken() === Interfa
 }
 ```
 
-### 2.15. Точки входа `StructKeyword` в парсере
+**`canFollowModifier`** (строка 3014): `@interface` может следовать за модификатором, когда аннотации включены:
+```typescript
+|| token() === AtToken && inAllowAnnotationContext() && lookAhead(() => nextToken() === InterfaceKeyword)
+```
+
+### 2.19. Точки входа `StructKeyword` в парсере
 
 `struct` должен быть валидным стартом во всех этих местах (только в ETS-контексте):
 
@@ -435,7 +546,29 @@ if (token() === AtToken && inAllowAnnotationContext() && nextToken() === Interfa
 | `nextTokenCanFollowDefaultKeyword` | 3020 | `inEtsContext()` |
 | `isStartOfExpressionStatement` | 5247 | `!inEtsContext() \|\| token !== StructKeyword` (исключение) |
 
-### 2.16. Вспомогательные функции парсинга
+### 2.23. Прочие token-уровневые модификации
+
+`struct` и `@interface` добавляются как валидные токены в следующих проверках:
+
+| Функция | Строка | Изменение |
+|---------|--------|----------|
+| `isListElement` | — | `StructKeyword` — валидный элемент списка |
+| `isListTerminator` | — | `StructKeyword` — терминатор списка (как class) |
+| `isReusableClassMember` | — | `StructKeyword` — допускается |
+| `canFollowModifier` | 3014 | `@interface` может следовать за модификатором |
+| `nextTokenCanFollowDefaultKeyword` | 3020 | `export default struct` разрешён в ETS |
+| `isDeclaration` | 7471 | `struct` + `@interface` — начала деклараций |
+
+### 2.24. `SourceFile.markedKitImportRange`
+
+После вызова `processKit()` на этапе парсинга (в `parseSourceFileWorker`, строка 1840), диапазоны трансформированных kit-импортов сохраняются в `sourceFile.markedKitImportRange` для использования чекером и эмиттером.
+
+```typescript
+// parseSourceFileWorker (строка 1840):
+processKit(factory, statements, sdkPath, sourceFile.markedKitImportRange, ...);
+```
+
+### 2.20. Вспомогательные функции парсинга
 
 **`parseEtsIdentifier`** (строка 2882):
 ```typescript
@@ -453,7 +586,7 @@ function parseEtsIdentifier(pos: number): Identifier {
 
 **`parseEtsTypeArguments`** (строка 4149): создаёт массив из одного type argument.
 
-### 2.17. `parseExpected` — обход для stateStyles (строка 2520)
+### 2.21. `parseExpected` — обход для stateStyles (строка 2520)
 
 ```typescript
 if (token() !== kind && stateStylesRootNode && inEtsStateStylesContext()) {
@@ -461,7 +594,7 @@ if (token() !== kind && stateStylesRootNode && inEtsStateStylesContext()) {
 }
 ```
 
-### 2.18. `parseIdentifier` — виртуальный идентификатор для stateStyles (строки 2850-2858)
+### 2.22. `parseIdentifier` — виртуальный идентификатор для stateStyles (строки 2850-2858)
 
 ```typescript
 if (stateStylesRootNode && inEtsStateStylesContext() && token() === DotToken) {
@@ -701,7 +834,33 @@ interface EtsOptions {
 }
 ```
 
-### 4.9. `ResolvedModule.isNotOhExport`
+### 4.9. `CheckMode.SkipEtsComponentBody` (типы, строка 1268)
+
+```typescript
+CheckMode.SkipEtsComponentBody = 1 << 7  // пропуск тела ETS-компонента при проверке типов
+```
+Используется чекером для пропуска тел EtsComponentExpression при разрешении сигнатур (оптимизация).
+
+### 4.10. `Decorator.annotationDeclaration` (types.ts, строка 1598)
+
+```typescript
+interface Decorator {
+    // ...
+    readonly annotationDeclaration?: AnnotationDeclaration;  // ссылка на декларацию аннотации
+}
+```
+Поле связывает декоратор с соответствующей AnnotationDeclaration (если декоратор является аннотацией). Используется чекером для `resolveAnnotation`.
+
+### 4.11. `SourceFile.markedKitImportRange`
+
+```typescript
+interface SourceFile {
+    // ...
+    markedKitImportRange?: KitImportRange[];  // диапазоны трансформированных kit-импортов
+}
+```
+
+### 4.12. `ResolvedModule.isNotOhExport`
 
 ```typescript
 // types.ts строка 7439
@@ -711,7 +870,7 @@ interface ResolvedModule {
 }
 ```
 
-### 4.10. `nodeCanBeDecorated` (utilities.ts строка 2721)
+### 4.13. `nodeCanBeDecorated` (utilities.ts строка 2721)
 
 ```typescript
 // @Sendable разрешён на FunctionDeclaration и TypeAliasDeclaration
@@ -721,37 +880,144 @@ function nodeCanBeDecorated(node, ...): boolean {
 }
 ```
 
+### 4.14. Фабричные функции (`factory/nodeFactory.ts`, ~100 строк)
+
+Новые factory-функции для создания ETS-узлов:
+
+| Функция | Узел |
+|---------|------|
+| `createStructDeclaration` / `updateStructDeclaration` | `StructDeclaration` |
+| `createAnnotationDeclaration` / `updateAnnotationDeclaration` | `AnnotationDeclaration` |
+| `createAnnotationPropertyDeclaration` / `updateAnnotationPropertyDeclaration` | `AnnotationPropertyDeclaration` |
+| `createEtsComponentExpression` / `updateEtsComponentExpression` | `EtsComponentExpression` |
+
+Модифицированы:
+- `createDecorator` / `updateDecorator` — добавлен параметр `annotationDeclaration`
+
+### 4.15. Node-test функции (`factory/nodeTests.ts`)
+
+| Функция | Проверка |
+|---------|----------|
+| `isStructDeclaration(node)` | `kind === SyntaxKind.StructDeclaration` |
+| `isAnnotationDeclaration(node)` | `kind === SyntaxKind.AnnotationDeclaration` |
+| `isAnnotationPropertyDeclaration(node)` | `kind === SyntaxKind.AnnotationPropertyDeclaration` |
+| `isEtsComponentExpression(node)` | `kind === SyntaxKind.EtsComponentExpression` |
+| `isAnnotation(node)` | `Decorator` с непустым `annotationDeclaration` |
+| `isDecoratorOrAnnotation(node)` | Базовый тест для `Decorator` |
+| `isDecorator(node)` | `Decorator` **без** `annotationDeclaration` |
+
+### 4.16. Visitor-функции (`visitorPublic.ts`)
+
+Новые case в visitor'ах для обхода ETS-узлов:
+
+| Синтаксис | Добавлен в |
+|-----------|-----------|
+| `SyntaxKind.Decorator` | Обход декораторов с `annotationDeclaration` |
+| `SyntaxKind.AnnotationPropertyDeclaration` | Обход свойств аннотаций |
+| `SyntaxKind.EtsComponentExpression` | Обход UI-компонентных выражений |
+| `SyntaxKind.StructDeclaration` | Обход struct |
+| `SyntaxKind.AnnotationDeclaration` | Обход аннотаций |
+
+### 4.17. `ohApi.ts` — функции, используемые парсером
+
+Функции из `src/compiler/ohApi.ts` (1915 строк), вызываемые напрямую из парсера:
+
+**Декораторы:**
+
+| Функция | Назначение |
+|---------|-----------|
+| `hasEtsExtendDecoratorNames(decorators, opts)` | Поиск `@Extend` |
+| `hasEtsStylesDecoratorNames(decorators, opts)` | Поиск `@Styles` |
+| `hasEtsBuildDecoratorNames(decorators, opts)` | Поиск render-метода |
+| `hasEtsBuilderDecoratorNames(decorators, opts)` | Поиск `@Builder`/`@LocalBuilder` |
+| `hasEtsConcurrentDecoratorNames(decorators, opts)` | Поиск `@Concurrent` |
+| `isTokenInsideBuilder(decorators)` | Проверка `@Builder` на узле |
+| `getEtsExtendDecoratorsComponentNames(...)` | Извлечение имени компонента из `@Extend(Name)` |
+| `getEtsStylesDecoratorComponentNames(...)` | Извлечение имени компонента из `@Styles` |
+| `isArkTsDecorator(node)` | Проверка: декоратор является ArkTS-декоратором |
+| `isEtsFunctionDecorators(decorators, opts)` | Проверка на ETS-декораторы функции |
+| `getReservedDecoratorsOfEtsFile(decorators)` | Фильтрация ETS-декораторов |
+| `getReservedDecoratorsOfStructDeclaration(decorators)` | Фильтрация декораторов struct |
+| `ensureEtsDecorators` / `concatenateDecoratorsAndModifiers` / `getEffectiveDecorators` | Манипуляции с декораторами |
+
+**Контекст:**
+
+| Функция | Назначение |
+|---------|-----------|
+| `isInEtsFile(node)` | Проверка ETS-файла |
+| `isInEtsFileWithOriginal(node)` | Проверка с учётом исходного узла |
+| `inEtsStylesContext(node)` | Проверка Styles-контекста вне парсера |
+
+**Kit-трансформация (~440 строк в ohApi.ts):**
+
+| Функция | Назначение |
+|---------|-----------|
+| `processKit(...)` | Трансформация `@kit.*` импортов |
+| `getSdkPath(opts)` | Путь к SDK |
+| `getKitJsonObject(sdkPath, kitName)` | Чтение kit-конфигурации из JSON |
+| `createImportDeclarationForKit(...)` | Создание реального import из kit-имени |
+| `markKitImport(...)` | Маркировка трансформированного импорта |
+| `processKitStatementSuccess(...)` | Обработка успешно трансформированного kit-импорта |
+| `supplementNamedBindings(...)` | Дополнение атрибутных биндингов |
+| `preProcessSpecifiedImportDeclaration(...)` | Предварительная обработка импортов |
+| `processExtendComponentMap(...)` | Обработка карты @Extend-компонентов |
+
+
 ---
 
 ## 5. Резюме для реализации в tsgo
 
-### Сканер — минимально
+### Сканер
 
-1. `struct` в карте ключевых слов → `StructKeyword`
+1. `struct` и `lazy` в карте ключевых слов → `StructKeyword`, `LazyKeyword`
 2. Флаг `inEtsContext` + метод `setEtsContext`
 3. При lookup: если `StructKeyword && !inEtsContext` → `Identifier`
+4. `LazyKeyword` — без условий
 
-### Парсер — основной объём
+### Парсер
 
 1. **Два уровня флагов**: `NodeFlags.EtsContext` + 13 `EtsFlags`
 2. **Вход в ETS-режим** по `ScriptKind.ETS` или `.ets` расширению
 3. **`StructDeclaration`**: парсинг, виртуальный конструктор из свойств + `LocalStorage`
-4. **`EtsComponentExpression`**: `ComponentName(args) { body }` и `CallExpression + {`
-5. **Декоратор-управляемые контексты**: `@Builder`, `@Extend(Name)`, `@Styles`
-6. **Виртуальные узлы**: type arguments, property access для @Extend/@Styles, return types
-7. **`AnnotationDeclaration`** (`@interface`): парсинг + свойства
-8. **Стрелочные функции**: проброс UICallbackContext/NoEtsComponentContext
-9. **`StructKeyword`** в 6+ точках проверки statement/declaration start
+4. **Struct/Builder-хелперы**: `isTokenInsideStructBuild`, `isTokenInsideStructPageTransition`, `isTokenInsideStructBuilder`, `tryParseConstructorDeclaration`, `parseConstructorName`
+5. **Auto-readonly**: `hasParamAndNoOnceDecorator`, `hasEnvDecorator`, инжекция в `parseClassElement`/`parseModifiers`
+6. **`createVirtualHeritageClauses`**: синтетический `extends CustomComponent`
+7. **`finishVirtualNode`**: создание виртуальных узлов
+8. **`doInDecoratorContext`**: детект `@Extend`/`@Styles`
+9. **`EtsComponentExpression`**: `ComponentName(args) { body }` и `CallExpression + {`
+10. **Декоратор-управляемые контексты**: `@Builder`, `@Extend(Name)`, `@Styles`
+11. **Виртуальные узлы**: type arguments, property access для @Extend/@Styles, return types, stateStyles-идентификаторы
+12. **`AnnotationDeclaration`** (`@interface`): парсинг + `isAnnotationMemberStart` + `parseAnnotationElement` + `tryParseDecorator`
+13. **Стрелочные функции**: проброс UICallbackContext/NoEtsComponentContext, исключение struct из ASI
+14. **`parseNewExpressionOrNewDotTarget`**: сохранение EtsNewExpressionContext
+15. **`firstArgumentExpression` / `repeatEachRest`**: отслеживание первого аргумента ForEach
+16. **`StructKeyword`** в 6+ точках проверки statement/declaration start + token-уровневых модификациях
+17. **`isValidVirtualTypeArgumentsContext`**: проверка контекста для виртуальных type arguments
+18. **3 `forEachChild`-функции** для новых узлов
+19. **`setLanguageVersionByFilePath`**: ETS-версия
+20. **`SourceFile.markedKitImportRange`**: сохранение диапазонов kit-трансформации
+21. **`processKit`** (~440 строк): вызов в `parseSourceFileWorker`
 
-### Биндер — минимально
+### Биндер
 
 1. `StructDeclaration` → `bindClassLikeDeclaration` с `SymbolFlags.Class`
 2. `AnnotationDeclaration` → `bindAnnotationDeclaration` с `SymbolFlags.Class | SymbolFlags.Annotation`
 3. `AnnotationPropertyDeclaration` → optional по initializer'у (не по `?`)
+4. `AnnotationPropertyDeclaration` в `this.prop = x` проверках
 
 ### Types
 
-- 5 новых SyntaxKind, 13 EtsFlags, 2 NodeFlags, 1 SymbolFlags
-- 4 новых AST-интерфейса + AnnotationElement
+- 6 новых SyntaxKind (StructKeyword, LazyKeyword + 4 узла: AnnotationPropertyDeclaration, EtsComponentExpression, StructDeclaration, AnnotationDeclaration)
+- 13 EtsFlags, 2 NodeFlags, 1 SymbolFlags, 1 CheckMode
+- 4 новых AST-интерфейса + AnnotationElement + Annotation (type alias)
+- `Decorator.annotationDeclaration` — связь декоратор→аннотация
+- `SourceFile.markedKitImportRange` — kit-диапазоны
 - `ScriptKind.ETS`, `Extension.Ets`, `Extension.Dets`
 - `EtsOptions` — конфигурация всех ETS-фич
+- 10 фабричных функций, 7 node-test функций, 8 visitor-функций
+
+### ohApi.ts (подмножество для парсера)
+
+- 13+ функций декораторов (`hasEts*DecoratorNames`, `isArkTsDecorator`, `isEtsFunctionDecorators`)
+- 3 функции контекста (`isInEtsFile`, `isInEtsFileWithOriginal`, `inEtsStylesContext`)
+- 9+ функций kit-трансформации (`processKit` + хелперы)
