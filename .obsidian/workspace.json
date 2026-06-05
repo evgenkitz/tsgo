@@ -181,8 +181,9 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/arkui-core-specification.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
@@ -211,7 +212,6 @@
     "tsgo/ArkTS/arkui-spec/general-ui-spec.md",
     "tsgo/ArkTS/arkui-spec/arkui-core-spec.md",
     "tsgo/ArkTS/arkui-spec",
-    "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
     "tsgo/ArkTS",
     "Без названия",
     "Specifications/ArkTSSpecification.txt",
