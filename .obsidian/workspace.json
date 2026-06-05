@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
+                "file": "Extend TSGO/ARKTS_SPECIFICATION.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ARKTS_SCANNER_PARSER_BINDER"
+              "title": "ARKTS_SPECIFICATION"
             }
           }
         ]
@@ -183,10 +183,11 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
+    "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
     "Без названия.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
-    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/arkui-core-specification.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
@@ -210,7 +211,6 @@
     "tsgo/ArkTS/arkui-spec/other-state-mgmt.md",
     "tsgo/ArkTS/arkui-spec/manage-state-component.md",
     "tsgo/ArkTS/arkui-spec/intro-state-mgmt.md",
-    "tsgo/ArkTS/arkui-spec/general-ui-spec.md",
     "tsgo/ArkTS/arkui-spec",
     "tsgo/ArkTS",
     "Без названия",
