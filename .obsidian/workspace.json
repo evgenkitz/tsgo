@@ -181,8 +181,17 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "a916b289f022d0a3",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
+    "tsgo/ArkTS/arkui-core-specification.md",
+    "tsgo/ArkTS/arkui-grammar-specification.md",
+    "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
+    "tsgo/ArkTS/old/arkui-core-specification.md",
+    "tsgo/ArkTS/old/arkui-grammar-specification.md",
+    "tsgo/ArkTS/old/arkui-grammar-implementation-estimation.md",
+    "tsgo/ArkTS/old/arkts-1.1-specification-analysis.md",
+    "tsgo/ArkTS/old/arkts-1.1-implementation-estimation.md",
+    "tsgo/ArkTS/old",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
@@ -192,10 +201,7 @@
     "Specifications/Links.md",
     "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
     "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
-    "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
-    "tsgo/ArkTS/arkui-grammar-specification.md",
     "Specifications/ArkTSSpecification.pdf",
-    "tsgo/ArkTS/arkui-core-specification.md",
     "tsgo/ArkTS/arkui-spec/ui-state-storages.md",
     "tsgo/ArkTS/arkui-spec/swiftui-feature-comparison.md",
     "tsgo/ArkTS/arkui-spec/rendering-control-syntax.md",
@@ -210,18 +216,12 @@
     "Без названия",
     "Specifications/ArkTSSpecification.txt",
     "Specifications/Не подтвержден 835671.crdownload",
-    "Extend TSGO/build-system-design.md",
     "Specifications",
-    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
-    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
-    "tsgo/Test.md",
-    "tsgo/AST.json/Исследование.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png.png",
     "Extend TSGO/Sugestions.png",
     "Extend TSGO/Sugestion.png",
     "Extend TSGO",
-    "tsgo/AST.json",
-    "_TASKS_"
+    "tsgo/AST.json"
   ]
 }
