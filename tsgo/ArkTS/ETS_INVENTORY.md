@@ -66,20 +66,20 @@
 
 **Состояние (`etsFlags: EtsFlags`, стр. 1574):**
 
-| Флаг                         | Бит   | Назначение                         |
-| ---------------------------- | ----- | ---------------------------------- |
-| `StructContext`              | 1<<1  | Парсинг внутри struct              |
-| `EtsExtendComponentsContext` | 1<<2  | Парсинг @Extend компонента         |
-| `EtsStylesComponentsContext` | 1<<3  | Парсинг @Styles компонента         |
-| `EtsBuildContext`            | 1<<4  | Парсинг внутри build() метода      |
-| `EtsBuilderContext`          | 1<<5  | Парсинг @Builder метода/функции    |
-| `EtsStateStylesContext`      | 1<<6  | Парсинг stateStyles                |
-| `EtsComponentsContext`       | 1<<7  | Парсинг внутри ETS компонента      |
-| `EtsNewExpressionContext`    | 1<<8  | Парсинг внутри new выражения       |
-| `UICallbackContext`          | 1<<9  | Парсинг UI стрелочной функции      |
-| `SyntaxComponentContext`     | 1<<10 | Парсинг ForEach/LazyForEach/Repeat |
-| `SyntaxDataSourceContext`    | 1<<11 | Парсинг первого аргумента ForEach  |
-| `NoEtsComponentContext`      | 1<<12 | ETS-компоненты запрещены           |
+| Флаг | Бит | Назначение |
+|---|---|---|
+| `StructContext` | 1<<1 | Парсинг внутри struct |
+| `EtsExtendComponentsContext` | 1<<2 | Парсинг @Extend компонента |
+| `EtsStylesComponentsContext` | 1<<3 | Парсинг @Styles компонента |
+| `EtsBuildContext` | 1<<4 | Парсинг внутри build() метода |
+| `EtsBuilderContext` | 1<<5 | Парсинг @Builder метода/функции |
+| `EtsStateStylesContext` | 1<<6 | Парсинг stateStyles |
+| `EtsComponentsContext` | 1<<7 | Парсинг внутри ETS компонента |
+| `EtsNewExpressionContext` | 1<<8 | Парсинг внутри new выражения |
+| `UICallbackContext` | 1<<9 | Парсинг UI стрелочной функции |
+| `SyntaxComponentContext` | 1<<10 | Парсинг ForEach/LazyForEach/Repeat |
+| `SyntaxDataSourceContext` | 1<<11 | Парсинг первого аргумента ForEach |
+| `NoEtsComponentContext` | 1<<12 | ETS-компоненты запрещены |
 
 **Context-функции (12 set + 12 query):**
 - `setStructContext`, `setEtsComponentsContext`, `setEtsNewExpressionContext`, `setEtsExtendComponentsContext`, `setEtsStylesComponentsContext`, `setEtsBuildContext`, `setEtsBuilderContext`, `setEtsStateStylesContext`, `setUICallbackContext`, `setSyntaxComponentContext`, `setSyntaxDataSourceContext`, `setNoEtsComponentContext`
@@ -135,9 +135,32 @@
 
 ### 3.4. Kit-импорты
 
-- Вызов `processKit(factory, statements, sdkPath, markedkitImportRanges, ...)` на строке 1840
-- Трансформирует `import ... from '@kit.*'` в соответствующие `require()` формы
+Механизм компилятора, преобразующий символические имена `@kit.X` в реальные пути к файлам деклараций SDK на этапе парсинга, до начала проверки типов.
+
+**Синтаксис:**
+```typescript
+import { Button, Text } from '@kit.ArkUI';
+import { image } from '@kit.ImageKit';
+```
+
+**Реализация:**
+- `KIT_PREFIX = '@kit.'` (ohApi.ts:1235)
+- `processKit()` (ohApi.ts:1588) — вызывается из `parseSourceFileWorker` (parser.ts:1837)
+- `getKitJsonObject()` (ohApi.ts:1265) — загружает конфигурацию kit'а из `kit_configs/<kitName>.json` в SDK
+- `createImportDeclarationForKit()` (ohApi.ts:1320) — создаёт новый import с реальным путём
+- Трансформированные узлы помечаются `NodeFlags.KitImportFlags` и `virtual = true`
 - Результаты сохраняются в `sourceFile.markedKitImportRange`
+- Кэширование: `kitJsonCache` (ohApi.ts:1255), `cleanKitJsonCache()` (ohApi.ts:1304)
+
+**White-list модулей:**
+- API-модули для дополнения атрибутов: `@ohos.arkui.*`, `@hms.hds.*` (ohApi.ts:1571)
+- Kit-модули: `@kit.ArkUI`, `@kit.MediaLibraryKit`, `@kit.UIDesignKit` (ohApi.ts:1582)
+
+**Пропуск трансформации:** если `noTransformedKitInParser`, отсутствует `sdkPath`, есть ошибки парсинга, или language version callback отклоняет
+
+**Пути SDK:**
+- `getSdkPath()` (ohApi.ts:1258) — извлекает путь SDK из `compilerOptions.etsLoaderPath`
+- Для mixed compiler SDK (1.2): путь `openharmony/ets/dynamic/build-tools/ets-loader/kit_configs`
 
 ### 3.5. Виртуальные узлы struct
 
@@ -157,6 +180,11 @@
 | `ObjectFlags.Annotation` | 1<<27 | Маркировка object types аннотаций |
 | `NodeFlags.EtsContext` | 1<<30 | Маркировка source file в ETS-контексте |
 | `NodeFlags.KitImportFlags` | 1<<29 | Маркировка узлов kit-импортов |
+
+**Тип `ESObject`:**
+- Специальный тип ArkTS — алиас для `any`, разрешённый в строгом режиме ArkTS (добавлен PR !106, 2023)
+- Используется для совместимости с JS API, где тип объекта неизвестен
+- Ограничения использования проверяются линтером (`arkts-limited-esobj`)
 
 ### 4.2. Проверка новых деклараций
 
@@ -204,7 +232,59 @@
 - `checkAnnotations` (40223) — старт проверки аннотаций узла
 - `checkAnnotation` (40252) — проверка области действия аннотации
 
-### 4.4. EtsComponentExpression — проверка декларативного UI
+### 4.4. Система `apiAvailable` — проверка доступности API по версиям SDK
+
+Механизм, проверяющий что используемые API доступны в целевой версии SDK. API, помеченные аннотацией `@Available(since: "12")`, вызывают предупреждение при использовании на более старых версиях.
+
+- `checkApiAvailableVersion()` (checker.ts:47221) — основная функция проверки при каждом вызове и new-выражении
+- `apiAvailableGetTypeOfNode()` (checker.ts:47216) — получение типа узла для проверки (добавлена поддержка `getTypeOfNode` в PR !858, май 2026)
+- `isApiAvailableVersionSpecifications` (checker.ts:1451) — host-callback для валидации версий API
+- Интегрировано с аннотациями через `@Available(since: "...")` и `@Retention({policy: "source"})`
+- Диагностика: `This_API_has_been_Special_Markings_exercise_caution_when_using_this_API` (код 28007/28046)
+- Поддержка диапазонов версий: `@Available(since: "12")`, `@Available(since: "12", until: "15")`
+
+### 4.5. `@SuppressWarnings` — подавление предупреждений
+
+Source-retention аннотация, подавляющая определённые предупреждения компилятора на аннотированных объявлениях:
+
+```arkts
+@SuppressWarnings("unused")
+function testFunc(): void {
+  let unusedVar = 42;
+}
+```
+
+- Относится к категории SourceRetention-аннотаций (checker.ts:47197-47199)
+- Валидация содержимого через host callback `isSourceRetentionAnnotationContentValid` (checker.ts:40381-40382)
+- Удаляется при emit'е (ohApi.ts:673)
+- Добавлен PR !810 (2025)
+
+### 4.6. Sendable — система статической проверки потокобезопасности
+
+Система статической типизации для конкурентного программирования. Гарантирует, что данные, передаваемые между потоками (через TaskPool), безопасны для разделяемого доступа.
+
+**Декоратор `@Sendable`** (ohApi.ts:1211):
+- `isSendableFunctionOrType()` — проверка `@Sendable` на функциях и type alias
+- Разрешён на `FunctionDeclaration`, `TypeAliasDeclaration`, `ClassDeclaration` (utilities.ts:2721)
+
+**Контроль импорта:**
+- `allowImportSendable()` (checker.ts:5138) — `.ts` файлы могут импортировать `.ets` только если включён `tsImportSendableEnable` или файл в SDK
+- `disableSendableCheckRules?: string[]` — гранулярное отключение правил
+- `tsImportSendableEnable?: boolean` — глобальное разрешение импорта Sendable из TS
+
+**Ключевые концепции:**
+- `@Sendable` декоратор: помечает класс, функцию или type alias как безопасный для передачи между потоками
+- `ISendable` интерфейс: маркерный интерфейс для sendable-классов
+- TaskPool: проверка аргументов — должны быть `@Concurrent`-декорированными
+
+**Ограничения Sendable:**
+1. Поля должны иметь явную аннотацию типа
+2. Запрещены вычисляемые имена свойств
+3. Наследование: только `@Sendable` класс → `ISendable`
+4. Объекты `collections.Array` должны быть sendable
+5. Импортированные переменные в замыканиях проверяются
+
+### 4.7. EtsComponentExpression — проверка декларативного UI
 
 | Функция | Строка | Назначение |
 |---|---|---|
@@ -214,33 +294,44 @@
 | `isSystemEtsComponent` | 34315 | Проверка: является ли идентификатор системным UI-компонентом из SDK |
 | `getEtsComponentExpressionPropertyOfType` | 34415 | Разрешение свойств ETS-компонента через @Extend/@Styles |
 
-### 4.5. Разрешение вызовов struct
+### 4.8. Разрешение вызовов struct
 
 - `isCalledStructDeclaration` — разрешение вызова struct без `new` (33232-33239)
 - Если тип — struct с construct-сигнатурами, разрешается вызов без `new`
 
-### 4.6. Модульное разрешение ETS
+### 4.9. Модульное разрешение ETS
 
 | Функция | Строка | Назначение |
 |---|---|---|
 | `resolveExternalModule` | 4910 | Ветвление для `.so`, `oh_modules`, запрет импорта `.ets` из `.ts` |
 | `allowImportSendable` | 5138 | Разрешение импорта Sendable из ETS SDK в TS |
 
-### 4.7. ETS-декораторы (@Builder, @Styles, @Extend)
+**Обработка `.so` файлов:**
+- Опция `tsImportSoCheck` (commandLineParser.ts) — включает проверку типов для `.so` импортов
+- При `!tsImportSoCheck`: предупреждение о ненайденном `.so` модуле подавляется, за исключением ETS-файлов с `needDoArkTsLinter`
+- Проверка типов `.so` файлов: PR !844 (`feature/enable-so-file-type-check`)
+- Игнорирование ошибок для `.so` модулей: PR !69, !78
+
+### 4.10. ETS-декораторы (@Builder, @Styles, @Extend, @AnimatableExtend, @Concurrent)
 
 - `checkGrammarDecorators` (47790-47828) — специальная логика для ETS-декораторов
 - Подавление ошибок для `@Builder`, `@Styles`, `@Sendable`
 
-### 4.8. Проверка инициализации свойств
+**`@AnimatableExtend`:**
+- Декоратор ArkUI для анимируемых расширений компонентов
+- Добавлен PR !88 (2023)
+- Настраивается через `compilerOptions.ets.extend.decorator`
+
+### 4.11. Проверка инициализации свойств
 
 - `checkPropertyAccessExpressionOrQualifiedName` (31285-31319) — поддержка `ets.propertyDecorators` (например, `@Link`, `@Prop`, `@ObjectLink`, `@Consume`)
 - `checkStructPropertyPosition` — проверка позиции `@Require` свойств
 
-### 4.9. Возвращаемые типы
+### 4.12. Возвращаемые типы
 
 - `checkAllCodePathsInNonVoidFunctionReturnOrThrow` (35615-35706) — проверка возвращаемых типов `@Extend`/`@Styles`
 
-### 4.10. JSDoc @throws (OpenHarmony)
+### 4.13. JSDoc @throws (OpenHarmony)
 
 | Функция | Назначение |
 |---|---|
@@ -251,7 +342,7 @@
 | `hasAsyncErrorCallbacks` (34110) | Проверка AsyncCallback/ErrorCallback |
 | `checkThrowableFunction` (34090) | Предупреждение о необработанных @throws |
 
-### 4.11. Расширяемая система проверки JSDoc-тегов (@form)
+### 4.14. Расширяемая система проверки JSDoc-тегов (@form)
 
 Форк добавляет plugin-подобную инфраструктуру для пользовательской валидации JSDoc-тегов (используется `@form`-фреймворком):
 
@@ -263,10 +354,16 @@
 - `getJsDocNodeCheckedConfig` / `getJsDocNodeConditionCheckedResult` / `getFileCheckedModuleInfo` — коллбэки на Program/EmitResolver/CustomTransformers
 - Интеграция в `checker.ts` (стр. 34475-34489) — вызов коллбэков при обработке JSDoc
 
-### 4.12. Linter-режим
+### 4.15. Linter-режим и строгие проверки
 
-- `isTypeCheckerForLinter` параметр (1393) — форсирует strict-режимы
-- `strictCheckerOnly` — опция для разделения strict-проверок
+- `isTypeCheckerForLinter` параметр (1393) — форсирует strict-режимы:
+  - `strictNullChecks`, `strictFunctionTypes`, `strictPropertyInitialization`, `noImplicitReturns` (1456-1465)
+- `strictCheckerOnly` — строгая проверка типов только для `.ets` файлов, отключает `getJsDocNodeCheckedConfig` (1463)
+- `disableStrictCheckPaths?: string[]` — пути, исключённые из строгой проверки (добавлено в !853, апрель 2026)
+- `enableStrictCheckOHModule?: boolean` — строгая проверка `oh_modules` (!733, !739)
+- `skipOhModulesLint?: boolean` — пропуск линтинга oh_modules
+- При `needDoArkTsLinter`: форсируется `skipLibCheck = false` (1452)
+- Линтер форсирует strict-режимы даже если они выключены в конфигурации
 
 ---
 
@@ -345,6 +442,14 @@
 - `getModulePathPartByPMType`, `getModuleByPMType`, `getPackageJsonByPMType`
 - `isOHModulesDirectory`, `isTargetModulesDerectory`, `pathContainsOHModules`
 - `choosePathContainsModules`, `isOHModulesAtTypesDirectory`, `isOHModulesReference`
+
+**`oh-exports` — контроль экспорта пакетов:**
+- Поле в `oh-package.json5`, ограничивающее какие модули пакета можно импортировать извне
+- `ResolvedModule.isNotOhExport?: boolean` (types.ts:7439-7440)
+- Если модуль разрешён, но не указан в `oh-exports` → `isNotOhExport = true`
+- В program.ts (3822): модули с `isNotOhExport` исключаются из программы
+- В checker.ts (4944): попытка импорта → ошибка `Cannot_find_module_0_This_module_is_not_exported`
+- Добавлен PR !804 (2026-03)
 
 **Трансформеры:**
 - `getTypeExportImportAndConstEnumTransformer` — `type` keyword + const enum inline
@@ -446,14 +551,32 @@
 - Разрешение `oh-package.json5` вместо `package.json` с использованием библиотеки `json5` для парсинга JSON5-формата
 - Приоритет `.d.ets` над `.d.ts` при наличии `compilerOptions.ets`
 
-### 6.9. `commandLineParser.ts`
+### 6.9. `commandLineParser.ts` — ETS-опции компилятора
 
 | Опция | Тип | Назначение |
 |---|---|---|
-| `ets` | `EtsOptions` | Главная ETS-конфигурация |
-| `packageManagerType` | `string` | Тип пакетного менеджера |
-| `emitNodeModulesFiles` | `boolean` | Эмит node_modules файлов |
+| `ets` | `EtsOptions` | Главная ETS-конфигурация (компоненты, декораторы, render, etc.) |
+| `packageManagerType` | `string` | Тип пакетного менеджера (`"ohpm"` для OpenHarmony) |
+| `emitNodeModulesFiles` | `boolean` | Эмит node_modules/oh_modules файлов |
 | `etsAnnotationsEnable` | `boolean` | Включение аннотаций |
+| `etsLoaderPath` | `string` | Путь к ETS-загрузчику (SDK) |
+| `tsImportSendableEnable` | `boolean` | Разрешение импорта Sendable из TS в ETS |
+| `tsImportSoCheck` | `boolean` | Проверка типов для `.so` импортов |
+| `maxFlowDepth` | `number` | Максимальная глубина flow-анализа (2000–65535) |
+| `skipOhModulesLint` | `boolean` | Пропуск линтинга oh_modules |
+| `enableStrictCheckOHModule` | `boolean` | Строгая проверка oh_modules |
+| `disableStrictCheckPaths` | `string[]` | Пути, исключённые из строгой проверки |
+| `disableSendableCheckRules` | `string[]` | Sendable-правила для отключения |
+| `strictCheckerOnly` | `boolean` | Строгая проверка только для `.ets` файлов |
+| `mixCompile` | `boolean` | Режим смешанной компиляции |
+| `isCompileJsHar` | `boolean` | Вывод HAR как JS файла |
+| `moduleRootPath` | `string` | Корневой путь модуля |
+| `compatibleSdkVersion` | `number` | Совместимая версия SDK |
+| `compileSdkVersion` | `number` | Целевая версия SDK |
+| `noTransformedKitInParser` | `boolean` | Пропуск kit-трансформации в парсере |
+| `skipPathsInKeyForCompilationSettings` | `boolean` | Пропуск путей в ключе компиляции |
+| `skipBaseUrlInKeyForCompilationSettings` | `boolean` | Пропуск baseUrl в ключе компиляции |
+| `compatibleSdkVersionStage` | `string` | Стадия совместимой версии SDK |
 
 ### 6.10. `program.ts`
 
@@ -517,7 +640,47 @@
 Декоратор ArkTS для пометки функций, выполняемых в параллельном режиме:
 - `hasEtsConcurrentDecoratorNames` в `ohApi.ts` (стр. 368) — проверка наличия `@Concurrent`
 - Поддержка в `EtsOptions.concurrent.decorator`
+- Используется TaskPool: аргументы функций, передаваемых в `taskpool`, должны быть `@Concurrent`-декорированными
 - Добавлен коммитом `6987d740bd Support concurrent decorator`
+
+### 6.17. ArkGuard и обфускация
+
+- **ArkGuard** — инструмент обфускации кода ArkTS
+- `--enable-arkguard` — флаг для включения arkguard-режима (PR !362)
+- `createObfTextSingleLineWriter()` (ohApi.ts:1095) — однострочный writer для обфускации (убирает пробелы/переносы строк)
+- **useTsHar**: флаги для обфускации в контексте HAR-пакетов (!657)
+- **Obfuscation whitelist**: поддержка wildcard'ов в белом списке обфускации (!359)
+- **Compact sourcemap**: исправление sourcemap при обфускации (!490)
+
+### 6.18. Изолированные декларации (isolate declarations)
+
+- Поддержка изолированных деклараций для ускорения компиляции
+- Добавлено PR !709 (2025-12)
+- Позволяет компилятору обрабатывать декларации независимо друг от друга
+
+### 6.19. Инкрементальная компиляция и кэширование
+
+- **TSC incremental**: переиспользование `.tsbuildinfo` для инкрементальной компиляции
+- **Linter incremental**: линтер переиспользует механизм инкрементальной компиляции TSC (!653, !656)
+- **Кэширование линтера**: `arktsLinterDiagnosticsPerFile` в builder state
+- **Linter cache**: PR !800 "addCacheForLinter"
+- **Parallel linter**: параллельное выполнение линтера (!211)
+- **Language service cache**: использование кэша языкового сервиса для ускорения (!258)
+
+### 6.20. Dynamic import
+
+- Исправления динамических импортов (!598)
+- Dynamic import json5 (`4c5ab8bdc4 dynamic import json5`)
+- Поддержка `import()` выражений в контексте ETS
+
+### 6.21. Оптимизации производительности и памяти
+
+- **Performance dotting** (§6.13): инструментирование замеров времени в TSC (!572) и линтере (!599)
+- **Memory dotting** (§6.13): отслеживание пикового использования памяти (!514)
+- **Освобождение TypeChecker'ов**: оптимизация потребления памяти (!405)
+- **Управление GC**: принудительный сбор мусора в режиме сборки «только в памяти» (`buildEndOnlyMemoryModeGC`, !840)
+- **Оптимизация сигнатур и функций** (!575, !576)
+- **Оптимизация эмита** (!826)
 
 ---
 
@@ -532,7 +695,7 @@
 | Новые функции парсера | 19+ |
 | Модифицированные функции парсера | 16+ |
 | EtsFlags (контексты парсера) | 13 |
-| Новые функции чекера | 40+ |
+| Новые функции чекера | 50+ |
 | Новые функции эмиттера | 5+ |
 | Новые диагностики | 42 |
 | Функции в ohApi.ts | 60+ |
@@ -541,7 +704,10 @@
 | Фабричные функции | 10 |
 | Node-test функции | 7 |
 | Visitor-функции | 8 |
-| CompilerOptions | 20+ |
-| Модульная система (oh_modules) | Полная поддержка ohpm |
+| CompilerOptions | 22 |
+| Модульная система (oh_modules + oh-exports) | Полная поддержка ohpm |
 | Инфраструктура профилирования | 2 новых файла (performanceDotting.ts, memorydotting/) |
 | Новые файлы компилятора | 4 (ohApi.ts, performanceDotting.ts, memorydotting/, _namespaces/ts*) |
+| Системы компилятора | apiAvailable, Sendable, @SuppressWarnings, аннотации, Kit-импорты |
+| Оптимизации | Инкрементальная компиляция, кэширование линтера, GC-оптимизация |
+| Обфускация | ArkGuard, useTsHar, obfuscation whitelist |
