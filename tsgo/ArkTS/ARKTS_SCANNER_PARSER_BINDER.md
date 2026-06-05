@@ -692,7 +692,12 @@ case SyntaxKind.AnnotationPropertyDeclaration:
 
 ---
 
-## 4. Типы (`src/compiler/types.ts`)
+## 4. Типы (`src/compiler/types.ts` → `internal/ast/`)
+
+> **Важно для tsgo:** AST-узлы в typescript-go **генерируются из схемы** `_scripts/ast.json` → `ast_generated.go`.
+> Добавление новых узлов (StructDeclaration, EtsComponentExpression, etc.) делается через редактирование `ast.json` и запуск кодогенератора.
+> Ручной код в `ast.go` нужен только для узлов с `handWritten: true` (сейчас только `SourceFile`).
+> Все struct/factory/visitor/clone/ForEachChild/Is*() — генерируются автоматически.
 
 ### 4.1. Новые SyntaxKind
 

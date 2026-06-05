@@ -35,12 +35,19 @@
 |--------|----------------|---------------|
 | Язык | TypeScript | Go |
 | Версия TS | 4.9.5 | 7.x (Corsa) |
-| AST | Интерфейсы TS | Структуры Go + кодогенерация |
-| Фабрики | `factory/nodeFactory.ts` | `NodeFactory` с arena-аллокацией |
+| AST-узлы | Интерфейсы TS (руками) | Структуры Go: **генерируются из схемы** `_scripts/ast.json` → `ast_generated.go` |
+| AST-схема | Нет | `_scripts/ast.json` — описание Kind'ов и структур узлов |
+| Ручной AST | Все узлы | Только `SourceFile` (помечен `handWritten: true`) |
+| Кодогенерация | Нет | `_scripts/generate-go-ast.ts` → `ast_generated.go` + `kind_generated.go` |
+| Фабрики | `factory/nodeFactory.ts` (руками) | `NodeFactory` — **генерится** из схемы (arena-аллокация per тип) |
+| Visitor | `visitorPublic.ts` (руками) | **Генерится** из схемы (`VisitEachChild`, `ForEachChild`, `Clone`) |
+| Is-проверки | `factory/nodeTests.ts` (руками) | **Генерится** из схемы (`Is*()` type guards) |
 | Символы | `Symbol` с битовыми флагами | `ast.Symbol` с битовыми флагами |
 | Flow | `FlowNode` union type | `ast.FlowNode` |
 | Парсер | Hand-written recursive descent | Hand-written recursive descent + reparser |
 | Структура | Монолит: `src/compiler/` | Разделение: `internal/parser/`, `internal/scanner/`, etc. |
+
+**Ключевой вывод:** Добавление новых AST-узлов (StructDeclaration и др.) делается через **схему `ast.json`**, а не ручным написанием Go-структур. Кодогенератор создаст struct, factory, visitor, clone, ForEachChild, Is*() — всё автоматически. Ручной код (`ast.go`) нужен только если узел помечен `handWritten: true`.
 
 ---
 
@@ -54,41 +61,56 @@
 - [ ] `inEtsContext: bool` + метод `SetEtsContext(bool)`
 - [ ] Условная отмена: `if keyword == StructKeyword && !inEtsContext → Identifier`
 
-### 1.2. AST / Типы (~200 строк)
+### 1.2. AST / Типы (~50 строк в схеме + ~15 строк ручного кода)
 
-**Новые Kind (SyntaxKind):**
-- [ ] `KindStructKeyword` — ключевое слово struct
-- [ ] `KindLazyKeyword` — ключевое слово lazy
-- [ ] `KindStructDeclaration` — объявление struct
-- [ ] `KindAnnotationDeclaration` — объявление @interface
-- [ ] `KindAnnotationPropertyDeclaration` — свойство аннотации
-- [ ] `KindEtsComponentExpression` — выражение UI-компонента
+**Добавляется в `_scripts/ast.json` (схема):**
 
-**Новые NodeFlags:**
+**Новые Kind в `kinds.elements`:**
+- [ ] `StructKeyword` — ключевое слово struct
+- [ ] `LazyKeyword` — ключевое слово lazy
+- [ ] `StructDeclaration` — объявление struct
+- [ ] `AnnotationDeclaration` — объявление @interface
+- [ ] `AnnotationPropertyDeclaration` — свойство аннотации
+- [ ] `EtsComponentExpression` — выражение UI-компонента
+
+**Новые определения узлов (каждый со своими `extends` и `members`):**
+
+```
+StructDeclaration:        extends [ClassLikeBase, DeclarationBase, StatementBase, ...]
+AnnotationDeclaration:    extends [DeclarationBase, StatementBase, ModifiersBase, LocalsContainerBase, ...]
+AnnotationPropertyDeclaration: extends [NamedDeclarationBase, ...]
+EtsComponentExpression:   extends [ExpressionBase, DeclarationBase]
+```
+
+После редактирования `ast.json` запустить `_scripts/generate-go-ast.ts` — сгенерирует:
+- Все struct-определения в `ast_generated.go`
+- `AsStructDeclaration()`, `AsAnnotationDeclaration()`, ... — cast-методы на `*Node`
+- `NewStructDeclaration()`, `UpdateStructDeclaration()`, ... — factory-методы на `*NodeFactory`
+- `ForEachChild`, `VisitEachChild`, `Clone` — для каждого узла
+- `IsStructDeclaration()`, `IsAnnotationDeclaration()`, ... — type guard'ы
+- Kind-константы в `kind_generated.go`
+
+**Ручной код — только если `handWritten: true` (как у `SourceFile`):**
+
+Для простых узлов (StructDeclaration, AnnotationDeclaration, EtsComponentExpression) `handWritten` не нужен — всё сгенерится автоматически.
+
+**Новые NodeFlags (`internal/ast/nodeflags.go`):**
 - [ ] `NodeFlagsEtsContext` (1 << 30) — файл в режиме ArkTS
 - [ ] `NodeFlagsKitImport` (1 << 29) — узлы kit-импортов
 
-**Новые SymbolFlags:**
+**Новые SymbolFlags (`internal/ast/symbolflags.go`):**
 - [ ] `SymbolFlagsAnnotation` (1 << 28)
 
-**EtsFlags (13 флагов):**
-- [ ] `EtsFlagsNone`, `StructContext`, `EtsExtendComponentsContext`, `EtsStylesComponentsContext`, `EtsBuildContext`, `EtsBuilderContext`, `EtsStateStylesContext`, `EtsComponentsContext`, `EtsNewExpressionContext`, `UICallbackContext`, `SyntaxComponentContext`, `SyntaxDataSourceContext`, `NoEtsComponentContext`
+**Новый файл — `internal/ast/etsflags.go`:**
+- [ ] `EtsFlags` enum (13 флагов: `StructContext`, `EtsExtendComponentsContext`, ...)
 
-**Новые AST-интерфейсы в Go (структуры + кодогенерация):**
-- [ ] `StructDeclaration` — extends `ClassLikeBase`, `Declaration`
-- [ ] `AnnotationDeclaration` — extends `Declaration`
-- [ ] `AnnotationPropertyDeclaration` — extends `AnnotationElement`
-- [ ] `EtsComponentExpression` — extends `Expression`, `Declaration`
-- [ ] `AnnotationElement` — базовый тип для элементов аннотации
-
-**CompilerOptions:**
+**CompilerOptions (`internal/compiler/` или где лежат опции):**
 - [ ] `ets: EtsOptions` (структура конфигурации)
 - [ ] `etsLoaderPath: string`
 - [ ] `etsAnnotationsEnable: bool`
 - [ ] `strictCheckerOnly: bool`
-- [ ] `tsImportSendableEnable: bool`
 
-**ScriptKind / Extension:**
+**ScriptKind / Extension (место зависит от того, где это в Corsa):**
 - [ ] `ScriptKindETS` (значение 8)
 - [ ] `ExtensionEts = ".ets"`, `ExtensionDets = ".d.ets"`
 
@@ -146,11 +168,13 @@
 - [ ] `AnnotationPropertyDeclaration` как `ControlFlowContainer` (если есть initializer)
 - [ ] `bindPropertyWorker`: пропуск `?` optionality для AnnotationProperty; optional по initializer
 
-### 1.5. AST-кодогенерация (~100 строк схемы)
+### 1.5. AST-кодогенерация (~50 строк в `ast.json` + запуск генератора)
 
-- [ ] Добавить новые Kind в `_scripts/ast.json`
-- [ ] Добавить новые структуры узлов в схему
-- [ ] Сгенерировать `ast_generated.go` и `kind_generated.go`
+- [ ] Добавить 6 новых Kind в `kinds.elements` схемы `_scripts/ast.json`
+- [ ] Добавить 5 определений узлов (StructDeclaration, AnnotationDeclaration, AnnotationPropertyDeclaration, EtsComponentExpression, AnnotationElement) в схему
+- [ ] Запустить `go run _scripts/generate-go-ast.ts` → обновит `ast_generated.go` + `kind_generated.go`
+- [ ] **Всё.** Struct'ы, factory, visitor, clone, ForEachChild, Is*() — сгенерированы автоматически.
+- [ ] Ручной код в `ast.go` — только если узел помечен `handWritten: true`. Для ArkTS-узлов это не нужно.
 
 ---
 
@@ -260,13 +284,13 @@ func TestStructOutsideETS(t *testing.T) {
 
 **Все вместе (синхронно):**
 1. Согласовать naming convention для ArkTS-дополнений в Go (префиксы, имена констант)
-2. Обновить `_scripts/ast.json` — схему AST с новыми узлами
-3. Сгенерировать `ast_generated.go` и `kind_generated.go`
-4. Добавить новые Kind, NodeFlags, SymbolFlags, TokenFlags, ScriptKind, Extension
-5. Реализовать `EtsFlags` + EtsOptions структуры
-6. Реализовать сканер (`struct`, `lazy`, `SetEtsContext`)
+2. Добавить 6 Kind + 5 определений узлов в `_scripts/ast.json`
+3. Запустить кодогенератор → получить обновлённые `ast_generated.go` + `kind_generated.go`
+4. Добавить новые NodeFlags (`internal/ast/nodeflags.go`), SymbolFlags (`internal/ast/symbolflags.go`), EtsFlags (новый файл `internal/ast/etsflags.go`)
+5. Реализовать EtsOptions структуры
+6. Реализовать сканер (`struct`, `lazy`, `SetEtsContext`) в `internal/scanner/scanner.go`
 
-**Результат:** Можно отсканировать `.ets` файл, `struct` и `lazy` распознаются как ключевые слова.
+**Результат:** Можно отсканировать `.ets` файл, `struct` и `lazy` распознаются как ключевые слова. Все новые AST-узлы имеют сгенерированные struct/factory/visitor/clone.
 
 **Критические решения:**
 - Как интегрировать ETS-режим в `ParseSourceFile` (новый параметр? расширение файла? ScriptKind?)
