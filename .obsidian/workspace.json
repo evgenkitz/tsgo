@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
+                "file": "tsgo/ArkTS/ETS_INVENTORY.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ARKTS_SPECIFICATION"
+              "title": "ETS_INVENTORY"
             }
           }
         ],
@@ -213,14 +213,14 @@
   "active": "888db64dd45ed078",
   "lastOpenFiles": [
     "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
-    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
+    "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
-    "Без названия.md",
     "Untitled.md",
+    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
+    "Без названия.md",
     "tsgo/ArkTS/old/arkts-1.1-specification-analysis.md",
     "tsgo/ArkTS/old/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/old",
-    "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "Extend TSGO/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",

@@ -66,20 +66,20 @@
 
 **Состояние (`etsFlags: EtsFlags`, стр. 1574):**
 
-| Флаг | Бит | Назначение |
-|---|---|---|
-| `StructContext` | 1<<1 | Парсинг внутри struct |
-| `EtsExtendComponentsContext` | 1<<2 | Парсинг @Extend компонента |
-| `EtsStylesComponentsContext` | 1<<3 | Парсинг @Styles компонента |
-| `EtsBuildContext` | 1<<4 | Парсинг внутри build() метода |
-| `EtsBuilderContext` | 1<<5 | Парсинг @Builder метода/функции |
-| `EtsStateStylesContext` | 1<<6 | Парсинг stateStyles |
-| `EtsComponentsContext` | 1<<7 | Парсинг внутри ETS компонента |
-| `EtsNewExpressionContext` | 1<<8 | Парсинг внутри new выражения |
-| `UICallbackContext` | 1<<9 | Парсинг UI стрелочной функции |
-| `SyntaxComponentContext` | 1<<10 | Парсинг ForEach/LazyForEach/Repeat |
-| `SyntaxDataSourceContext` | 1<<11 | Парсинг первого аргумента ForEach |
-| `NoEtsComponentContext` | 1<<12 | ETS-компоненты запрещены |
+| Флаг                         | Бит   | Назначение                         |
+| ---------------------------- | ----- | ---------------------------------- |
+| `StructContext`              | 1<<1  | Парсинг внутри struct              |
+| `EtsExtendComponentsContext` | 1<<2  | Парсинг @Extend компонента         |
+| `EtsStylesComponentsContext` | 1<<3  | Парсинг @Styles компонента         |
+| `EtsBuildContext`            | 1<<4  | Парсинг внутри build() метода      |
+| `EtsBuilderContext`          | 1<<5  | Парсинг @Builder метода/функции    |
+| `EtsStateStylesContext`      | 1<<6  | Парсинг stateStyles                |
+| `EtsComponentsContext`       | 1<<7  | Парсинг внутри ETS компонента      |
+| `EtsNewExpressionContext`    | 1<<8  | Парсинг внутри new выражения       |
+| `UICallbackContext`          | 1<<9  | Парсинг UI стрелочной функции      |
+| `SyntaxComponentContext`     | 1<<10 | Парсинг ForEach/LazyForEach/Repeat |
+| `SyntaxDataSourceContext`    | 1<<11 | Парсинг первого аргумента ForEach  |
+| `NoEtsComponentContext`      | 1<<12 | ETS-компоненты запрещены           |
 
 **Context-функции (12 set + 12 query):**
 - `setStructContext`, `setEtsComponentsContext`, `setEtsNewExpressionContext`, `setEtsExtendComponentsContext`, `setEtsStylesComponentsContext`, `setEtsBuildContext`, `setEtsBuilderContext`, `setEtsStateStylesContext`, `setUICallbackContext`, `setSyntaxComponentContext`, `setSyntaxDataSourceContext`, `setNoEtsComponentContext`
