@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
+                "file": "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ETS_COMPILER_ANALYSIS"
+              "title": "ARKTS_SPECIFICATION"
             }
           }
         ]
@@ -183,6 +183,8 @@
   },
   "active": "a916b289f022d0a3",
   "lastOpenFiles": [
+    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
+    "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
     "Extend TSGO/ARKTS_SPECIFICATION.md",
     "Untitled.md",
@@ -192,7 +194,6 @@
     "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
-    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "Specifications/ArkTSSpecification.pdf",
     "tsgo/ArkTS/arkui-core-specification.md",
     "tsgo/ArkTS/arkui-spec/ui-state-storages.md",
@@ -220,7 +221,6 @@
     "Extend TSGO/Sugestions.png",
     "Extend TSGO/Sugestion.png",
     "Extend TSGO",
-    "_TASKS_/Test.md",
     "tsgo/AST.json",
     "_TASKS_"
   ]
