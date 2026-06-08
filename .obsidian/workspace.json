@@ -212,11 +212,12 @@
   },
   "active": "888db64dd45ed078",
   "lastOpenFiles": [
-    "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
-    "tsgo/ArkTS/ETS_INVENTORY.md",
     "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
-    "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
     "Untitled.md",
+    "tsgo/ArkTS/ETS_INVENTORY.md",
+    "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
+    "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
+    "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
     "Без названия.md",
     "tsgo/ArkTS/old/arkts-1.1-specification-analysis.md",
     "tsgo/ArkTS/old/arkts-1.1-implementation-estimation.md",
@@ -246,7 +247,6 @@
     "tsgo/AST.json",
     "Untitled.canvas",
     "hvigor/Test.md",
-    "rollup/Test.md",
     "_TASKS_",
     "tsgo",
     "rollup"
