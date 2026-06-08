@@ -48,9 +48,23 @@
               "icon": "lucide-file",
               "title": "ETS_COMPILER_ANALYSIS"
             }
+          },
+          {
+            "id": "e8f4d03bc7213769",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -210,12 +224,14 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "888db64dd45ed078",
+  "active": "e8f4d03bc7213769",
   "lastOpenFiles": [
+    "Untitled.md",
+    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
+    "tsgo/ArkTS/ast-code-generation.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
     "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
-    "Untitled.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
     "Без названия.md",
@@ -223,7 +239,6 @@
     "tsgo/ArkTS/old/arkts-1.1-implementation-estimation.md",
     "tsgo/ArkTS/old",
     "Extend TSGO/ARKTS_SPECIFICATION.md",
-    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/arkui-grammar-implementation-estimation.md",
     "tsgo/ArkTS/arkui-core-specification.md",
     "tsgo/ArkTS/arkui-grammar-specification.md",
@@ -246,7 +261,6 @@
     "tsgo/Test.md",
     "tsgo/AST.json",
     "Untitled.canvas",
-    "hvigor/Test.md",
     "_TASKS_",
     "tsgo",
     "rollup"
