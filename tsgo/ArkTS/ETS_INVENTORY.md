@@ -4,14 +4,14 @@
 
 ### Новые значения SyntaxKind (`types.ts`)
 
-| SyntaxKind | Строка | Назначение |
-|---|---|---|
-| `StructKeyword` | 140 | Ключевое слово `struct` (только в `.ets` файлах) |
-| `LazyKeyword` | 213 | Ключевое слово `lazy` для ленивых импортов ArkTS |
-| `AnnotationPropertyDeclaration` | 235 | Свойство внутри `@interface`-блока |
-| `EtsComponentExpression` | 286 | Выражение декларативного UI-компонента (`Column() { ... }`) |
-| `StructDeclaration` | 334 | Объявление `struct` |
-| `AnnotationDeclaration` | 335 | Объявление `@interface` (аннотации) |
+| SyntaxKind                      | Строка | Назначение                                                  |
+| ------------------------------- | ------ | ----------------------------------------------------------- |
+| `StructKeyword`                 | 140    | Ключевое слово `struct` (только в `.ets` файлах)            |
+| `LazyKeyword`                   | 213    | Ключевое слово `lazy` для ленивых импортов ArkTS            |
+| `AnnotationPropertyDeclaration` | 235    | Свойство внутри `@interface`-блока                          |
+| `EtsComponentExpression`        | 286    | Выражение декларативного UI-компонента (`Column() { ... }`) |
+| `StructDeclaration`             | 334    | Объявление `struct`                                         |
+| `AnnotationDeclaration`         | 335    | Объявление `@interface` (аннотации)                         |
 
 ### Новые AST-интерфейсы (`types.ts`)
 
@@ -534,15 +534,15 @@ function testFunc(): void {
 
 ### 6.7. `binder.ts`
 
-| Изменение | Строка | Назначение |
-|---|---|---|
-| `case StructDeclaration` | 2141 | Создание контейнера |
-| `case AnnotationDeclaration` | 2142 | Создание контейнера |
-| `case AnnotationPropertyDeclaration` | 2189 | Control flow контейнер |
-| `case AnnotationPropertyDeclaration` | 2923 | Биндинг через `bindPropertyWorker` |
-| `case StructDeclaration` | 2991 | Биндинг struct |
-| `case AnnotationDeclaration` | 2996 | Биндинг аннотации |
-| `bindAnnotationDeclaration` | 3600 | Биндинг с `SymbolFlags.Class \| SymbolFlags.Annotation` |
+| Изменение                            | Строка | Назначение                                              |
+| ------------------------------------ | ------ | ------------------------------------------------------- |
+| `case StructDeclaration`             | 2141   | Создание контейнера                                     |
+| `case AnnotationDeclaration`         | 2142   | Создание контейнера                                     |
+| `case AnnotationPropertyDeclaration` | 2189   | Control flow контейнер                                  |
+| `case AnnotationPropertyDeclaration` | 2923   | Биндинг через `bindPropertyWorker`                      |
+| `case StructDeclaration`             | 2991   | Биндинг struct                                          |
+| `case AnnotationDeclaration`         | 2996   | Биндинг аннотации                                       |
+| `bindAnnotationDeclaration`          | 3600   | Биндинг с `SymbolFlags.Class \| SymbolFlags.Annotation` |
 
 ### 6.8. `moduleNameResolver.ts`
 
