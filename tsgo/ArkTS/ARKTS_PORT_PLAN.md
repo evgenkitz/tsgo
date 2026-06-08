@@ -13,21 +13,21 @@
 
 ### Ключевые файлы
 
-| Модуль | Путь | Размер |
-|--------|------|--------|
-| Сканер | `internal/scanner/scanner.go` | ~2,882 строки |
-| Парсер | `internal/parser/parser.go` | ~6,822 строки |
-| Биндер | `internal/binder/binder.go` | ~2,805 строк |
-| AST-узлы | `internal/ast/ast.go` | ~3,002 строки (рукописный) |
-| AST-узлы | `internal/ast/ast_generated.go` | ~9,884 строки (кодогенерируемый) |
-| Flow-граф | `internal/ast/flow.go` | Flow-узлы |
-| Символы | `internal/ast/symbol.go` | Symbol/SymbolTable |
-| Флаги | `internal/ast/nodeflags.go`, `symbolflags.go`, `tokenflags.go` | Flag-перечисления |
-| Коды узлов | `internal/ast/kind_generated.go` | Kind enum (кодогенерируемый) |
-| Тесты | `testdata/tests/cases/compiler/` | 257 TS-тестов |
-| Базилины | `testdata/baselines/reference/` | 49,155 baseline-файлов |
-| Тест-раннер | `internal/testrunner/` | Харнесс для компиляторных тестов |
-| Кодоген AST | `_scripts/ast.json`, `_scripts/generate-go-ast.ts` | Схема AST → Go-код |
+| Модуль      | Путь                                                           | Размер                           |
+| ----------- | -------------------------------------------------------------- | -------------------------------- |
+| Сканер      | `internal/scanner/scanner.go`                                  | ~2,882 строки                    |
+| Парсер      | `internal/parser/parser.go`                                    | ~6,822 строки                    |
+| Биндер      | `internal/binder/binder.go`                                    | ~2,805 строк                     |
+| AST-узлы    | `internal/ast/ast.go`                                          | ~3,002 строки (рукописный)       |
+| AST-узлы    | `internal/ast/ast_generated.go`                                | ~9,884 строки (кодогенерируемый) |
+| Flow-граф   | `internal/ast/flow.go`                                         | Flow-узлы                        |
+| Символы     | `internal/ast/symbol.go`                                       | Symbol/SymbolTable               |
+| Флаги       | `internal/ast/nodeflags.go`, `symbolflags.go`, `tokenflags.go` | Flag-перечисления                |
+| Коды узлов  | `internal/ast/kind_generated.go`                               | Kind enum (кодогенерируемый)     |
+| Тесты       | `testdata/tests/cases/compiler/`                               | 257 TS-тестов                    |
+| Базилины    | `testdata/baselines/reference/`                                | 49,155 baseline-файлов           |
+| Тест-раннер | `internal/testrunner/`                                         | Харнесс для компиляторных тестов |
+| Кодоген AST | `_scripts/ast.json`, `_scripts/generate-go-ast.ts`             | Схема AST → Go-код               |
 
 ### Отличия от ohos-typescript
 
