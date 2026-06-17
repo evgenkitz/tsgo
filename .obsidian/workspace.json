@@ -210,15 +210,15 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "888db64dd45ed078",
   "lastOpenFiles": [
-    "tsgo/ArkTS/ARKTS_PORT_PLAN 1.md",
+    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
+    "tsgo/ArkTS/ARKTS_PORT_PLAN 1.md",
     "Untitled.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/ast-code-generation.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
-    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
     "Без названия.md",
