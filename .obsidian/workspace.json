@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
+                "file": "tsgo/ArkTS/ETS_INVENTORY.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ARKTS_PORT_PLAN"
+              "title": "ETS_INVENTORY"
             }
           }
         ],
@@ -212,13 +212,13 @@
   },
   "active": "888db64dd45ed078",
   "lastOpenFiles": [
-    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
+    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
+    "tsgo/ArkTS/ETS_INVENTORY.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
+    "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN 1.md",
     "Untitled.md",
-    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/ast-code-generation.md",
-    "tsgo/ArkTS/ETS_INVENTORY.md",
     "tsgo/ArkTS/ARKTS_SPECIFICATION.md",
     "tsgo/ArkTS/ETS_LINTER_INVENTORY.md",
     "Без названия.md",
