@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "scanner-and-parser-review/002-scanner-ast-ext.md",
+                "file": "scanner-and-parser-review/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "002-scanner-ast-ext"
+              "title": "README"
             }
           }
         ],
@@ -212,13 +212,14 @@
   },
   "active": "888db64dd45ed078",
   "lastOpenFiles": [
-    "Untitled 2.md",
     "scanner-and-parser-review/002-scanner-ast-ext.md",
+    "_TASKS_/Test.md",
     "scanner-and-parser-review/README.md",
+    "scanner-and-parser-review/017-arkui-loop-components.md",
+    "Untitled 2.md",
     "scanner-and-parser-review/013-ets-options.md",
     "scanner-and-parser-review/007-ets-component-expression.md",
     "scanner-and-parser-review/006-function-method-decorator-mods.md",
-    "scanner-and-parser-review/017-arkui-loop-components.md",
     "scanner-and-parser-review/012-kit-import-resolution.md",
     "Untitled 1.md",
     "Untitled.md",
@@ -241,7 +242,6 @@
     "Plan/2026-07-03.md",
     "Plan",
     "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
-    "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/old",
     "Specifications/ArkTSSpecification.pdf",
     "tsgo/ArkTS",
