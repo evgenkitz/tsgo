@@ -329,16 +329,8 @@ A developer writes `@interface Foo { }` in a `.ts` file. `inAllowAnnotationConte
 
 | Criterion | Verification |
 |-----------|-------------|
-| `@interface` in .ets produces AnnotationDeclaration AST | Integration tests in `arkts_test.go` |
+| `@interface` in .ets produces AnnotationDeclaration AST | Unit tests in `arkts_test.go` |
 | `@interface` does NOT consume `@` as decorator | Unit test: `tryParseDecorator` returns nil for `@interface` |
 | `.ts` files reject `@interface` as grammar error | `TestParseAnnotationDeclaration_NotInEtsContext` |
 | Existing decorator parsing unaffected | All existing decorator tests pass unchanged |
 | AST and diagnostics match reference tsc | `arkts_cmp_test.go` compares against reference for annotation test cases in `arkTSTest/testcase/` |
-
-| Criterion | Verification |
-|-----------|-------------|
-| `@interface` in .ets produces AnnotationDeclaration AST | Integration tests in `arkts_test.go` |
-| `@interface` does NOT consume `@` as decorator | Unit test verifying `tryParseDecorator` returns nil |
-| `.ts` files reject `@interface` as grammar error | `TestParseAnnotationDeclaration_NotInEtsContext` |
-| Existing decorator parsing unaffected | All existing decorator tests pass unchanged |
-| Valid annotation syntax parses without errors | `@interface Foo { x: string; }` clean parse |

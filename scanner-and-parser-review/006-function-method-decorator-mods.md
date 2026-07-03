@@ -201,11 +201,11 @@ Inside a struct: `@Component struct Foo { @Param title: string = ""; }` — the 
 
 ## Acceptance Strategy
 
-| Criterion                                             | Verification                                                                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| @Builder/@Extend/@Styles functions parse correctly    | Integration tests in `arkts_integration_test.go` (8 tests)                                                         |
-| Decorator helpers classify correctly                  | Unit tests in `arkts_decorators_test.go` (21 tests)                                                                |
-| Auto-readonly injection for @Param/@Env               | Parser tests verify virtual readonly modifier in struct context                                                    |
-| @Sendable on FunctionDeclaration/TypeAliasDeclaration | `NodeCanBeDecorated` unit tests in .ets vs .ts context                                                             |
-| Existing TS decorator behavior unaffected             | All existing decorator tests pass unchanged                                                                        |
-| AST and diagnostics match reference tsc               | `arkts_cmp_test.go` compares against reference for decorator test cases (`arkts-sendable-decorator-limited`, etc.) |
+| Criterion | Verification |
+|-----------|-------------|
+| @Builder/@Extend/@Styles functions parse correctly | Unit tests in `arkts_integration_test.go` (8 tests) |
+| Decorator helpers classify correctly | Unit tests in `arkts_decorators_test.go` (21 tests) |
+| Auto-readonly injection for @Param/@Env | Parser tests verify virtual readonly modifier in struct context |
+| @Sendable on FunctionDeclaration/TypeAliasDeclaration | `NodeCanBeDecorated` unit tests in .ets vs .ts context |
+| Existing TS decorator behavior unaffected | All existing decorator tests pass unchanged |
+| AST and diagnostics match reference tsc | `arkts_cmp_test.go` compares against reference for decorator test cases (`arkts-sendable-decorator-limited`, etc.) |

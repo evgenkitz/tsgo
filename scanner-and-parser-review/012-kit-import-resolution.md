@@ -339,8 +339,8 @@ Multiple `.ets` files are parsed in parallel. The `sync.Map` kit JSON cache ensu
 
 ## Target Users
 
-- **ArkTS application developers** — use `@kit.X` shorthand imports instead of long SDK file paths
-- **ArkTS application developers** — provide kit JSON configuration files that map kit names to real module paths
+- **ArkTS application developers** — use `@kit.X` shorthand imports; SDK providers configure kit JSON mapping files
+- **ArkTS compiler developers** — maintain kit import transformation and parser integration
 
 ## Acceptance Strategy
 
@@ -351,6 +351,7 @@ Multiple `.ets` files are parsed in parallel. The `sync.Map` kit JSON cache ensu
 | Thread-safe concurrent kit access | `sync.Map` cache + existing multi-threaded compilation tests pass |
 | Node flags correctly set on transformed nodes | Unit tests verify `NodeFlagsKitImportFlags` and `NodeFlagsNoOriginalText` |
 | Existing TS/ETS parsing unaffected | `go test ./...` — zero regressions |
+| AST matches reference tsc after kit transform | `arkts_cmp_test.go` verifies transformed imports produce identical AST to reference |
 
 ---
 
