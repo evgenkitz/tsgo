@@ -1,15 +1,6 @@
 # Scanner & Parser Plans — Requirements Review
 
-This folder contains copies of all scanner/parser plans for review against the SR decomposition dimensions. 8 plans, each corresponding 1:1 to a gitcode issue. Plans are sourced from the following branches:
-
-| Plan | Source branch |
-|------|--------------|
-| #2, #3, #4 | `arkts/4-phase-2-add-annotations-parsing` |
-| #5 | `arkts/5-phase-2-add-struct-parsing` |
-| #6 | `arkts/6-phase-2-parser-modifications` |
-| #12 | `arkts/12-phase-2-add-kit-import-resolution` |
-| #13 | `arkts/13-add-ets-options` |
-| #17 | `arkts/17-arkui-loop-components` |
+This folder contains copies of all scanner/parser plans for review against the SR decomposition dimensions. 8 plans, each corresponding 1:1 to a gitcode issue.
 
 ## Plan Inventory
 
@@ -41,7 +32,7 @@ This folder contains copies of all scanner/parser plans for review against the S
 | 3. Target users | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 4. Restrictions & constraints | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 5. External dependency | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 6. Performance indicators | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 6. Performance indicators | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 7. Acceptance Strategy | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### Legend

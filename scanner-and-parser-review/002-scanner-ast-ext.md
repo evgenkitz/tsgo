@@ -280,14 +280,6 @@ A developer adds a new ArkTS AST node type to `_scripts/ast.json`. Running `npx 
 - **ArkTS compiler developers** — engineers porting ArkTS features from the reference tsc to Go
 - **ArkTS application developers** — indirectly, as end users of the `.ets` file format and ArkTS syntax
 
-## Performance Indicators
-
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Scanner overhead for non-ETS files | Zero measurable overhead | `textToKeywordEts` lookup gated behind `s.inEtsContext` boolean check (branch-predictable) |
-| Build time regression | <1% increase | `npx hereby build` before/after |
-| Existing test suite | Zero regressions | `go test ./...` — all existing TS tests must pass unchanged |
-
 ## Restrictions & Constraints
 
 - **Generated files**: `ast_generated.go`, `kind_generated.go`, `encoder_generated.go`, and `decoder_generated.go` must never be edited directly — always edit `_scripts/ast.json` and regenerate.

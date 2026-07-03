@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "scanner-and-parser-review/002-scanner-ast-ext.md",
+                "file": "scanner-and-parser-review/006-function-method-decorator-mods.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "002-scanner-ast-ext"
+              "title": "006-function-method-decorator-mods"
             }
           }
         ],
@@ -198,16 +198,16 @@
   },
   "active": "aa0eca485c064355",
   "lastOpenFiles": [
-    "tsgo/ArkTS/ETS_INVENTORY.md",
+    "scanner-and-parser-review/004-annotation-declarations.md",
+    "scanner-and-parser-review/002-scanner-ast-ext.md",
     "scanner-and-parser-review/README.md",
+    "scanner-and-parser-review/003-context-flags.md",
     "scanner-and-parser-review/017-arkui-loop-components.md",
     "scanner-and-parser-review/013-ets-options.md",
     "scanner-and-parser-review/012-kit-import-resolution.md",
     "scanner-and-parser-review/006-function-method-decorator-mods.md",
     "scanner-and-parser-review/005-struct-declarations.md",
-    "scanner-and-parser-review/004-annotation-declarations.md",
-    "scanner-and-parser-review/003-context-flags.md",
-    "scanner-and-parser-review/002-scanner-ast-ext.md",
+    "tsgo/ArkTS/ETS_INVENTORY.md",
     "Без названия.md",
     "scanner-and-parser-review",
     "Plan/tsgo项目路标计划.md",

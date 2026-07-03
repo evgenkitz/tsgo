@@ -203,7 +203,7 @@ Inside a struct: `@Component struct Foo { @Param title: string = ""; }` — the 
 
 | Criterion | Verification |
 |-----------|-------------|
-| @Builder/@Extend/@Styles functions parse correctly | Integration tests in `arkts_integration_test.go` (8 tests) |
+| @Builder/@Extend/@Styles functions parse correctly | Unit tests in `arkts_integration_test.go` (8 tests) |
 | Decorator helpers classify correctly | Unit tests in `arkts_decorators_test.go` (21 tests) |
 | Auto-readonly injection for @Param/@Env | Parser tests verify virtual readonly modifier in struct context |
 | @Sendable on FunctionDeclaration/TypeAliasDeclaration | `NodeCanBeDecorated` unit tests in .ets vs .ts context |
