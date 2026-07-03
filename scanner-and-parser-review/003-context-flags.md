@@ -161,8 +161,7 @@ Inside a struct's `build()` method, the parser enters multiple nested contexts s
 
 ## Target Users
 
-- **ArkTS compiler developers** — use the context system to implement ArkTS-specific parser logic without manual state threading
-- **ArkTS compiler developers** — may query parser state via exposed context methods during type-checking
+- **ArkTS compiler developers** — use the context system for ArkTS-specific parser logic and type-checking without manual state threading
 
 ## Restrictions & Constraints
 
