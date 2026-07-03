@@ -116,8 +116,8 @@ The parser detects `Repeat.each` as an `attrUICallback` entry (root=`Repeat`, pr
 
 ## Target Users
 
-- **ArkUI application developers** — use `ForEach`, `LazyForEach`, `Repeat.each` for list rendering in UI component definitions
-- **Compiler developers** — maintain the parser's context-sensitive argument parsing for ArkUI loop constructs
+- **ArkTS application developers** — use `ForEach`, `LazyForEach`, `Repeat.each` for list rendering in UI component definitions
+- **ArkTS compiler developers** — maintain the parser's context-sensitive argument parsing for ArkUI loop constructs
 
 ## Restrictions & Constraints
 

@@ -90,8 +90,8 @@ An ArkTS developer sets `{ "ets": { "customComponent": "MyBaseComponent" } }` in
 
 ## Target Users
 
-- **ArkTS project maintainers** — configure ArkTS compilation behavior via tsconfig.json
-- **Compiler developers** — access EtsOptions in parser, checker, and emitter code
+- **ArkTS application developers** — configure ArkTS compilation behavior via tsconfig.json
+- **ArkTS compiler developers** — access EtsOptions in parser, checker, and emitter code
 
 ## Restrictions & Constraints
 

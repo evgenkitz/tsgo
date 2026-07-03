@@ -213,20 +213,6 @@ No explicit initialization is needed — `parsingContexts` is set per-`parseList
 Check if `In_annotation_declaration_any_symbols_between_and_interface_are_forbidden` diagnostic
 exists in `internal/diagnostics`. If not, add it via the diagnostic codegen workflow.
 
-## Verification
-
-1. **Build:** `go build ./internal/parser/...` — compiles without errors
-2. **Parser round-trip tests:**
-   - `@interface` with multiple properties of different types
-   - `@interface` with no properties (empty body)
-   - `@interface` with missing body → missing list
-   - `@interface` with `@` and `interface` on adjacent tokens (valid)
-   - `@interface` with token between `@` and `interface` → parse error
-   - `@interface` in `.ts` file → parsed as decorator + identifier (NOT annotation declaration)
-   - `@interface MyAnnotation { prop1: string; prop2: number = 0; }` — full round-trip
-3. **Existing tests:** `npx hereby test` — zero regressions in existing TS/TSX/ETS tests
-4. **Lint:** `npx hereby lint`
-
 ## References
 
 | Reference tsc file | Lines | Content |
@@ -336,8 +322,8 @@ A developer writes `@interface Foo { }` in a `.ts` file. `inAllowAnnotationConte
 
 ## Target Users
 
-- **ArkTS framework developers** — define custom decorator types via `@interface` for use in component declarations
-- **Compiler developers** — maintain the parser's decorator/annotation disambiguation logic
+- **ArkTS application developers** — define custom decorator types via `@interface` for use in component declarations
+- **ArkTS compiler developers** — maintain the parser's decorator/annotation disambiguation logic
 
 ## Acceptance Strategy
 

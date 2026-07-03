@@ -219,15 +219,6 @@ func resolveIdentifierKeywordKind(node *ast.Identifier) ast.Kind {
 
 ---
 
-## Verification
-
-1. **Build:** `npx hereby build` — compiles without errors
-2. **Schema regeneration:** `npx hereby generate:ast && npx hereby generate:enums` — clean
-3. **Scanner round-trip:** `.ets` files tokenize correctly (`struct`/`lazy` as keywords)
-4. **TS files unaffected:** `struct`/`lazy` remain identifiers in `.ts` files
-5. **Existing tests:** zero regressions
-6. **Lint:** `npx hereby lint` — clean
-
 ## Files changed (total)
 
 ### New files
@@ -272,7 +263,6 @@ func resolveIdentifierKeywordKind(node *ast.Identifier) ast.Kind {
 - ohos-typescript: `src/compiler/types.ts` (SyntaxKind, EtsFlags, ScriptKind, NodeFlags, SymbolFlags, Extension)
 - ohos-typescript: `src/compiler/scanner.ts:1583-1590` (keyword lookup)
 - ohos-typescript: `src/compiler/utilities.ts` (supportedTSExtensions)
-- `ARKTS_PORT_PLAN.md` (Phase 1 sections)
 
 ## Requirement Scenario
 

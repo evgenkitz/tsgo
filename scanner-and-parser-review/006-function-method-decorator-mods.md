@@ -189,8 +189,8 @@ Inside a struct: `@Component struct Foo { @Param title: string = ""; }` — the 
 
 ## Target Users
 
-- **ArkTS component developers** — use `@Builder`, `@Extend`, `@Styles`, `@Param`, `@Env`, `@Sendable` decorators
-- **Compiler developers** — maintain decorator context detection and auto-readonly injection
+- **ArkTS application developers** — use `@Builder`, `@Extend`, `@Styles`, `@Param`, `@Env`, `@Sendable` decorators
+- **ArkTS compiler developers** — maintain decorator context detection and auto-readonly injection
 
 ## Restrictions & Constraints
 

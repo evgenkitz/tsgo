@@ -254,22 +254,6 @@ case ast.KindStructKeyword:
     return p.inEtsContext()
 ```
 
-## Verification
-
-1. **Build:** `go build ./internal/parser/...` — compiles without errors
-2. **Parser round-trip tests:**
-   - `struct Foo { }` — minimal struct, no members
-   - `struct Bar extends Base { prop: string; }` — with explicit extends, virtual constructor has one property
-   - `struct Baz<T> extends Base<T> { @State count: number; build() { } }` — type parameters, heritage, decorated property, build method
-   - `struct Empty { }` → virtual constructor with only `##storage?: LocalStorage` parameter
-   - `struct` keyword in `.ts` file → parsed as identifier (VariableStatement), NOT StructDeclaration
-3. **Virtual constructor verification:**
-   - Parse a struct with properties → verify `ConstructorDeclaration` is first member
-   - Verify `value?` parameter contains a type literal with matching property signatures
-   - Verify `##storage?` parameter with type `LocalStorage`
-4. **Existing tests:** `npx hereby test` — zero regressions in existing TS/TSX tests
-5. **Lint:** `npx hereby lint`
-
 ## References
 
 | Reference tsc file | Lines | Content |
@@ -303,8 +287,8 @@ In a `.ts` file, `const struct = 1;` — `struct` is parsed as a regular identif
 
 ## Target Users
 
-- **ArkTS component developers** — write `.ets` files with `struct` declarations for UI component definitions
-- **Compiler developers** — maintain struct parsing logic and virtual constructor synthesis
+- **ArkTS application developers** — write `.ets` files with `struct` declarations for UI component definitions
+- **ArkTS compiler developers** — maintain struct parsing logic and virtual constructor synthesis
 
 ## Acceptance Strategy
 
