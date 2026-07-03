@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "scanner-and-parser-review/README.md",
+                "file": "scanner-and-parser-review/002-scanner-ast-ext.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "002-scanner-ast-ext"
             }
           }
         ],
@@ -212,14 +212,14 @@
   },
   "active": "888db64dd45ed078",
   "lastOpenFiles": [
-    "scanner-and-parser-review/017-arkui-loop-components.md",
     "scanner-and-parser-review/README.md",
+    "scanner-and-parser-review/013-ets-options.md",
     "scanner-and-parser-review/007-ets-component-expression.md",
-    "scanner-and-parser-review/012-kit-import-resolution.md",
     "scanner-and-parser-review/006-function-method-decorator-mods.md",
+    "scanner-and-parser-review/017-arkui-loop-components.md",
+    "scanner-and-parser-review/012-kit-import-resolution.md",
     "Untitled 1.md",
     "Untitled.md",
-    "scanner-and-parser-review/013-ets-options.md",
     "scanner-and-parser-review/005-struct-declarations.md",
     "scanner-and-parser-review/004-annotation-declarations.md",
     "scanner-and-parser-review/002-scanner-ast-ext.md",
