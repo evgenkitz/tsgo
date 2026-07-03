@@ -41,30 +41,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Plan/tsgo项目路标计划.md",
+                "file": "tsgo/ArkTS/ETS_INVENTORY.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tsgo项目路标计划"
-            }
-          },
-          {
-            "id": "5103dccd4914e657",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Без названия.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Без названия"
+              "title": "ETS_INVENTORY"
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -87,7 +73,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Файловый менеджер"
+              "title": "Files"
             }
           },
           {
@@ -214,34 +200,34 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Меню быстрого перехода": false,
-      "graph:Граф": false,
-      "canvas:Создать новый холст": false,
-      "daily-notes:Сегодняшняя заметка": false,
-      "templates:Вставить шаблон": false,
-      "command-palette:Открыть палитру команд": false,
-      "bases:Создать новую базу": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "5103dccd4914e657",
+  "active": "888db64dd45ed078",
   "lastOpenFiles": [
     "Без названия.md",
     "Plan/tsgo项目路标计划.md",
-    "Plan/build-system-design.md",
-    "Plan/hvigor_manual.html",
-    "Plan/incremental-build-overview.html",
-    "Plan/analysis-k1ngqaquuu-critique.md",
     "Plan/tsgo_project_roadmap_en.md",
-    "Plan/2026-07-03.md",
-    "tsgo/ArkTS/ETS_INVENTORY.md",
     "Plan/tsgo_mem.md",
     "Plan/tsgo Integration Analysis of Rollup Solution Options.md",
     "Plan/tsgo & tsc性能测试数据-0624.md",
+    "Plan/incremental-build-overview.html",
+    "Plan/hvigor_manual.html",
+    "Plan/build-system-design.md",
+    "Plan/analysis-k1ngqaquuu-critique.md",
+    "Plan/2026-07-03.md",
     "Plan",
+    "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
+    "tsgo/ArkTS/ETS_INVENTORY.md",
     "Untitled.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
-    "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
     "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN 1.md",
     "tsgo/ArkTS/ast-code-generation.md",
