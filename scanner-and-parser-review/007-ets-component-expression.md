@@ -123,15 +123,10 @@ Infrastructure for feeding `.ets` test files through both parsers with ArkTS com
 
 ## Tests
 
-**Go:** `internal/parser/arkts.go` (unit tests), `internal/testrunner/arkts_cmp_test.go` (AST comparison)
+**Go:** `internal/parser/arkts_ets_component_test.go` — unit tests for EtsComponentExpression parsing, virtual type arguments, virtual identifiers, UICallback context
+**Go:** `internal/testrunner/arkts_cmp_test.go` — AST comparison vs reference tsc (34/34 files passing, 0 known gaps)
 
-**Test data:** `testdata/arkts/ets_components_*.ets` — component instantiation test files
-
-| Metric | Result |
-|--------|--------|
-| AST comparison vs reference tsc | 34/34 files passing, 0 known gaps |
-| Parser unit tests | Zero regressions |
-| Build | `go build ./...` clean |
+**Test data:** `testdata/arkts/ets_components_*.ets`, `testdata/arkts/struct_build_components.ets`, `testdata/arkts/struct_with_component.ets`, `testdata/arkts/struct_with_entry_component.ets`
 
 ## Deferred to future issues
 
