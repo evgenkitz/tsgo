@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "scanner-and-parser-review/006-function-method-decorator-mods.md",
+                "file": "scanner-and-parser-review/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "006-function-method-decorator-mods"
+              "title": "README"
             }
           }
         ],
@@ -212,13 +212,13 @@
   },
   "active": "6aa586dec4cf14ad",
   "lastOpenFiles": [
+    "scanner-and-parser-review/002-scanner-ast-ext.md",
     "scanner-and-parser-review/007-ets-component-expression.md",
-    "scanner-and-parser-review/012-kit-import-resolution.md",
+    "scanner-and-parser-review/README.md",
     "scanner-and-parser-review/006-function-method-decorator-mods.md",
+    "scanner-and-parser-review/012-kit-import-resolution.md",
     "Без названия.md",
     "scanner-and-parser-review/004-annotation-declarations.md",
-    "scanner-and-parser-review/002-scanner-ast-ext.md",
-    "scanner-and-parser-review/README.md",
     "scanner-and-parser-review/003-context-flags.md",
     "scanner-and-parser-review/017-arkui-loop-components.md",
     "scanner-and-parser-review/013-ets-options.md",

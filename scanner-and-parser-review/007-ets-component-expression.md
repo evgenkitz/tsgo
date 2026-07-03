@@ -151,14 +151,23 @@ Infrastructure for feeding `.ets` test files through both parsers with ArkTS com
 
 ## Requirement Scenario
 
-- `Button("hello")` — component instantiation without body
-- `Column() { Text("child") }` — component with nested child body
-- `Button("hi").fontSize(14)` — property access with virtual type argument injection
-- `Button("x").fontSize(14).fontColor(Color.Red)` — chained property access
-- `@Extend(Button) function() { .fontSize(14) }` — decorator-based virtual identifier
-- `@Builder function() { UnknownFunc("arg") { Text("child") } }` — CallExpression-to-ECE conversion
-- Struct `build()` method with component property chains
-- Arrow function callbacks within `ForEach`/`LazyForEach` syntax components
+**Scenario 1: Component instantiation**
+An ArkTS developer writes `Button("hello")` inside a `@Builder` function. The parser recognizes `Button` as a known component name and produces an `EtsComponentExpression` node with the argument list.
+
+**Scenario 2: Component with nested child body**
+`Column() { Text("child") }` — the parser detects the `{` following the call arguments and parses a function body containing child component expressions, forming a tree of nested `EtsComponentExpression` nodes.
+
+**Scenario 3: Property access with virtual type arguments**
+`Button("hi").fontSize(14).fontColor(Color.Red)` — inside a `@Builder` function, the parser injects a synthesized `TypeReference("ButtonAttribute")` as a virtual type argument on each chained property access call.
+
+**Scenario 4: Decorator-based virtual identifiers**
+`@Extend(Button) function myExtend() { .fontSize(14) }` — the parser synthesizes a virtual `ButtonInstance` identifier for the leading `.` so the property access chain can be parsed correctly.
+
+**Scenario 5: CallExpression-to-ECE conversion**
+`@Builder function myBuilder() { UnknownFunc("arg") { Text("child") } }` — when a call expression is followed by `{` inside a UI callback context, the parser converts it to an `EtsComponentExpression` with a trailing body.
+
+**Scenario 6: UICallback context in arrow functions**
+Inside `ForEach("data").itemBuilder((item) => { ... })`, the parser enters `UICallbackContext` so that `{ body }` following a call expression inside the arrow function produces an `EtsComponentExpression`.
 
 ## Target Users
 
