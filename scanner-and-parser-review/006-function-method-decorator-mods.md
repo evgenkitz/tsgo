@@ -155,13 +155,7 @@ The reference hard-resets all decorator contexts at the end of `parseFunctionDec
 
 ## Tests
 
-**Go:** `internal/parser/arkts_decorators_test.go`, `internal/parser/arkts_integration_test.go`, `internal/scanner/arkts_test.go`
-
-| Test file | Tests | What it covers |
-|-----------|-------|---------------|
-| `arkts_decorators_test.go` | 21 | All 8 decorator helpers: Extend/Styles/Builder detection, component name extraction, Param+Once/Env, readonly injection |
-| `arkts_integration_test.go` | 8 | @Builder/@Extend/@Styles function parsing, auto-readonly, EtsNewExpressionContext, struct-as-identifier in .ts, .ets script kind |
-| `scanner/arkts_test.go` | 10+ | struct/lazy keywords in ETS vs TS context (already present from Phase 1) |
+**Go:** `internal/parser/arkts_decorators_test.go` — unit tests for all decorator helpers, function/method parsing, auto-readonly injection, @Sendable support, StructDeclaration decorator container
 
 ## Deferred to future issues
 
@@ -203,9 +197,6 @@ Inside a struct: `@Component struct Foo { @Param title: string = ""; }` — the 
 
 | Criterion | Verification |
 |-----------|-------------|
-| @Builder/@Extend/@Styles functions parse correctly | Unit tests in `arkts_integration_test.go` (8 tests) |
-| Decorator helpers classify correctly | Unit tests in `arkts_decorators_test.go` (21 tests) |
-| Auto-readonly injection for @Param/@Env | Parser tests verify virtual readonly modifier in struct context |
-| @Sendable on FunctionDeclaration/TypeAliasDeclaration | `NodeCanBeDecorated` unit tests in .ets vs .ts context |
+| Decorator helpers, function/method parsing, auto-readonly, @Sendable | Unit tests in `arkts_decorators_test.go` |
 | Existing TS decorator behavior unaffected | All existing decorator tests pass unchanged |
 | AST and diagnostics match reference tsc | `arkts_cmp_test.go` compares against reference for decorator test cases (`arkts-sendable-decorator-limited`, etc.) |
