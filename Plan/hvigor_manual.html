@@ -1,0 +1,3286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hvigor — Полное руководство</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #1c2333;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #f0883e;
+            --accent4: #bc8cff;
+            --accent5: #f778ba;
+            --code-bg: #0d1117;
+            --warning: #d29922;
+            --danger: #f85149;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            padding: 24px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+
+        .nav-group {
+            margin-bottom: 8px;
+        }
+
+        .nav-group-title {
+            padding: 8px 24px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text2);
+            font-weight: 600;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 24px;
+            color: var(--text2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: rgba(88, 166, 255, 0.05);
+            border-left-color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            background: rgba(88, 166, 255, 0.1);
+            border-left-color: var(--accent);
+        }
+
+        .nav-link .icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-left: 300px;
+            min-height: 100vh;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 80px 64px 60px;
+            background: linear-gradient(180deg, rgba(88,166,255,0.08) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(88,166,255,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff, var(--accent), var(--accent4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text2);
+            max-width: 700px;
+            margin-bottom: 32px;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+        }
+
+        .badge.blue { color: var(--accent); border-color: rgba(88,166,255,0.3); }
+        .badge.green { color: var(--accent2); border-color: rgba(63,185,80,0.3); }
+        .badge.orange { color: var(--accent3); border-color: rgba(240,136,62,0.3); }
+        .badge.purple { color: var(--accent4); border-color: rgba(188,140,255,0.3); }
+
+        /* ===== CONTENT SECTIONS ===== */
+        .content {
+            padding: 48px 64px;
+            max-width: 1100px;
+        }
+
+        .section {
+            margin-bottom: 64px;
+            scroll-margin-top: 24px;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section h2 .num {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .section .desc {
+            color: var(--text2);
+            font-size: 1.05rem;
+            margin-bottom: 32px;
+            max-width: 800px;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: #fff;
+            scroll-margin-top: 24px;
+        }
+
+        .section h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 12px;
+            color: var(--accent);
+            scroll-margin-top: 24px;
+        }
+
+        .section p {
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+        }
+
+        .card h4 {
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+
+        .card p {
+            color: var(--text2);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .cards-grid .card {
+            margin-bottom: 0;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        .code-block {
+            position: relative;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: var(--bg3);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+
+        .code-header .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-header .dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-header .dots span:nth-child(1) { background: #f85149; }
+        .code-header .dots span:nth-child(2) { background: #d29922; }
+        .code-header .dots span:nth-child(3) { background: #3fb950; }
+
+        .code-header .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .code-header .copy-btn:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .code-body {
+            padding: 16px 20px;
+            overflow-x: auto;
+        }
+
+        .code-body pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .code-body .comment { color: #8b949e; }
+        .code-body .keyword { color: #ff7b72; }
+        .code-body .string { color: #a5d6ff; }
+        .code-body .function { color: #d2a8ff; }
+        .code-body .type { color: #79c0ff; }
+        .code-body .number { color: #79c0ff; }
+        .code-body .decorator { color: #ffa657; }
+        .code-body .property { color: #7ee787; }
+        .code-body .param { color: #ffa657; }
+
+        /* ===== DIAGRAMS ===== */
+        .diagram {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .diagram-title {
+            font-size: 0.85rem;
+            color: var(--text2);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .arch-layer {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .arch-box {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 140px;
+            text-align: center;
+            border: 1px solid;
+        }
+
+        .arch-box.user {
+            background: rgba(88,166,255,0.1);
+            border-color: rgba(88,166,255,0.3);
+            color: var(--accent);
+        }
+
+        .arch-box.core {
+            background: rgba(63,185,80,0.1);
+            border-color: rgba(63,185,80,0.3);
+            color: var(--accent2);
+        }
+
+        .arch-box.plugin {
+            background: rgba(240,136,62,0.1);
+            border-color: rgba(240,136,62,0.3);
+            color: var(--accent3);
+        }
+
+        .arch-box.output {
+            background: rgba(188,140,255,0.1);
+            border-color: rgba(188,140,255,0.3);
+            color: var(--accent4);
+        }
+
+        .arch-arrow {
+            color: var(--text2);
+            font-size: 1.2rem;
+        }
+
+        .arch-label {
+            font-size: 0.7rem;
+            color: var(--text2);
+            padding: 4px 16px;
+            background: var(--bg3);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== PIPELINE DIAGRAM ===== */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            text-align: center;
+            min-width: 130px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .pipeline-step:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .pipeline-step .step-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .pipeline-step .step-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .pipeline-step .step-desc {
+            font-size: 0.7rem;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+
+        .pipeline-arrow {
+            color: var(--accent);
+            font-size: 1.3rem;
+            padding: 0 4px;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg3);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text2);
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td {
+            background: rgba(88,166,255,0.03);
+        }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            display: flex;
+            gap: 14px;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .alert .alert-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert .alert-content {
+            flex: 1;
+        }
+
+        .alert .alert-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .alert .alert-text {
+            font-size: 0.85rem;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+
+        .alert.info {
+            background: rgba(88,166,255,0.05);
+            border-color: var(--accent);
+        }
+        .alert.info .alert-title { color: var(--accent); }
+
+        .alert.warning {
+            background: rgba(210,153,34,0.05);
+            border-color: var(--warning);
+        }
+        .alert.warning .alert-title { color: var(--warning); }
+
+        .alert.success {
+            background: rgba(63,185,80,0.05);
+            border-color: var(--accent2);
+        }
+        .alert.success .alert-title { color: var(--accent2); }
+
+        .alert.danger {
+            background: rgba(248,81,73,0.05);
+            border-color: var(--danger);
+        }
+        .alert.danger .alert-title { color: var(--danger); }
+
+        /* ===== TABS ===== */
+        .tabs {
+            margin: 24px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: var(--text2);
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== ACCORDION ===== */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--bg2);
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: var(--bg3);
+        }
+
+        .accordion-header .acc-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .accordion-header .acc-arrow {
+            transition: transform 0.3s;
+            color: var(--text2);
+        }
+
+        .accordion-item.open .accordion-header .acc-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.open .accordion-body {
+            max-height: 2000px;
+        }
+
+        .accordion-body-inner {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ===== FLOWCHART ===== */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .flow-node {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid;
+            min-width: 100px;
+            transition: all 0.2s;
+        }
+
+        .flow-node:hover {
+            transform: scale(1.05);
+        }
+
+        .flow-node.start {
+            background: rgba(63,185,80,0.15);
+            border-color: rgba(63,185,80,0.4);
+            color: var(--accent2);
+            border-radius: 24px;
+        }
+
+        .flow-node.process {
+            background: rgba(88,166,255,0.1);
+            border-color: rgba(88,166,255,0.3);
+            color: var(--accent);
+        }
+
+        .flow-node.decision {
+            background: rgba(210,153,34,0.1);
+            border-color: rgba(210,153,34,0.4);
+            color: var(--warning);
+            transform: rotate(0deg);
+            border-radius: 4px;
+        }
+
+        .flow-node.end {
+            background: rgba(188,140,255,0.15);
+            border-color: rgba(188,140,255,0.4);
+            color: var(--accent4);
+            border-radius: 24px;
+        }
+
+        .flow-arrow-down {
+            color: var(--text2);
+            font-size: 1.1rem;
+        }
+
+        .flow-arrow-right {
+            color: var(--text2);
+            font-size: 0.9rem;
+        }
+
+        .flow-label {
+            font-size: 0.7rem;
+            color: var(--text2);
+            padding: 2px 8px;
+            background: var(--bg3);
+            border-radius: 8px;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-box {
+            position: relative;
+            margin: 0 24px 16px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 36px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text2);
+            font-size: 0.9rem;
+        }
+
+        /* ===== MOBILE ===== */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 200;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 1.2rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 90;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .overlay.open {
+                display: block;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .main {
+                margin-left: 0;
+            }
+            .hero {
+                padding: 80px 24px 40px;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .content {
+                padding: 32px 20px;
+            }
+            .pipeline {
+                flex-direction: column;
+            }
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text2);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 300px;
+            right: 0;
+            height: 3px;
+            z-index: 150;
+            background: var(--bg);
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent4));
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        @media (max-width: 900px) {
+            .progress-bar { left: 0; }
+        }
+
+        /* ===== INLINE CODE ===== */
+        code:not(pre code) {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.82rem;
+            color: var(--accent);
+        }
+
+        /* ===== LIST ===== */
+        ul, ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text2);
+        }
+
+        li strong {
+            color: var(--text);
+        }
+
+        /* ===== COMPARISON ===== */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .comparison .col {
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .comparison .col.pros {
+            background: rgba(63,185,80,0.03);
+        }
+
+        .comparison .col.cons {
+            background: rgba(248,81,73,0.03);
+        }
+
+        .comparison h4 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .comparison .col.pros h4 { color: var(--accent2); }
+        .comparison .col.cons h4 { color: var(--danger); }
+
+        .comparison li {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 40px 64px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text2);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* ===== INTERACTIVE TERMINAL ===== */
+        .terminal {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 24px 0;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #1a1a1a;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-header .dot.r { background: #f85149; }
+        .terminal-header .dot.y { background: #d29922; }
+        .terminal-header .dot.g { background: #3fb950; }
+
+        .terminal-header .title {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+
+        .terminal-body {
+            padding: 16px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .terminal-body .prompt {
+            color: var(--accent2);
+        }
+
+        .terminal-body .cmd {
+            color: var(--text);
+        }
+
+        .terminal-body .output {
+            color: var(--text2);
+        }
+
+        .terminal-body .success-msg {
+            color: var(--accent2);
+        }
+
+        .terminal-body .error-msg {
+            color: var(--danger);
+        }
+
+        .terminal-body .info-msg {
+            color: var(--accent);
+        }
+
+        /* ===== QUICK NAV CARDS ===== */
+        .quick-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .quick-nav-card {
+            display: block;
+            padding: 20px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .quick-nav-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .quick-nav-card .qn-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .quick-nav-card .qn-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .quick-nav-card .qn-desc {
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" id="menuToggle">☰</button>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>⚡ hvigor Guide</h2>
+        <p>Полное руководство по системе сборки OpenHarmony</p>
+    </div>
+
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Поиск по разделам..." id="searchInput">
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Начало</div>
+        <a href="#introduction" class="nav-link active"><span class="icon">📖</span> Введение</a>
+        <a href="#architecture" class="nav-link"><span class="icon">🏗️</span> Архитектура</a>
+        <a href="#installation" class="nav-link"><span class="icon">📦</span> Установка</a>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Основы</div>
+        <a href="#project-structure" class="nav-link"><span class="icon">📁</span> Структура проекта</a>
+        <a href="#hvigorfile" class="nav-link"><span class="icon">📝</span> hvigorfile.ts</a>
+        <a href="#build-profile" class="nav-link"><span class="icon">⚙️</span> build-profile.json5</a>
+        <a href="#modules" class="nav-link"><span class="icon">🧩</span> Типы модулей</a>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Продвинутое</div>
+        <a href="#tasks" class="nav-link"><span class="icon">🔧</span> Таски и пайплайны</a>
+        <a href="#dependencies" class="nav-link"><span class="icon">🔗</span> Зависимости</a>
+        <a href="#build-modes" class="nav-link"><span class="icon">🎭</span> Режимы сборки</a>
+        <a href="#plugins" class="nav-link"><span class="icon">🔌</span> Плагины</a>
+        <a href="#oh-package" class="nav-link"><span class="icon">📮</span> oh-package.json5</a>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Практика</div>
+        <a href="#cli" class="nav-link"><span class="icon">💻</span> CLI команды</a>
+        <a href="#debugging" class="nav-link"><span class="icon">🐛</span> Отладка сборки</a>
+        <a href="#performance" class="nav-link"><span class="icon">🚀</span> Оптимизация</a>
+        <a href="#migration" class="nav-link"><span class="icon">🔄</span> Миграция</a>
+        <a href="#best-practices" class="nav-link"><span class="icon">⭐</span> Best Practices</a>
+        <a href="#faq" class="nav-link"><span class="icon">❓</span> FAQ</a>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Ресурсы</div>
+        <a href="#resources" class="nav-link"><span class="icon">📚</span> Ссылки и ресурсы</a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>hvigor</h1>
+        <p class="subtitle">Полное руководство по системе сборки OpenHarmony / HarmonyOS — от основ до продвинутых техник настройки и оптимизации.</p>
+        <div class="hero-badges">
+            <span class="badge blue">TypeScript</span>
+            <span class="badge green">OpenHarmony 4.0+</span>
+            <span class="badge orange">hvigor 4.x</span>
+            <span class="badge purple">DevEco Studio</span>
+        </div>
+    </section>
+
+    <div class="content">
+
+        <!-- Quick Nav -->
+        <div class="quick-nav">
+            <a href="#introduction" class="quick-nav-card">
+                <div class="qn-icon">📖</div>
+                <div class="qn-title">Введение</div>
+                <div class="qn-desc">Что такое hvigor и зачем он нужен</div>
+            </a>
+            <a href="#architecture" class="quick-nav-card">
+                <div class="qn-icon">🏗️</div>
+                <div class="qn-title">Архитектура</div>
+                <div class="qn-desc">Как устроена система изнутри</div>
+            </a>
+            <a href="#hvigorfile" class="quick-nav-card">
+                <div class="qn-icon">📝</div>
+                <div class="qn-title">Конфигурация</div>
+                <div class="qn-desc">hvigorfile.ts и build-profile.json5</div>
+            </a>
+            <a href="#tasks" class="quick-nav-card">
+                <div class="qn-icon">🔧</div>
+                <div class="qn-title">Таски</div>
+                <div class="qn-desc">Пайплайны и кастомные таски</div>
+            </a>
+            <a href="#cli" class="quick-nav-card">
+                <div class="qn-icon">💻</div>
+                <div class="qn-title">CLI</div>
+                <div class="qn-desc">Командная строка и флаги</div>
+            </a>
+            <a href="#performance" class="quick-nav-card">
+                <div class="qn-icon">🚀</div>
+                <div class="qn-title">Оптимизация</div>
+                <div class="qn-desc">Ускорение сборки и кэширование</div>
+            </a>
+        </div>
+
+        <!-- ======================== -->
+        <!-- 1. INTRODUCTION -->
+        <!-- ======================== -->
+        <section class="section" id="introduction">
+            <h2><span class="num">01</span> Введение</h2>
+            <p class="desc">Что такое hvigor, его роль в экосистеме OpenHarmony и почему он был выбран в качестве системы сборки.</p>
+
+            <h3>Что такое hvigor?</h3>
+            <p><strong>hvigor</strong> — это система сборки, разработанная для <strong>OpenHarmony</strong> и <strong>HarmonyOS</strong>. Она использует <strong>TypeScript</strong> в качестве языка конфигурации и обеспечивает декларативное описание процессов сборки, компиляции и упаковки приложений.</p>
+
+            <p>hvigor заменил собой предыдущие подходы к сборке и стал стандартом начиная с <strong>OpenHarmony 4.0 Release</strong> и <strong>API 9</strong> в HarmonyOS. Он интегрирован в IDE <strong>DevEco Studio</strong> (основанную на IntelliJ IDEA) и также может использоваться из командной строки.</p>
+
+            <div class="alert info">
+                <span class="alert-icon">ℹ️</span>
+                <div class="alert-content">
+                    <div class="alert-title">Аналогия с Gradle</div>
+                    <div class="alert-text">hvigor для OpenHarmony — это то же, что Gradle для Android. Оба используют DSL на основе JVM/TypeScript, оба управляют зависимостями, тасками и пайплайнами сборки. Но hvigor спроектирован специально под ArkTS/ArkUI и модульную архитектуру HarmonyOS.</div>
+                </div>
+            </div>
+
+            <h3>Ключевые особенности</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>🔷 TypeScript DSL</h4>
+                    <p>Конфигурация сборки пишется на TypeScript с полной поддержкой IDE: автодополнение, проверка типов, рефакторинг.</p>
+                </div>
+                <div class="card">
+                    <h4>⚡ Инкрементальная сборка</h4>
+                    <p>hvigor отслеживает изменения файлов и пересобирает только то, что изменилось, значительно ускоряя процесс.</p>
+                </div>
+                <div class="card">
+                    <h4>🧩 Модульная архитектура</h4>
+                    <p>Поддержка HAP, HAR, HSP модулей с автоматическим разрешением зависимостей между ними.</p>
+                </div>
+                <div class="card">
+                    <h4>🔌 Система плагинов</h4>
+                    <p>Расширяемая система плагинов для компиляции ArkTS, упаковки ресурсов, сигнатурного подписания и т.д.</p>
+                </div>
+                <div class="card">
+                    <h4>🎭 Конфигурации сборки</h4>
+                    <p>Встроенная поддержка Debug/Release режимов, кастомных product'ов и таргетов.</p>
+                </div>
+                <div class="card">
+                    <h4>📦 Управление пакетами</h4>
+                    <p>Интеграция с ohpm (OpenHarmony Package Manager) для управления внешними зависимостями.</p>
+                </div>
+            </div>
+
+            <h3>hvigor vs другие системы сборки</h3>
+            <div class="comparison">
+                <div class="col pros">
+                    <h4>✅ Преимущества</h4>
+                    <ul>
+                        <li>Нативная поддержка ArkTS/ArkUI</li>
+                        <li>TypeScript для конфигурации</li>
+                        <li>Глубокая интеграция с DevEco Studio</li>
+                        <li>Встроенная поддержка HAP/HAR/HSP</li>
+                        <li>Инкрементальная сборка из коробки</li>
+                        <li>Автоматическое управление ресурсами (.ets, .png, .json)</li>
+                    </ul>
+                </div>
+                <div class="col cons">
+                    <h4>⚠️ Ограничения</h4>
+                    <ul>
+                        <li>Привязка к экосистеме OpenHarmony</li>
+                        <li>Меньше/community плагинов чем у Gradle</li>
+                        <li>Документация в основном на китайском</li>
+                        <li>Молодая экосистема</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 2. ARCHITECTURE -->
+        <!-- ======================== -->
+        <section class="section" id="architecture">
+            <h2><span class="num">02</span> Архитектура</h2>
+            <p class="desc">Как устроен hvigor изнутри: уровни абстракции, ключевые компоненты и процесс выполнения сборки.</p>
+
+            <h3>Общая архитектура</h3>
+            <div class="diagram">
+                <div class="diagram-title">Архитектура hvigor</div>
+                <div class="arch-diagram">
+                    <div class="arch-layer">
+                        <div class="arch-box user">👤 DevEco Studio</div>
+                        <div class="arch-box user">💻 CLI (hvigorw)</div>
+                    </div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-label">Интерфейс запуска</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer">
+                        <div class="arch-box core">📋 hvigorfile.ts (Entry)</div>
+                        <div class="arch-box core">📋 hvigorfile.ts (Feature)</div>
+                        <div class="arch-box core">📋 hvigorfile.ts (Library)</div>
+                    </div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-label">Конфигурация модулей</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer">
+                        <div class="arch-box plugin">🔌 app-plugin</div>
+                        <div class="arch-box plugin">🔌 hap-plugin</div>
+                        <div class="arch-box plugin">🔌 har-plugin</div>
+                        <div class="arch-box plugin">🔌 hsp-plugin</div>
+                    </div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-label">Плагины</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer">
+                        <div class="arch-box output">🏗️ ArkCompiler</div>
+                        <div class="arch-box output">🏗️ Resource Compiler</div>
+                        <div class="arch-box output">🏗️ Pakcer (.hap/.har)</div>
+                        <div class="arch-box output">🏗️ Signer</div>
+                    </div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-label">Артефакты</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer">
+                        <div class="arch-box output" style="min-width: 200px; background: rgba(188,140,255,0.2); border-color: rgba(188,140,255,0.5);">📦 .hap / .har / .hsp / .app</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Ключевые компоненты</h3>
+
+            <div class="accordion">
+                <div class="accordion-item open">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">📋 hvigorfile.ts</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Основной файл конфигурации для каждого модуля. Определяет, какой плагин использовать и какие таски выполнять. Каждый модуль (entry, feature, library) имеет свой hvigorfile.ts.</p>
+                            <p>На уровне проекта (root) hvigorfile.ts определяет глобальную конфигурацию и таски, применимые ко всем модулям.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">📐 build-profile.json5</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Определяет модули проекта, режимы сборки (Debug/Release), target'ы (phone, tablet, wearable и т.д.), и конфигурации signing'а. Это основной файл описания проекта.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">📦 oh-package.json5</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Аналог package.json в npm. Определяет имя пакета, версию, зависимости (dependencies, devDependencies), и настройки репозитория для ohpm.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">🔌 Плагины (Plugins)</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Плагины — это расширения hvigor, которые добавляют конкретные таски. Основные встроенные плагины:</p>
+                            <ul>
+                                <li><strong>@ohos/hvigor-ohos-plugin</strong> — основной плагин для OpenHarmony</li>
+                                <li><strong>app-plugin</strong> — таски для сборки .app файла</li>
+                                <li><strong>hap-plugin</strong> — таски для сборки HAP модулей</li>
+                                <li><strong>har-plugin</strong> — таски для сборки HAR библиотек</li>
+                                <li><strong>hsp-plugin</strong> — таски для сборки HSP shared-модулей</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">🏗️ ArkCompiler</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>ArkCompiler — компилятор ArkTS/JavaScript, который транслирует исходный код в байткод для виртуальной машины ArkVM. Вызывается через плагин hap-plugin/har-plugin в процессе сборки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">🔄 hvigor Daemon</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>hvigor использует демон (фоновый процесс) для ускорения последующих сборок. Демон держит в памяти кэш конфигураций, граф зависимостей и результаты инкрементальной сборки.</p>
+                            <p>Управление демоном: <code>hvigorw --daemon</code> / <code>hvigorw --stop</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Процесс сборки (Pipeline)</h3>
+            <div class="diagram">
+                <div class="diagram-title">Пайплайн сборки HAP модуля</div>
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <div class="step-icon">📥</div>
+                        <div class="step-name">Pre-Build</div>
+                        <div class="step-desc">Подготовка окружения</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">🔗</div>
+                        <div class="step-name">Dependency</div>
+                        <div class="step-desc">Разрешение зависимостей</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">🎨</div>
+                        <div class="step-name">Resources</div>
+                        <div class="step-desc">Компиляция ресурсов</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">⚡</div>
+                        <div class="step-name">ArkCompile</div>
+                        <div class="step-desc">Компиляция ArkTS</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">📦</div>
+                        <div class="step-name">Package</div>
+                        <div class="step-desc">Упаковка .hap</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">🔐</div>
+                        <div class="step-name">Sign</div>
+                        <div class="step-desc">Подписание</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-icon">📋</div>
+                        <div class="step-name">Post-Build</div>
+                        <div class="step-desc">Финализация</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 3. INSTALLATION -->
+        <!-- ======================== -->
+        <section class="section" id="installation">
+            <h2><span class="num">03</span> Установка и настройка</h2>
+            <p class="desc">Как установить hvigor, настроить окружение и начать работу с системой сборки.</p>
+
+            <h3>Предварительные требования</h3>
+            <ul>
+                <li><strong>Node.js</strong> ≥ 16.0 (рекомендуется LTS версия)</li>
+                <li><strong>DevEco Studio</strong> (рекомендуется, включает hvigor)</li>
+                <li><strong>ohpm</strong> — менеджер пакетов OpenHarmony (поставляется с DevEco Studio)</li>
+                <li><strong>Java JDK</strong> ≥ 17 (для некоторых плагинов)</li>
+            </ul>
+
+            <h3>Установка через DevEco Studio</h3>
+            <p>Самый простой способ — использовать <strong>DevEco Studio</strong>, которая поставляется со встроенным hvigor:</p>
+
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot r"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                    <span class="title">Terminal</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="prompt">$</span> <span class="cmd"># Проверка версии hvigor</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw --version</span></div>
+                    <div class="output">hvigor version: 4.2.1</div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Проверка версии Node.js</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">node --version</span></div>
+                    <div class="output">v20.11.0</div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Проверка версии ohpm</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm --version</span></div>
+                    <div class="output">ohpm 2.0.0</div>
+                </div>
+            </div>
+
+            <h3>Создание нового проекта</h3>
+            <p>При создании проекта через DevEco Studio автоматически генерируется необходимая структура:</p>
+
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot r"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                    <span class="title">Terminal</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="prompt">$</span> <span class="cmd"># Создание нового проекта через CLI (если доступно)</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">hvigorw init my-app --template empty</span></div>
+                    <div class="output">✓ Project created successfully</div>
+                    <div class="output">✓ hvigorfile.ts generated</div>
+                    <div class="output">✓ build-profile.json5 generated</div>
+                    <div class="output">✓ oh-package.json5 generated</div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd">cd my-app</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">hvigorw assembleHap --mode module -p product=default</span></div>
+                    <div class="success-msg">✓ BUILD SUCCESSFUL in 12s</div>
+                </div>
+            </div>
+
+            <div class="alert warning">
+                <span class="alert-icon">⚠️</span>
+                <div class="alert-content">
+                    <div class="alert-title">Wrapper скрипт</div>
+                    <div class="alert-text">Всегда используйте <code>hvigorw</code> (wrapper) вместо глобального <code>hvigor</code>. Wrapper гарантирует, что все разработчики проекта используют одинаковую версию hvigor, указанную в <code>hvigor/hvigor-wrapper.js</code>.</div>
+                </div>
+            </div>
+
+            <h3>Структура wrapper'а</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>hvigor/hvigor-config.json5</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"hvigorVersion"</span>: <span class="string">"4.2.1"</span>,
+  <span class="property">"dependencies"</span>: {
+    <span class="property">"@ohos/hvigor"</span>: <span class="string">"4.2.1"</span>,
+    <span class="property">"@ohos/hvigor-ohos-plugin"</span>: <span class="string">"4.2.1"</span>
+  },
+  <span class="property">"node-version"</span>: <span class="string">"&gt;= 16.0.0"</span>
+}</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 4. PROJECT STRUCTURE -->
+        <!-- ======================== -->
+        <section class="section" id="project-structure">
+            <h2><span class="num">04</span> Структура проекта</h2>
+            <p class="desc">Полная структура типичного OpenHarmony проекта с hvigor.</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>my-app/ — структура проекта</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>my-app/
+├── <span class="comment">.hvigor/</span>                    <span class="comment"># Внутренние файлы hvigor (кэш, daemon)</span>
+├── <span class="comment">build/</span>                      <span class="comment"># Выходные артефакты сборки</span>
+│   └── outputs/
+│       └── default/
+│           └── entry-default.hap
+├── <span class="comment">entry/</span>                      <span class="comment"># Модуль entry (точка входа)</span>
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── ets/             <span class="comment"># Исходники ArkTS</span>
+│   │   │   │   ├── entryability/
+│   │   │   │   │   └── EntryAbility.ets
+│   │   │   │   └── pages/
+│   │   │   │       └── Index.ets
+│   │   │   ├── resources/       <span class="comment"># Ресурсы</span>
+│   │   │   │   ├── base/
+│   │   │   │   │   ├── media/
+│   │   │   │   │   └── profile/
+│   │   │   │   └── rawfile/
+│   │   │   └── module.json5     <span class="comment"># Манифест модуля</span>
+│   │   ├── ohosTest/            <span class="comment"># Тесты</span>
+│   │   └── test/                <span class="comment"># Unit-тесты</span>
+│   ├── hvigorfile.ts            <span class="comment"># Конфигурация модуля</span>
+│   ├── build-profile.json5      <span class="comment"># Профиль сборки модуля</span>
+│   └── oh-package.json5         <span class="comment"># Пакет модуля</span>
+├── <span class="comment">library/</span>                    <span class="comment"># Модуль библиотеки (HAR)</span>
+│   ├── src/main/ets/
+│   ├── hvigorfile.ts
+│   ├── build-profile.json5
+│   └── oh-package.json5
+├── <span class="comment">hvigor/</span>                     <span class="comment"># Wrapper hvigor</span>
+│   ├── hvigor-config.json5
+│   └── hvigor-wrapper.js
+├── hvigorfile.ts               <span class="comment"># Root-конфигурация hvigor</span>
+├── build-profile.json5         <span class="comment"># Root-профиль сборки</span>
+├── oh-package.json5            <span class="comment"># Root-пакет</span>
+├── hvigorw                     <span class="comment"># Wrapper скрипт (bash)</span>
+├── hvigorw.bat                 <span class="comment"># Wrapper скрипт (Windows)</span>
+└── package-lock.json5</pre></div>
+            </div>
+
+            <h3>Описание ключевых файлов</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Файл</th>
+                            <th>Уровень</th>
+                            <th>Назначение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>hvigorfile.ts</code></td>
+                            <td>Root + Module</td>
+                            <td>Конфигурация тасков и плагинов</td>
+                        </tr>
+                        <tr>
+                            <td><code>build-profile.json5</code></td>
+                            <td>Root + Module</td>
+                            <td>Модули, таргеты, режимы сборки, signing</td>
+                        </tr>
+                        <tr>
+                            <td><code>oh-package.json5</code></td>
+                            <td>Root + Module</td>
+                            <td>Имя пакета, версия, зависимости</td>
+                        </tr>
+                        <tr>
+                            <td><code>module.json5</code></td>
+                            <td>Module</td>
+                            <td>Манифест модуля (abilities, permissions)</td>
+                        </tr>
+                        <tr>
+                            <td><code>hvigor-config.json5</code></td>
+                            <td>Wrapper</td>
+                            <td>Версия hvigor, зависимости wrapper'а</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 5. HVIGORFILE.TS -->
+        <!-- ======================== -->
+        <section class="section" id="hvigorfile">
+            <h2><span class="num">05</span> hvigorfile.ts</h2>
+            <p class="desc">Детальное описание конфигурационного файла hvigor — основного файла настройки сборки.</p>
+
+            <h3>Root-level hvigorfile.ts</h3>
+            <p>Файл на уровне проекта определяет глобальную конфигурацию и подключает плагины:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>hvigorfile.ts (root)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="comment">// Импорт ядра hvigor и плагина OpenHarmony</span>
+<span class="keyword">import</span> { <span class="type">appTasks</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">appTasks</span>(),  <span class="comment">// Подключение системных тасков</span>
+    <span class="property">plugins</span>: []          <span class="comment">// Кастомные плагины</span>
+}</pre></div>
+            </div>
+
+            <h3>Module-level hvigorfile.ts</h3>
+            <p>Файл на уровне модуля определяет специфичные для модуля таски:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>entry/hvigorfile.ts</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">hapTasks</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">hapTasks</span>(),  <span class="comment">// HAP-специфичные таски</span>
+    <span class="property">plugins</span>: []
+}</pre></div>
+            </div>
+
+            <h3>hvigorfile.ts для HAR библиотеки</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>library/hvigorfile.ts</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">harTasks</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">harTasks</span>(),  <span class="comment">// HAR-специфичные таски</span>
+    <span class="property">plugins</span>: []
+}</pre></div>
+            </div>
+
+            <h3>hvigorfile.ts для HSP shared модуля</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>shared/hvigorfile.ts</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">hspTasks</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">hspTasks</span>(),  <span class="comment">// HSP-специфичные таски</span>
+    <span class="property">plugins</span>: []
+}</pre></div>
+            </div>
+
+            <div class="alert info">
+                <span class="alert-icon">ℹ️</span>
+                <div class="alert-content">
+                    <div class="alert-title">Системные таски (system tasks)</div>
+                    <div class="alert-text">Функции <code>appTasks()</code>, <code>hapTasks()</code>, <code>harTasks()</code>, <code>hspTasks()</code> возвращают предустановленные наборы тасков. Они автоматически подключают все необходимые этапы: компиляцию, упаковку, подписывание. Вы можете расширять или модифицировать эти наборы через параметр <code>plugins</code>.</div>
+                </div>
+            </div>
+
+            <h3>Расширение hvigorfile.ts — кастомные таски</h3>
+            <p>Вы можете добавлять собственные таски и модифицировать существующие:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>entry/hvigorfile.ts — с кастомным таском</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">hapTasks</span>, <span class="type">HvigorTask</span>, <span class="type">HvigorPlugin</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="comment">// Создание кастомного плагина</span>
+<span class="keyword">const</span> <span class="function">myCustomPlugin</span>: <span class="type">HvigorPlugin</span> = {
+    <span class="function">apply</span>(<span class="param">context</span>: <span class="type">HvigorTaskContext</span>) {
+        <span class="comment">// Регистрация кастомного таска</span>
+        context.<span class="function">registerTask</span>({
+            <span class="property">name</span>: <span class="string">'customLogTask'</span>,
+            <span class="function">execute</span>(<span class="param">taskContext</span>: <span class="type">HvigorTaskContext</span>) {
+                <span class="type">console</span>.<span class="function">log</span>(<span class="string">'🚀 Выполняется кастомный таск!'</span>);
+            }
+        });
+    }
+};
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">hapTasks</span>(),
+    <span class="property">plugins</span>: [<span class="function">myCustomPlugin</span>]
+}</pre></div>
+            </div>
+
+            <h3>Модификация существующих тасков</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>hook в существующий таск</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">const</span> <span class="function">buildHookPlugin</span>: <span class="type">HvigorPlugin</span> = {
+    <span class="function">apply</span>(<span class="param">context</span>) {
+        <span class="comment">// Хук ДО выполнения compileArkTS</span>
+        context.<span class="function">beforeTask</span>(<span class="string">'compileArkTS'</span>, () => {
+            <span class="type">console</span>.<span class="function">log</span>(<span class="string">'📝 Перед компиляцией ArkTS...'</span>);
+            <span class="comment">// Например, генерация файлов, проверка линтером</span>
+        });
+
+        <span class="comment">// Хук ПОСЛЕ выполнения packageHap</span>
+        context.<span class="function">afterTask</span>(<span class="string">'packageHap'</span>, () => {
+            <span class="type">console</span>.<span class="function">log</span>(<span class="string">'✅ HAP файл успешно упакован!'</span>);
+            <span class="comment">// Например, копирование артефакта в другую директорию</span>
+        });
+    }
+};</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 6. BUILD-PROFILE.JSON5 -->
+        <!-- ======================== -->
+        <section class="section" id="build-profile">
+            <h2><span class="num">06</span> build-profile.json5</h2>
+            <p class="desc">Файл описания конфигураций сборки проекта и модулей.</p>
+
+            <h3>Root build-profile.json5</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>build-profile.json5 (root)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"app"</span>: {
+    <span class="property">"signingConfigs"</span>: [
+      {
+        <span class="property">"name"</span>: <span class="string">"default"</span>,
+        <span class="property">"material"</span>: {
+          <span class="property">"certpath"</span>: <span class="string">"/path/to/cert.cer"</span>,
+          <span class="property">"storePassword"</span>: <span class="string">"***"</span>,
+          <span class="property">"keyAlias"</span>: <span class="string">"debugKey"</span>,
+          <span class="property">"keyPassword"</span>: <span class="string">"***"</span>,
+          <span class="property">"profile"</span>: <span class="string">"/path/to/provision.p7b"</span>,
+          <span class="property">"signAlg"</span>: <span class="string">"SHA256withECDSA"</span>,
+          <span class="property">"storeFile"</span>: <span class="string">"/path/to/keystore.p12"</span>
+        }
+      }
+    ],
+    <span class="property">"products"</span>: [
+      {
+        <span class="property">"name"</span>: <span class="string">"default"</span>,
+        <span class="property">"signingConfig"</span>: <span class="string">"default"</span>,
+        <span class="property">"compatibleSdkVersion"</span>: <span class="number">9</span>,
+        <span class="property">"runtimeOS"</span>: <span class="string">"HarmonyOS"</span>,
+        <span class="property">"buildOption"</span>: {
+          <span class="property">"strictMode"</span>: {
+            <span class="property">"caseSensitiveCheck"</span>: <span class="keyword">true</span>
+          }
+        }
+      }
+    ],
+    <span class="property">"buildModeSet"</span>: [
+      {
+        <span class="property">"name"</span>: <span class="string">"debug"</span>
+      },
+      {
+        <span class="property">"name"</span>: <span class="string">"release"</span>
+      }
+    ]
+  },
+  <span class="property">"modules"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"entry"</span>,
+      <span class="property">"srcPath"</span>: <span class="string">"./entry"</span>,
+      <span class="property">"targets"</span>: [
+        {
+          <span class="property">"name"</span>: <span class="string">"default"</span>,
+          <span class="property">"applyToProducts"</span>: [<span class="string">"default"</span>]
+        }
+      ]
+    },
+    {
+      <span class="property">"name"</span>: <span class="string">"library"</span>,
+      <span class="property">"srcPath"</span>: <span class="string">"./library"</span>
+    }
+  ]
+}</pre></div>
+            </div>
+
+            <h3>Module build-profile.json5</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>entry/build-profile.json5</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"apiType"</span>: <span class="string">"stageMode"</span>,
+  <span class="property">"buildOption"</span>: {
+    <span class="property">"arkOptions"</span>: {
+      <span class="property">"runtimeOnly"</span>: {
+        <span class="property">"sources"</span>: [<span class="string">"./src/main/ets/runtime"</span>]
+      },
+      <span class="property">"excluded"</span>: [
+        <span class="string">"**/*.test.ets"</span>,
+        <span class="string">"**/*.mock.ets"</span>
+      ],
+      <span class="property">"nativeLib"</span>: {
+        <span class="property">"filter"</span>: {
+          <span class="property">"excludes"</span>: [<span class="string">"**/libunused.so"</span>]
+        }
+      }
+    },
+    <span class="property">"resourceOption"</span>: {
+      <span class="property">"extraSourceResources"</span>: []
+    },
+    <span class="property">"strictMode"</span>: {
+      <span class="property">"useNormalizedOHMUrl"</span>: <span class="keyword">true</span>
+    }
+  },
+  <span class="property">"buildOptionSet"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"release"</span>,
+      <span class="property">"arkOptions"</span>: {
+        <span class="property">"obfuscation"</span>: {
+          <span class="property">"ruleOptions"</span>: {
+            <span class="property">"enable"</span>: <span class="keyword">true</span>,
+            <span class="property">"files"</span>: [<span class="string">"./obfuscation-rules.txt"</span>]
+          }
+        }
+      }
+    }
+  ],
+  <span class="property">"targets"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"default"</span>
+    },
+    {
+      <span class="property">"name"</span>: <span class="string">"ohosTest"</span>
+    }
+  ]
+}</pre></div>
+            </div>
+
+            <h3>Ключевые поля build-profile.json5</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Поле</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>app.signingConfigs</code></td>
+                            <td>Конфигурации подписи для разных сред</td>
+                        </tr>
+                        <tr>
+                            <td><code>app.products</code></td>
+                            <td>Продуктовые конфигурации (variants)</td>
+                        </tr>
+                        <tr>
+                            <td><code>app.buildModeSet</code></td>
+                            <td>Режимы сборки: debug, release</td>
+                        </tr>
+                        <tr>
+                            <td><code>modules</code></td>
+                            <td>Список модулей проекта с путями</td>
+                        </tr>
+                        <tr>
+                            <td><code>buildOption.arkOptions</code></td>
+                            <td>Настройки компилятора ArkTS</td>
+                        </tr>
+                        <tr>
+                            <td><code>buildOptionSet</code></td>
+                            <td>Настройки для конкретных режимов сборки</td>
+                        </tr>
+                        <tr>
+                            <td><code>compatibleSdkVersion</code></td>
+                            <td>Минимальная совместимая версия SDK</td>
+                        </tr>
+                        <tr>
+                            <td><code>runtimeOS</code></td>
+                            <td>Целевая ОС: "HarmonyOS" или "OpenHarmony"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 7. MODULES -->
+        <!-- ======================== -->
+        <section class="section" id="modules">
+            <h2><span class="num">07</span> Типы модулей</h2>
+            <p class="desc">OpenHarmony поддерживает три основных типа модулей: HAP, HAR и HSP.</p>
+
+            <div class="diagram">
+                <div class="diagram-title">Сравнение типов модулей</div>
+                <div class="arch-diagram">
+                    <div class="arch-layer">
+                        <div class="arch-box user" style="min-width: 200px;">
+                            📱 <strong>HAP</strong><br>
+                            <span style="font-size: 0.75rem; font-weight: 400;">Harmony Ability Package</span><br>
+                            <span style="font-size: 0.7rem; font-weight: 400;">Исполняемый модуль</span>
+                        </div>
+                        <div class="arch-box plugin" style="min-width: 200px;">
+                            📚 <strong>HAR</strong><br>
+                            <span style="font-size: 0.75rem; font-weight: 400;">Harmony Archive</span><br>
+                            <span style="font-size: 0.7rem; font-weight: 400;">Статическая библиотека</span>
+                        </div>
+                        <div class="arch-box core" style="min-width: 200px;">
+                            🔗 <strong>HSP</strong><br>
+                            <span style="font-size: 0.75rem; font-weight: 400;">Harmony Shared Package</span><br>
+                            <span style="font-size: 0.7rem; font-weight: 400;">Динамическая библиотека</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Характеристика</th>
+                            <th>HAP</th>
+                            <th>HAR</th>
+                            <th>HSP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Тип</strong></td>
+                            <td>Исполняемый</td>
+                            <td>Статическая библиотека</td>
+                            <td>Динамическая библиотека</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Расширение</strong></td>
+                            <td><code>.hap</code></td>
+                            <td><code>.har</code></td>
+                            <td><code>.hsp</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Может быть entry point</strong></td>
+                            <td>✅ Да</td>
+                            <td>❌ Нет</td>
+                            <td>❌ Нет</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Компиляция</strong></td>
+                            <td>В байткод .abc</td>
+                            <td>В байткод .abc</td>
+                            <td>В байткод .abc</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Встраивание</strong></td>
+                            <td>—</td>
+                            <td>Копируется в HAP</td>
+                            <td>Линкуется динамически</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Общий между HAP</strong></td>
+                            <td>—</td>
+                            <td>Нет (дублируется)</td>
+                            <td>✅ Да (общий)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Плагин</strong></td>
+                            <td><code>hapTasks()</code></td>
+                            <td><code>harTasks()</code></td>
+                            <td><code>hspTasks()</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Размер</strong></td>
+                            <td>Полный</td>
+                            <td>Включается в HAP</td>
+                            <td>Отдельный пакет</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert success">
+                <span class="alert-icon">💡</span>
+                <div class="alert-content">
+                    <div class="alert-title">Когда использовать HSP?</div>
+                    <div class="alert-text">Используйте HSP, когда у вас несколько HAP модулей (например, основной app + feature modules) и вы хотите共享 общие компоненты, ресурсы и код без дублирования. Это уменьшает итоговый размер приложения.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 8. TASKS -->
+        <!-- ======================== -->
+        <section class="section" id="tasks">
+            <h2><span class="num">08</span> Таски и пайплайны</h2>
+            <p class="desc">Управление тасками сборки, хуками и кастомными задачами.</p>
+
+            <h3>Встроенные таски</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Таск</th>
+                            <th>Описание</th>
+                            <th>Применим к</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>preBuild</code></td>
+                            <td>Подготовка окружения сборки</td>
+                            <td>Все</td>
+                        </tr>
+                        <tr>
+                            <td><code>generateLoaderJson</code></td>
+                            <td>Генерация loader.json для модулей</td>
+                            <td>HAP, HSP</td>
+                        </tr>
+                        <tr>
+                            <td><code>compileResource</code></td>
+                            <td>Компиляция ресурсов (.png, .json и т.д.)</td>
+                            <td>Все</td>
+                        </tr>
+                        <tr>
+                            <td><code>compileArkTS</code></td>
+                            <td>Компиляция ArkTS → .abc байткод</td>
+                            <td>Все</td>
+                        </tr>
+                        <tr>
+                            <td><code>buildNative</code></td>
+                            <td>Компиляция C/C++ кода (если есть)</td>
+                            <td>HAP, HSP</td>
+                        </tr>
+                        <tr>
+                            <td><code>packageHap</code></td>
+                            <td>Упаковка .hap файла</td>
+                            <td>HAP</td>
+                        </tr>
+                        <tr>
+                            <td><code>packageHar</code></td>
+                            <td>Упаковка .har файла</td>
+                            <td>HAR</td>
+                        </tr>
+                        <tr>
+                            <td><code>packageHsp</code></td>
+                            <td>Упаковка .hsp файла</td>
+                            <td>HSP</td>
+                        </tr>
+                        <tr>
+                            <td><code>signHap</code></td>
+                            <td>Подписание HAP файла</td>
+                            <td>HAP</td>
+                        </tr>
+                        <tr>
+                            <td><code>assembleHap</code></td>
+                            <td>Финальная сборка (aggregator таск)</td>
+                            <td>HAP</td>
+                        </tr>
+                        <tr>
+                            <td><code>assembleApp</code></td>
+                            <td>Сборка .app файла из всех модулей</td>
+                            <td>Root</td>
+                        </tr>
+                        <tr>
+                            <td><code>clean</code></td>
+                            <td>Очистка выходных директорий</td>
+                            <td>Все</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Граф зависимостей тасков</h3>
+            <div class="diagram">
+                <div class="diagram-title">Граф выполнения тасков для HAP</div>
+                <div class="flowchart">
+                    <div class="flow-node start">▶ assembleHap</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">preBuild</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">generateLoaderJson</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">compileResource</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">compileArkTS</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">buildNative (опционально)</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">packageHap</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node process">signHap</div>
+                    <div class="flow-arrow-down">▼</div>
+                    <div class="flow-node end">✅ Готово</div>
+                </div>
+            </div>
+
+            <h3>Кастомные таски — полный пример</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>entry/hvigorfile.ts — расширенный пример</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">hapTasks</span>, <span class="type">HvigorPlugin</span>, <span class="type">HvigorTaskContext</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+
+<span class="comment">// Плагин для генерации version info перед сборкой</span>
+<span class="keyword">const</span> <span class="function">versionInfoPlugin</span>: <span class="type">HvigorPlugin</span> = {
+    <span class="function">apply</span>(<span class="param">context</span>: <span class="type">HvigorTaskContext</span>) {
+        context.<span class="function">registerTask</span>({
+            <span class="property">name</span>: <span class="string">'generateVersionInfo'</span>,
+            <span class="property">dependencies</span>: [<span class="string">'preBuild'</span>],  <span class="comment">// Выполняется после preBuild</span>
+            <span class="function">execute</span>(<span class="param">taskContext</span>) {
+                <span class="keyword">const</span> fs = <span class="function">require</span>(<span class="string">'fs'</span>);
+                <span class="keyword">const</span> path = <span class="function">require</span>(<span class="string">'path'</span>);
+
+                <span class="keyword">const</span> version = <span class="type">JSON</span>.<span class="function">parse</span>(
+                    fs.<span class="function">readFileSync</span>(<span class="string">'oh-package.json5'</span>, <span class="string">'utf8'</span>)
+                ).<span class="property">version</span>;
+
+                <span class="keyword">const</span> buildTime = <span class="keyword">new</span> <span class="type">Date</span>().<span class="function">toISOString</span>();
+                <span class="keyword">const</span> content = <span class="string">`export const VERSION = '${version}';\n`</span> +
+                               <span class="string">`export const BUILD_TIME = '${buildTime}';\n`</span>;
+
+                fs.<span class="function">writeFileSync</span>(
+                    path.<span class="function">join</span>(<span class="string">'src/main/ets/generated'</span>, <span class="string">'VersionInfo.ets'</span>),
+                    content
+                );
+                <span class="type">console</span>.<span class="function">log</span>(<span class="string">`✅ Version info generated: ${version}`</span>);
+            }
+        });
+    }
+};
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">hapTasks</span>(),
+    <span class="property">plugins</span>: [<span class="function">versionInfoPlugin</span>]
+}</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 9. DEPENDENCIES -->
+        <!-- ======================== -->
+        <section class="section" id="dependencies">
+            <h2><span class="num">09</span> Управление зависимостями</h2>
+            <p class="desc">Как управлять зависимостями между модулями и внешними пакетами через ohpm.</p>
+
+            <h3>oh-package.json5 — зависимости</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>oh-package.json5</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"name"</span>: <span class="string">"my-app"</span>,
+  <span class="property">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="property">"description"</span>: <span class="string">"My OpenHarmony Application"</span>,
+  <span class="property">"main"</span>: <span class="string">""</span>,
+  <span class="property">"author"</span>: <span class="string">""</span>,
+  <span class="property">"license"</span>: <span class="string">"Apache-2.0"</span>,
+  <span class="property">"dependencies"</span>: {
+    <span class="comment">// Локальные модули (workspace)</span>
+    <span class="property">"@ohos/library"</span>: <span class="string">"file:../library"</span>,
+    <span class="property">"@ohos/shared"</span>: <span class="string">"file:../shared"</span>,
+    <span class="comment">// Внешние пакеты из ohpm репозитория</span>
+    <span class="property">"@ohos/hypium"</span>: <span class="string">"1.0.16"</span>,
+    <span class="property">"@ohos/hamock"</span>: <span class="string">"1.0.0"</span>
+  },
+  <span class="property">"devDependencies"</span>: {
+    <span class="property">"@ohos/hvigor"</span>: <span class="string">"4.2.1"</span>,
+    <span class="property">"@ohos/hvigor-ohos-plugin"</span>: <span class="string">"4.2.1"</span>
+  },
+  <span class="property">"overrides"</span>: {
+    <span class="comment">// Принудительная версия для транзитивных зависимостей</span>
+    <span class="property">"@ohos/some-lib"</span>: <span class="string">"2.0.0"</span>
+  }
+}</pre></div>
+            </div>
+
+            <h3>Типы зависимостей</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Тип</th>
+                            <th>Синтаксис</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Локальный модуль</td>
+                            <td><code>"file:../path"</code></td>
+                            <td>Ссылка на локальный HAR/HSP модуль</td>
+                        </tr>
+                        <tr>
+                            <td>ohpm пакет</td>
+                            <td><code>"1.0.0"</code></td>
+                            <td>Пакет из репозитория ohpm</td>
+                        </tr>
+                        <tr>
+                            <td>Диапазон версий</td>
+                            <td><code>"^1.0.0"</code>, <code>"~1.0.0"</code></td>
+                            <td>Семантическое версионирование</td>
+                        </tr>
+                        <tr>
+                            <td>Git URL</td>
+                            <td><code>"git+https://..."</code></td>
+                            <td>Прямая ссылка на Git репозиторий</td>
+                        </tr>
+                        <tr>
+                            <td>Dev-зависимость</td>
+                            <td><code>devDependencies</code></td>
+                            <td>Только для разработки (тесты, линтеры)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Команды ohpm</h3>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot r"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                    <span class="title">Terminal — ohpm команды</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="prompt">$</span> <span class="cmd"># Установка всех зависимостей</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm install</span></div>
+                    <div class="output">📦 Installing dependencies...</div>
+                    <div class="success-msg">✓ Installed 15 packages in 3.2s</div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Установка конкретного пакета</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm install @ohos/hypium</span></div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Установка dev-зависимости</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm install --save-dev @ohos/hamock</span></div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Обновление пакета</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm update @ohos/hypium</span></div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Удаление пакета</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm uninstall @ohos/hypium</span></div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Поиск пакета</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">ohpm search hypium</span></div>
+                </div>
+            </div>
+
+            <h3>Workspace (монорепозиторий)</h3>
+            <p>Для управления несколькими модулями в одном проекте hvigor использует workspace:</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>oh-package.json5 — workspace конфигурация</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"name"</span>: <span class="string">"my-workspace"</span>,
+  <span class="property">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="property">"workspaces"</span>: [
+    <span class="string">"./entry"</span>,
+    <span class="string">"./library"</span>,
+    <span class="string">"./shared"</span>
+  ]
+}</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 10. BUILD MODES -->
+        <!-- ======================== -->
+        <section class="section" id="build-modes">
+            <h2><span class="num">10</span> Режимы сборки</h2>
+            <p class="desc">Debug vs Release, кастомные конфигурации и управление вариантами сборки.</p>
+
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab(event, 'tab-debug')">Debug</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-release')">Release</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-custom')">Custom</button>
+                </div>
+
+                <div class="tab-content active" id="tab-debug">
+                    <h4>Debug режим</h4>
+                    <p>Используется во время разработки. Включает:</p>
+                    <ul>
+                        <li>Отладочные символы</li>
+                        <li>Отсутствие обфускации</li>
+                        <li>Быстрая компиляция</li>
+                        <li>Debug-сертификат для подписи</li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dots"><span></span><span></span><span></span></div>
+                            <span>Запуск в Debug режиме</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-body"><pre><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --mode module -p product=default -p buildMode=debug</span></div></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-release">
+                    <h4>Release режим</h4>
+                    <p>Используется для продакшена. Включает:</p>
+                    <ul>
+                        <li>Обфускация кода</li>
+                        <li>Оптимизация байт-кода</li>
+                        <li>Продакшен-сертификат</li>
+                        <li>Удаление отладочной информации</li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dots"><span></span><span></span><span></span></div>
+                            <span>Запуск в Release режиме</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-body"><pre><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --mode module -p product=default -p buildMode=release</span></div></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-custom">
+                    <h4>Кастомные режимы</h4>
+                    <p>Вы можете создавать собственные режимы сборки:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dots"><span></span><span></span><span></span></div>
+                            <span>build-profile.json5 — кастомный режим</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-body"><pre>{
+  <span class="property">"app"</span>: {
+    <span class="property">"buildModeSet"</span>: [
+      { <span class="property">"name"</span>: <span class="string">"debug"</span> },
+      { <span class="property">"name"</span>: <span class="string">"release"</span> },
+      { <span class="property">"name"</span>: <span class="string">"staging"</span> },
+      { <span class="property">"name"</span>: <span class="string">"enterprise"</span> }
+    ]
+  }
+}</pre></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Обфускация кода</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>entry/build-profile.json5 — настройка обфускации</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"buildOptionSet"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"release"</span>,
+      <span class="property">"arkOptions"</span>: {
+        <span class="property">"obfuscation"</span>: {
+          <span class="property">"ruleOptions"</span>: {
+            <span class="property">"enable"</span>: <span class="keyword">true</span>,
+            <span class="property">"files"</span>: [<span class="string">"./obfuscation-rules.txt"</span>]
+          }
+        }
+      }
+    }
+  ]
+}</pre></div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>obfuscation-rules.txt — правила обфускации</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="comment"># Исключить из обфускации</span>
+-ignore-property
+-ignore-class-name
+-ignore-file-name
+-ignore-class <span class="string">com.example.MyClass</span>
+-ignore-property <span class="string">com.example.MyClass.myProperty</span>
+
+<span class="comment"># Включить обфускацию для всего</span>
+-enable-all</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 11. PLUGINS -->
+        <!-- ======================== -->
+        <section class="section" id="plugins">
+            <h2><span class="num">11</span> Система плагинов</h2>
+            <p class="desc">Расширение hvigor через кастомные плагины.</p>
+
+            <h3>Создание плагина</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>plugins/MyPlugin.ts — кастомный плагин</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">HvigorPlugin</span>, <span class="type">HvigorTaskContext</span>, <span class="type">HvigorNode</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor'</span>;
+
+<span class="keyword">interface</span> <span class="type">MyPluginOptions</span> {
+  <span class="property">message</span>: <span class="type">string</span>;
+  <span class="property">verbose</span>: <span class="type">boolean</span>;
+}
+
+<span class="keyword">export</span> <span class="keyword">function</span> <span class="function">myPlugin</span>(<span class="param">options</span>: <span class="type">MyPluginOptions</span>): <span class="type">HvigorPlugin</span> {
+  <span class="keyword">return</span> {
+    <span class="function">apply</span>(<span class="param">context</span>: <span class="type">HvigorTaskContext</span>) {
+      <span class="comment">// Получить доступ к конфигурации модуля</span>
+      <span class="keyword">const</span> modulePath = context.<span class="property">module</span>.<span class="property">name</span>;
+
+      <span class="comment">// Зарегистрировать таск</span>
+      context.<span class="function">registerTask</span>({
+        <span class="property">name</span>: <span class="string">'myPluginTask'</span>,
+        <span class="function">execute</span>(<span class="param">taskContext</span>) {
+          <span class="keyword">if</span> (options.<span class="property">verbose</span>) {
+            <span class="type">console</span>.<span class="function">log</span>(<span class="string">`[${modulePath}] ${options.message}`</span>);
+          }
+
+          <span class="comment">// Доступ к файловой системе модуля</span>
+          <span class="keyword">const</span> fs = <span class="function">require</span>(<span class="string">'fs'</span>);
+          <span class="keyword">const</span> files = fs.<span class="function">readdirSync</span>(taskContext.<span class="property">modulePath</span>);
+          <span class="type">console</span>.<span class="function">log</span>(<span class="string">`Files: ${files.length}`</span>);
+        }
+      });
+
+      <span class="comment">// Хуки к существующим таскам</span>
+      context.<span class="function">beforeTask</span>(<span class="string">'compileArkTS'</span>, () => {
+        <span class="type">console</span>.<span class="function">log</span>(<span class="string">'🔍 Проверка кода перед компиляцией...'</span>);
+      });
+
+      context.<span class="function">afterTask</span>(<span class="string">'packageHap'</span>, () => {
+        <span class="type">console</span>.<span class="function">log</span>(<span class="string">'📦 Артефакт готов!'</span>);
+      });
+    }
+  };
+}</pre></div>
+            </div>
+
+            <h3>Использование плагина</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>hvigorfile.ts</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="keyword">import</span> { <span class="type">hapTasks</span> } <span class="keyword">from</span> <span class="string">'@ohos/hvigor-ohos-plugin'</span>;
+<span class="keyword">import</span> { <span class="function">myPlugin</span> } <span class="keyword">from</span> <span class="string">'./plugins/MyPlugin'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> {
+    <span class="property">system</span>: <span class="type">hapTasks</span>(),
+    <span class="property">plugins</span>: [
+        <span class="function">myPlugin</span>({
+            <span class="property">message</span>: <span class="string">'Hello from my plugin!'</span>,
+            <span class="property">verbose</span>: <span class="keyword">true</span>
+        })
+    ]
+}</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 12. OH-PACKAGE.JSON5 -->
+        <!-- ======================== -->
+        <section class="section" id="oh-package">
+            <h2><span class="num">12</span> oh-package.json5</h2>
+            <p class="desc">Формат описания пакетов в OpenHarmony.</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>oh-package.json5 — полный пример</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"name"</span>: <span class="string">"@scope/my-library"</span>,
+  <span class="property">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="property">"description"</span>: <span class="string">"Shared UI components library"</span>,
+  <span class="property">"main"</span>: <span class="string">"Index.ets"</span>,
+  <span class="property">"author"</span>: <span class="string">"John Doe"</span>,
+  <span class="property">"license"</span>: <span class="string">"Apache-2.0"</span>,
+  <span class="property">"repository"</span>: <span class="string">"https://github.com/user/my-library"</span>,
+  <span class="property">"keywords"</span>: [<span class="string">"ui"</span>, <span class="string">"components"</span>, <span class="string">"arkui"</span>],
+  <span class="property">"dependencies"</span>: {},
+  <span class="property">"devDependencies"</span>: {
+    <span class="property">"@ohos/hvigor"</span>: <span class="string">"4.2.1"</span>
+  }
+}</pre></div>
+            </div>
+
+            <h3>Специальные поля</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Поле</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>Уникальное имя пакета. Может использовать scope: <code>@ohos/xxx</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>version</code></td>
+                            <td>Версия в формате semver (MAJOR.MINOR.PATCH)</td>
+                        </tr>
+                        <tr>
+                            <td><code>main</code></td>
+                            <td>Точка входа модуля (основной .ets файл)</td>
+                        </tr>
+                        <tr>
+                            <td><code>dependencies</code></td>
+                            <td>Зависимости, необходимые для работы</td>
+                        </tr>
+                        <tr>
+                            <td><code>devDependencies</code></td>
+                            <td>Зависимости только для разработки</td>
+                        </tr>
+                        <tr>
+                            <td><code>overrides</code></td>
+                            <td>Принудительная замена версий транзитивных зависимостей</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 13. CLI -->
+        <!-- ======================== -->
+        <section class="section" id="cli">
+            <h2><span class="num">13</span> CLI команды</h2>
+            <p class="desc">Полный справочник по командам hvigor из командной строки.</p>
+
+            <h3>Основные команды</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Команда</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>./hvigorw assembleHap</code></td>
+                            <td>Собрать HAP файл</td>
+                        </tr>
+                        <tr>
+                            <td><code>./hvigorw assembleApp</code></td>
+                            <td>Собрать .app файл (все модули)</td>
+                        </tr>
+                        <tr>
+                            <td><code>./hvigorw clean</code></td>
+                            <td>Очистить результаты сборки</td>
+                        </tr>
+                        <tr>
+                            <td><code>./hvigorw --version</code></td>
+                            <td>Показать версию hvigor</td>
+                        </tr>
+                        <tr>
+                            <td><code>./hvigorw --help</code></td>
+                            <td>Показать справку</td>
+                        </tr>
+                        <tr>
+                            <td><code>./hvigorw tasks</code></td>
+                            <td>Список доступных тасков</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Флаги и параметры</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Флаг</th>
+                            <th>Описание</th>
+                            <th>Пример</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>--mode</code></td>
+                            <td>Режим сборки: <code>project</code> или <code>module</code></td>
+                            <td><code>--mode module</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>-p product</code></td>
+                            <td>Выбрать product из build-profile</td>
+                            <td><code>-p product=default</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>-p buildMode</code></td>
+                            <td>Режим: <code>debug</code> или <code>release</code></td>
+                            <td><code>-p buildMode=release</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>-p module</code></td>
+                            <td>Целевой модуль</td>
+                            <td><code>-p module=entry</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--no-daemon</code></td>
+                            <td>Отключить daemon</td>
+                            <td><code>--no-daemon</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--analyze</code></td>
+                            <td>Анализ сборки (timing, cache)</td>
+                            <td><code>--analyze</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--dry-run</code></td>
+                            <td>Показать план без выполнения</td>
+                            <td><code>--dry-run</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--incremental</code></td>
+                            <td>Инкрементальная сборка (по умолчанию)</td>
+                            <td><code>--incremental</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--force</code></td>
+                            <td>Полная пересборка без кэша</td>
+                            <td><code>--force</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--parallel</code></td>
+                            <td>Параллельная сборка модулей</td>
+                            <td><code>--parallel</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Типичные сценарии</h3>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot r"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                    <span class="title">Terminal — типичные команды</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="comment"># Полная сборка проекта (Debug)</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleApp --mode project -p product=default -p buildMode=debug</span></div>
+                    <br>
+                    <div><span class="comment"># Сборка конкретного модуля (Release)</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --mode module -p module=entry -p product=default -p buildMode=release</span></div>
+                    <br>
+                    <div><span class="comment"># Очистка и полная пересборка</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw clean && ./hvigorw assembleHap --force</span></div>
+                    <br>
+                    <div><span class="comment"># Анализ производительности сборки</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --analyze</span></div>
+                    <br>
+                    <div><span class="comment"># Dry-run — посмотреть что будет выполнено</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --dry-run</span></div>
+                    <br>
+                    <div><span class="comment"># Параллельная сборка модулей</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleApp --parallel</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 14. DEBUGGING -->
+        <!-- ======================== -->
+        <section class="section" id="debugging">
+            <h2><span class="num">14</span> Отладка сборки</h2>
+            <p class="desc">Как диагностировать проблемы со сборкой и анализировать логи.</p>
+
+            <h3>Уровни логирования</h3>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot r"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                    <span class="title">Terminal</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="comment"># Подробный вывод (verbose)</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --verbose</span></div>
+                    <br>
+                    <div><span class="comment"># Отладочный вывод (debug)</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --debug</span></div>
+                    <br>
+                    <div><span class="comment"># Только ошибки</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap --quiet</span></div>
+                </div>
+            </div>
+
+            <h3>Анализ производительности</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>Пример вывода --analyze</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="info-msg">📊 Build Analysis Report</span>
+
+<span class="output">Total time: 12.4s</span>
+
+<span class="output">Task execution breakdown:</span>
+<span class="output">  compileResource    3.2s  ████████████░░░░░░░░  25.8%</span>
+<span class="output">  compileArkTS       5.1s  ████████████████████░  41.1%</span>
+<span class="output">  packageHap         1.8s  ███████░░░░░░░░░░░░░  14.5%</span>
+<span class="output">  signHap            0.9s  ███░░░░░░░░░░░░░░░░░   7.3%</span>
+<span class="output">  other              1.4s  █████░░░░░░░░░░░░░░░  11.3%</span>
+
+<span class="success-msg">✓ Cache hit ratio: 67%</span>
+<span class="info-msg">💡 Tip: Enable parallel build to reduce compileArkTS time</span></pre></div>
+            </div>
+
+            <h3>Типичные ошибки и решения</h3>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">❌ "Module not found" при сборке</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Причина:</strong> Зависимость не установлена или путь в <code>oh-package.json5</code> указан неверно.</p>
+                            <p><strong>Решение:</strong></p>
+                            <div class="terminal">
+                                <div class="terminal-body">
+                                    <div><span class="prompt">$</span> <span class="cmd">ohpm install</span></div>
+                                    <div class="output"># Проверьте пути в oh-package.json5</div>
+                                    <div class="output"># Убедитесь, что целевой модуль существует</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">❌ "Signing failed" при сборке</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Причина:</strong> Неверная конфигурация подписи или отсутствующие сертификаты.</p>
+                            <p><strong>Решение:</strong> Проверьте <code>build-profile.json5</code> → <code>signingConfigs</code>. Убедитесь, что пути к сертификатам верны и пароли корректны. Для автоматической подписи используйте <code>autoSign: true</code> в DevEco Studio.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">❌ "hvigor daemon crashed"</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Причина:</strong> Daemon процесс завершился аварийно (часто из-за нехватки памяти).</p>
+                            <p><strong>Решение:</strong></p>
+                            <div class="terminal">
+                                <div class="terminal-body">
+                                    <div><span class="prompt">$</span> <span class="cmd"># Остановить daemon</span></div>
+                                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw --stop</span></div>
+                                    <div><span class="prompt">$</span> <span class="cmd"># Увеличить память для Node.js</span></div>
+                                    <div><span class="prompt">$</span> <span class="cmd">export NODE_OPTIONS="--max-old-space-size=4096"</span></div>
+                                    <div><span class="prompt">$</span> <span class="cmd"># Перезапустить сборку</span></div>
+                                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleHap</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">❌ "Resource compilation failed"</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Причина:</strong> Ошибка в ресурсах — неверный JSON, отсутствующие файлы, дубликаты ID.</p>
+                            <p><strong>Решение:</strong> Проверьте файлы в <code>resources/base/</code>. Убедитесь, что все JSON файлы валидны, нет дубликатов resource ID, и все ссылки на ресурсы корректны.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 15. PERFORMANCE -->
+        <!-- ======================== -->
+        <section class="section" id="performance">
+            <h2><span class="num">15</span> Оптимизация сборки</h2>
+            <p class="desc">Техники ускорения сборки и оптимизации конфигурации hvigor.</p>
+
+            <h3>1. Инкрементальная сборка</h3>
+            <p>hvigor по умолчанию использует инкрементальную сборку. Убедитесь, что она не отключена:</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>hvigor-config.json5</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"hvigorVersion"</span>: <span class="string">"4.2.1"</span>,
+  <span class="property">"dependencies"</span>: { ... },
+  <span class="property">"enableIncrementalBuild"</span>: <span class="keyword">true</span>,    <span class="comment">// ✅ Включено по умолчанию</span>
+  <span class="property">"enableDaemon"</span>: <span class="keyword">true</span>,              <span class="comment">// ✅ Daemon для ускорения</span>
+  <span class="property">"enableParallelBuild"</span>: <span class="keyword">true</span>       <span class="comment">// ✅ Параллельная сборка</span>
+}</pre></div>
+            </div>
+
+            <h3>2. Исключение файлов из компиляции</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>build-profile.json5 — исключение файлов</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre>{
+  <span class="property">"buildOption"</span>: {
+    <span class="property">"arkOptions"</span>: {
+      <span class="property">"excluded"</span>: [
+        <span class="string">"**/test/**"</span>,
+        <span class="string">"**/*.test.ets"</span>,
+        <span class="string">"**/*.mock.ets"</span>,
+        <span class="string">"**/generated/**"</span>
+      ]
+    }
+  }
+}</pre></div>
+            </div>
+
+            <h3>3. Кэширование</h3>
+            <p>hvigor автоматически кэширует результаты тасков. Кэш хранится в <code>.hvigor/</code>. Для сброса кэша:</p>
+            <div class="terminal">
+                <div class="terminal-body">
+                    <div><span class="prompt">$</span> <span class="cmd"># Полная очистка кэша</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw clean</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">rm -rf .hvigor/</span></div>
+                    <br>
+                    <div><span class="prompt">$</span> <span class="cmd"># Сброс только daemon</span></div>
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw --stop</span></div>
+                </div>
+            </div>
+
+            <h3>4. Параллельная сборка</h3>
+            <p>При сборке нескольких модулей hvigor может выполнять таски параллельно:</p>
+            <div class="terminal">
+                <div class="terminal-body">
+                    <div><span class="prompt">$</span> <span class="cmd">./hvigorw assembleApp --parallel</span></div>
+                    <div class="output">🔄 Building modules in parallel...</div>
+                    <div class="output">  [entry]   compileArkTS ...</div>
+                    <div class="output">  [library] compileArkTS ...</div>
+                    <div class="output">  [shared]  compileArkTS ...</div>
+                    <div class="success-msg">✓ BUILD SUCCESSFUL in 8.2s (was 14.1s sequential)</div>
+                </div>
+            </div>
+
+            <h3>5. Оптимизация ArkTS компиляции</h3>
+            <div class="card">
+                <h4>⚡ Советы по ускорению компиляции</h4>
+                <ul>
+                    <li><strong>Исключайте тестовые файлы</strong> из <code>arkOptions.excluded</code></li>
+                    <li><strong>Разбивайте большие модули</strong> на несколько HAR — hvigor может компилировать их параллельно</li>
+                    <li><strong>Используйте HSP</strong> вместо HAR для shared кода — компилируется один раз</li>
+                    <li><strong>Увеличьте память Node.js</strong>: <code>NODE_OPTIONS="--max-old-space-size=4096"</code></li>
+                    <li><strong>Не используйте <code>--force</code></code> без необходимости — это отключает кэш</li>
+                    <li><strong>Держите hvigor и плагины</strong> обновлёнными — каждая версия приносит оптимизации</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 16. MIGRATION -->
+        <!-- ======================== -->
+        <section class="section" id="migration">
+            <h2><span class="num">16</span> Миграция</h2>
+            <p class="desc">Переход на hvigor с других систем сборки и миграция между версиями.</p>
+
+            <h3>С FA (Form Ability) на Stage модель</h3>
+            <p>При переходе с FA-модели на Stage-модель необходимо:</p>
+            <ol>
+                <li>Изменить <code>apiType</code> в <code>build-profile.json5</code> на <code>"stageMode"</code></li>
+                <li>Обновить <code>module.json5</code> — новая структура манифеста</li>
+                <li>Мигрировать код с JavaScript/Java на ArkTS</li>
+                <li>Обновить <code>hvigorfile.ts</code> — использовать <code>hapTasks()</code> вместо старых тасков</li>
+            </ol>
+
+            <h3>Миграция между версиями hvigor</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Из → В</th>
+                            <th>Что изменить</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>3.x → 4.x</td>
+                            <td>Обновить <code>hvigor-config.json5</code>, обновить плагины, проверить API тасков</td>
+                        </tr>
+                        <tr>
+                            <td>FA → Stage</td>
+                            <td>Изменить <code>apiType</code>, обновить манифест, мигрировать код</td>
+                        </tr>
+                        <tr>
+                            <td>npm → ohpm</td>
+                            <td>Заменить <code>package.json</code> на <code>oh-package.json5</code>, использовать ohpm</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 17. BEST PRACTICES -->
+        <!-- ======================== -->
+        <section class="section" id="best-practices">
+            <h2><span class="num">17</span> Best Practices</h2>
+            <p class="desc">Рекомендации по организации проекта и настройке hvigor.</p>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>📁 Модульная архитектура</h4>
+                    <p>Разделяйте приложение на небольшие модули (HAR/HSP). Это ускоряет инкрементальную сборку и улучшает переиспользование кода.</p>
+                </div>
+                <div class="card">
+                    <h4>🔖 Версионирование</h4>
+                    <p>Используйте семантическое версионирование. Фиксируйте версии зависимостей в <code>oh-package.json5</code> для воспроизводимости сборки.</p>
+                </div>
+                <div class="card">
+                    <h4>🚫 .gitignore</h4>
+                    <p>Не коммитьте <code>build/</code>, <code>.hvigor/</code>, <code>oh_modules/</code>. Коммитьте только <code>oh-package.json5</code> и <code>hvigor-config.json5</code>.</p>
+                </div>
+                <div class="card">
+                    <h4>🔒 Безопасность</h4>
+                    <p>Не храните пароли от keystore в <code>build-profile.json5</code>. Используйте переменные окружения или secure storage DevEco Studio.</p>
+                </div>
+                <div class="card">
+                    <h4>🧪 Тестирование сборки</h4>
+                    <p>Добавьте CI/CD пайплайн с <code>./hvigorw assembleHap --force</code> для проверки воспроизводимости сборки.</p>
+                </div>
+                <div class="card">
+                    <h4>📏 Размер HAP</h4>
+                    <p>Используйте HSP для shared кода между модулями. Исключайте неиспользуемые ресурсы. Включайте обфускацию для Release.</p>
+                </div>
+            </div>
+
+            <h3>Пример .gitignore для hvigor-проекта</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    <span>.gitignore</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-body"><pre><span class="comment"># Build outputs</span>
+build/
+**/build/
+
+<span class="comment"># hvigor internal</span>
+.hvigor/
+
+<span class="comment"># ohpm dependencies</span>
+oh_modules/
+
+<span class="comment"># IDE</span>
+.idea/
+*.iml
+.local/
+
+<span class="comment"># OS</span>
+.DS_Store
+Thumbs.db
+
+<span class="comment"># Signing (никогда не коммитьте!)</span>
+*.p12
+*.p7b
+*.cer
+*.jks
+keystore/</pre></div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 18. FAQ -->
+        <!-- ======================== -->
+        <section class="section" id="faq">
+            <h2><span class="num">18</span> FAQ</h2>
+            <p class="desc">Часто задаваемые вопросы по hvigor.</p>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">Чем hvigor отличается от Gradle?</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>hvigor использует TypeScript в качестве DSL, тогда как Gradle использует Kotlin/Groovy. hvigor специализирован под OpenHarmony/ArkTS, имеет встроенную поддержку HAP/HAR/HSP модулей и интегрирован с ArkCompiler. Gradle — более универсальная система, используемая в Android, Java и других экосистемах.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">Можно ли использовать npm-пакеты в OpenHarmony?</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Напрямую — нет. OpenHarmony использует свою систему пакетов — <strong>ohpm</strong>. Однако существуют совместимые пакеты, опубликованные в ohpm-репозитории. Вы можете обернуть npm-пакет в HAR/HSP модуль, если он не зависит от Node.js API.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">Как подключить C/C++ код?</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>C/C++ код компилируется через <code>buildNative</code> таск, который использует CMake. Создайте директорию <code>cpp/</code> в модуле с <code>CMakeLists.txt</code> и настройте <code>build-profile.json5</code> для нативной сборки.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">Как настроить CI/CD с hvigor?</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <div class="terminal">
+                                <div class="terminal-body">
+                                    <div><span class="comment"># Пример GitHub Actions</span></div>
+                                    <div><span class="comment"># .github/workflows/build.yml</span></div>
+                                    <br>
+                                    <div><span class="keyword">name</span>: <span class="string">Build</span></div>
+                                    <div><span class="keyword">on</span>: [push]</div>
+                                    <div><span class="keyword">jobs</span>:</div>
+                                    <div>  <span class="property">build</span>:</div>
+                                    <div>    <span class="property">runs-on</span>: <span class="string">ubuntu-latest</span></div>
+                                    <div>    <span class="property">steps</span>:</div>
+                                    <div>      - <span class="property">uses</span>: <span class="string">actions/checkout@v3</span></div>
+                                    <div>      - <span class="property">run</span>: <span class="string">./hvigorw assembleHap --force</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="acc-title">Как уменьшить размер .hap файла?</span>
+                        <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <ul>
+                                <li>Используйте <strong>HSP</strong> вместо <strong>HAR</strong> для shared-кода между модулями</li>
+                                <li>Включите <strong>обфускацию</strong> в release-режиме</li>
+                                <li>Исключите неиспользуемые ресурсы через <code>arkOptions.excluded</code></li>
+                                <li>Используйте <strong>resource splitting</strong> для разных экранов/языков</li>
+                                <li>Минимизируйте количество нативных библиотек</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- 19. RESOURCES -->
+        <!-- ======================== -->
+        <section class="section" id="resources">
+            <h2><span class="num">19</span> Ссылки и ресурсы</h2>
+            <p class="desc">Полезные ссылки для дальнейшего изучения.</p>
+
+            <div class="cards-grid">
+                <a href="https://gitee.com/openharmony" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">🌐</div>
+                    <div class="qn-title">OpenHarmony Gitee</div>
+                    <div class="qn-desc">Официальный репозиторий OpenHarmony</div>
+                </a>
+                <a href="https://developer.huawei.com/consumer/cn/deveco-studio/" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">💻</div>
+                    <div class="qn-title">DevEco Studio</div>
+                    <div class="qn-desc">IDE для разработки HarmonyOS приложений</div>
+                </a>
+                <a href="https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">📚</div>
+                    <div class="qn-title">HarmonyOS Docs</div>
+                    <div class="qn-desc">Официальная документация HarmonyOS</div>
+                </a>
+                <a href="https://ohpm.openharmony.cn" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">📦</div>
+                    <div class="qn-title">ohpm Repository</div>
+                    <div class="qn-desc">Репозиторий пакетов OpenHarmony</div>
+                </a>
+                <a href="https://gitee.com/openharmony/third_party_hvigor" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">⚡</div>
+                    <div class="qn-title">hvigor на Gitee</div>
+                    <div class="qn-desc">Исходный код hvigor</div>
+                </a>
+                <a href="https://developer.huawei.com/consumer/cn/forum/" class="quick-nav-card" target="_blank">
+                    <div class="qn-icon">💬</div>
+                    <div class="qn-title">Huawei Developer Forum</div>
+                    <div class="qn-desc">Форум разработчиков HarmonyOS</div>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>hvigor Guide — Полное руководство по системе сборки OpenHarmony</p>
+        <p style="margin-top: 8px;">Создано с ❤️ для разработчиков OpenHarmony / HarmonyOS</p>
+        <p style="margin-top: 8px; font-size: 0.75rem;">Актуально для hvigor 4.x, OpenHarmony 4.0+, API 9-11</p>
+    </div>
+
+</div>
+
+<script>
+    // ===== Sidebar Navigation =====
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section');
+
+    // Active link on scroll
+    function updateActiveLink() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveLink);
+
+    // ===== Progress Bar =====
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('progressFill').style.width = scrolled + '%';
+    });
+
+    // ===== Mobile Menu =====
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+    });
+
+    // Close sidebar on nav click (mobile)
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 900) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+        });
+    });
+
+    // ===== Accordion =====
+    function toggleAccordion(header) {
+        const item = header.parentElement;
+        const isOpen = item.classList.contains('open');
+
+        // Close all in same accordion
+        const accordion = item.parentElement;
+        accordion.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+
+        if (!isOpen) {
+            item.classList.add('open');
+        }
+    }
+
+    // ===== Tabs =====
+    function switchTab(event, tabId) {
+        const tabContainer = event.target.closest('.tabs');
+
+        tabContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        tabContainer.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // ===== Copy Code =====
+    function copyCode(btn) {
+        const codeBody = btn.closest('.code-block').querySelector('.code-body pre');
+        const text = codeBody.innerText;
+
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.style.color = '#3fb950';
+            btn.style.borderColor = '#3fb950';
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+            }, 2000);
+        });
+    }
+
+    // ===== Search =====
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        navLinks.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            link.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+
+    // ===== Smooth scroll for anchor links =====
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

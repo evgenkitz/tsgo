@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tsgo/ArkTS/ETS_INVENTORY.md",
+                "file": "Plan/tsgo项目路标计划.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ETS_INVENTORY"
+              "title": "tsgo项目路标计划"
             }
           }
         ],
@@ -73,7 +73,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Файловый менеджер"
             }
           },
           {
@@ -200,21 +200,32 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false,
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "bases:Создать новую базу": false,
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "888db64dd45ed078",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
+    "Plan/build-system-design.md",
+    "Plan/hvigor_manual.html",
+    "Plan/incremental-build-overview.html",
+    "Plan/analysis-k1ngqaquuu-critique.md",
+    "Plan/tsgo_project_roadmap_en.md",
+    "Plan/2026-07-03.md",
+    "tsgo/ArkTS/ETS_INVENTORY.md",
+    "Plan/tsgo项目路标计划.md",
+    "Plan/tsgo_mem.md",
+    "Plan/tsgo Integration Analysis of Rollup Solution Options.md",
+    "Plan/tsgo & tsc性能测试数据-0624.md",
+    "Plan",
     "Без названия.md",
     "Untitled.md",
-    "tsgo/ArkTS/ETS_INVENTORY.md",
     "tsgo/ArkTS/ETS_COMPILER_ANALYSIS.md",
     "tsgo/ArkTS/ARKTS_PORT_PLAN.md",
     "tsgo/ArkTS/ARKTS_SCANNER_PARSER_BINDER.md",
@@ -232,23 +243,12 @@
     "tsgo/ArkTS/arkts-1.1-specification-analysis.md",
     "Specifications/ArkTSSpecification.pdf",
     "tsgo/ArkTS/arkts-1.1-implementation-estimation.md",
-    "Untitled 1.md",
-    "tsgo/ArkTS/Анализ ArkTS 1.1 Specification 2025.03.04.md",
-    "tsgo/AST.json/Исследование.md",
     "tsgo/ArkTS",
-    "Specifications/Links.md",
     "Specifications/ArkTSSpecification.txt",
     "Specifications",
-    "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
-    "Extend TSGO/build-system-design.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
-    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
     "Extend TSGO",
-    "_TASKS_/Test.md",
     "tsgo/AST.json",
-    "Untitled.canvas",
-    "_TASKS_",
-    "tsgo",
-    "rollup"
+    "Untitled.canvas"
   ]
 }

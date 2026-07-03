@@ -1,0 +1,3348 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>tsgo — Инкрементальная система сборки</title>
+        <style>
+            :root {
+                --bg: #0d1117;
+                --bg-card: #161b22;
+                --bg-card-hover: #1c2333;
+                --border: #30363d;
+                --text: #c9d1d9;
+                --text-dim: #8b949e;
+                --accent: #58a6ff;
+                --accent2: #3fb950;
+                --accent3: #d2a8ff;
+                --warn: #d29922;
+                --danger: #f85149;
+                --code-bg: #0d1117;
+                --tab-active: #1f6feb;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+                    sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                line-height: 1.6;
+                padding: 0;
+            }
+            header {
+                background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+                border-bottom: 1px solid var(--border);
+                padding: 32px 40px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            header h1 {
+                font-size: 1.8em;
+                font-weight: 700;
+                color: #f0f6fc;
+            }
+            header p {
+                color: var(--text-dim);
+                margin-top: 4px;
+                font-size: 0.95em;
+            }
+            header .badge {
+                display: inline-block;
+                background: var(--accent);
+                color: #000;
+                font-size: 0.7em;
+                padding: 2px 8px;
+                border-radius: 10px;
+                margin-left: 8px;
+                vertical-align: middle;
+                font-weight: 600;
+            }
+            nav.tabs {
+                display: flex;
+                gap: 0;
+                background: var(--bg-card);
+                border-bottom: 1px solid var(--border);
+                padding: 0 40px;
+                position: sticky;
+                top: 108px;
+                z-index: 99;
+                overflow-x: auto;
+            }
+            nav.tabs button {
+                background: none;
+                border: none;
+                color: var(--text-dim);
+                padding: 12px 20px;
+                font-size: 0.9em;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.15s;
+                white-space: nowrap;
+                font-family: inherit;
+            }
+            nav.tabs button:hover {
+                color: var(--text);
+            }
+            nav.tabs button.active {
+                color: var(--accent);
+                border-bottom-color: var(--tab-active);
+            }
+            main {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 32px 40px;
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+            .card {
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 24px;
+                margin-bottom: 20px;
+            }
+            .card h3 {
+                font-size: 1.15em;
+                color: #f0f6fc;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .card h3 .icon {
+                font-size: 1.3em;
+            }
+            .card p {
+                margin-bottom: 8px;
+                color: var(--text-dim);
+                font-size: 0.95em;
+            }
+            .card ul {
+                margin-left: 20px;
+                color: var(--text-dim);
+                font-size: 0.93em;
+            }
+            .card li {
+                margin-bottom: 4px;
+            }
+            .diagram {
+                background: #ffffff;
+                border-radius: 8px;
+                padding: 24px;
+                margin: 16px 0;
+                text-align: center;
+                border: 1px solid var(--border);
+                overflow-x: auto;
+            }
+            .diagram svg {
+                max-width: 100%;
+            }
+            pre {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 16px;
+                overflow-x: auto;
+                font-size: 0.85em;
+                line-height: 1.5;
+            }
+            code {
+                font-family:
+                    "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas",
+                    monospace;
+                font-size: 0.88em;
+            }
+            .keyword {
+                color: #ff7b72;
+            }
+            .type {
+                color: #d2a8ff;
+            }
+            .str {
+                color: #a5d6ff;
+            }
+            .comment {
+                color: #8b949e;
+                font-style: italic;
+            }
+            .func {
+                color: #d2a8ff;
+            }
+            .num {
+                color: #79c0ff;
+            }
+            .grid2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .grid3 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            @media (max-width: 800px) {
+                .grid2,
+                .grid3 {
+                    grid-template-columns: 1fr;
+                }
+            }
+            .status-tag {
+                display: inline-block;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-size: 0.8em;
+                font-weight: 600;
+                margin: 2px;
+            }
+            .st-skip {
+                background: #1b3a1b;
+                color: #3fb950;
+            }
+            .st-rebuild {
+                background: #3a1b1b;
+                color: #f85149;
+            }
+            .st-pseudo {
+                background: #3a2e1b;
+                color: #d29922;
+            }
+            .st-error {
+                background: #2a1b3a;
+                color: #d2a8ff;
+            }
+            .flow-steps {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 12px 0;
+            }
+            .flow-step {
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 10px 8px;
+                font-size: 0.82em;
+            }
+            .flow-arrow {
+                display: flex;
+                align-items: center;
+                color: var(--text-dim);
+                font-size: 1.2em;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.9em;
+            }
+            th,
+            td {
+                text-align: left;
+                padding: 10px 14px;
+                border-bottom: 1px solid var(--border);
+            }
+            th {
+                color: var(--text-dim);
+                font-weight: 600;
+                font-size: 0.82em;
+                text-transform: uppercase;
+            }
+            td {
+                color: var(--text);
+            }
+            tr:hover td {
+                background: rgba(255, 255, 255, 0.02);
+            }
+            footer {
+                text-align: center;
+                padding: 24px;
+                color: var(--text-dim);
+                font-size: 0.82em;
+                border-top: 1px solid var(--border);
+                margin-top: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>
+                tsgo — Инкрементальная система сборки<span class="badge"
+                    >v2</span
+                >
+            </h1>
+            <p>
+                Как <code>tsc --build</code> и
+                <code>tsc --incremental</code> устроены изнутри. Два уровня:
+                проект-оркестратор + инкрементальная компиляция файлов.
+            </p>
+        </header>
+
+        <nav class="tabs">
+            <button class="active" data-tab="arch">Архитектура</button>
+            <button data-tab="orchestrator">Оркестратор (проекты)</button>
+            <button data-tab="incremental">Инкрементал (файлы)</button>
+            <button data-tab="cache">Кэш (.tsbuildinfo)</button>
+            <button data-tab="lifecycle">Жизненный цикл</button>
+        </nav>
+
+        <main>
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB: Архитектура -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="tab-content active" id="tab-arch">
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F9E9;</span> Два уровня
+                        инкрементальности
+                    </h3>
+                    <p>
+                        Система сборки разделена на два независимых, но
+                        взаимодействующих пакета:
+                    </p>
+
+                    <div class="grid2">
+                        <div
+                            style="
+                                border-left: 3px solid var(--accent);
+                                padding-left: 16px;
+                            "
+                        >
+                            <strong
+                                style="color: var(--accent); font-size: 1.05em"
+                                >Уровень 1: Оркестратор проектов</strong
+                            >
+                            <p style="margin-top: 6px">
+                                <code>internal/execute/build/</code>
+                            </p>
+                            <ul>
+                                <li>
+                                    Управляет графом проектов (tsconfig &#8594;
+                                    tsconfig)
+                                </li>
+                                <li>
+                                    Строит DAG зависимостей через
+                                    <code>references</code>
+                                </li>
+                                <li>
+                                    Определяет, <em>какой</em> проект
+                                    перекомпилировать
+                                </li>
+                                <li>
+                                    Читает/пишет <code>.tsbuildinfo</code> для
+                                    проверки актуальности
+                                </li>
+                                <li>Координирует параллельную сборку</li>
+                                <li>
+                                    Watch mode: отслеживает изменения файлов
+                                </li>
+                            </ul>
+                        </div>
+                        <div
+                            style="
+                                border-left: 3px solid var(--accent2);
+                                padding-left: 16px;
+                            "
+                        >
+                            <strong
+                                style="color: var(--accent2); font-size: 1.05em"
+                                >Уровень 2: Инкрементальная компиляция</strong
+                            >
+                            <p style="margin-top: 6px">
+                                <code>internal/execute/incremental/</code>
+                            </p>
+                            <ul>
+                                <li>
+                                    Работает внутри одного проекта (одного
+                                    tsconfig)
+                                </li>
+                                <li>
+                                    Сравнивает <em>снапшоты</em> файлов: что
+                                    изменилось с прошлого раза
+                                </li>
+                                <li>
+                                    Перестраивает только изменившиеся и
+                                    транзитивно-затронутые файлы
+                                </li>
+                                <li>
+                                    Кэширует диагностики и сигнатуры
+                                    <code>.d.ts</code>
+                                </li>
+                                <li>
+                                    Формирует <code>BuildInfo</code> для
+                                    сохранения в <code>.tsbuildinfo</code>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F5FA;</span> Общая схема потока
+                        данных
+                    </h3>
+                    <div class="diagram">
+                        <svg
+                            viewBox="0 0 960 560"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="
+                                font-family:
+                                    -apple-system, BlinkMacSystemFont,
+                                    sans-serif;
+                                font-size: 13px;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="a1"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#58a6ff"
+                                    />
+                                </marker>
+                                <marker
+                                    id="a2"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#3fb950"
+                                    />
+                                </marker>
+                                <marker
+                                    id="a3"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#d29922"
+                                    />
+                                </marker>
+                                <marker
+                                    id="a4"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#d2a8ff"
+                                    />
+                                </marker>
+                                <filter id="s1">
+                                    <feDropShadow
+                                        dx="0"
+                                        dy="2"
+                                        stdDeviation="2"
+                                        flood-opacity="0.12"
+                                    />
+                                </filter>
+                            </defs>
+
+                            <!-- Entry point -->
+                            <rect
+                                x="330"
+                                y="10"
+                                width="300"
+                                height="50"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                                filter="url(#s1)"
+                            />
+                            <text
+                                x="480"
+                                y="31"
+                                text-anchor="middle"
+                                fill="#58a6ff"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                tsc --build / tsc --incremental
+                            </text>
+                            <text
+                                x="480"
+                                y="49"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Входная точка сборки
+                            </text>
+
+                            <!-- Arrow: entry -> orchestrator -->
+                            <path
+                                d="M480 60 L480 100"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#a1)"
+                            />
+
+                            <!-- Middle row: two packages -->
+                            <rect
+                                x="25"
+                                y="105"
+                                width="440"
+                                height="175"
+                                rx="10"
+                                fill="#161b22"
+                                stroke="#58a6ff"
+                                stroke-width="2"
+                                filter="url(#s1)"
+                            />
+                            <rect
+                                x="30"
+                                y="80"
+                                width="100"
+                                height="20"
+                                rx="4"
+                                fill="#1f6feb22"
+                                stroke="#1f6feb44"
+                            />
+                            <text
+                                x="80"
+                                y="95"
+                                text-anchor="middle"
+                                fill="#58a6ff"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                ПАКЕТ build/
+                            </text>
+                            <text
+                                x="245"
+                                y="140"
+                                text-anchor="middle"
+                                fill="#58a6ff"
+                                font-weight="700"
+                                font-size="15"
+                            >
+                                Orchestrator
+                            </text>
+                            <line
+                                x1="45"
+                                y1="150"
+                                x2="445"
+                                y2="150"
+                                stroke="#30363d"
+                            />
+                            <text x="50" y="172" fill="#c9d1d9" font-size="12">
+                                &#x2022; GenerateGraph() &#8212; строит DAG
+                                проектов
+                            </text>
+                            <text x="50" y="194" fill="#c9d1d9" font-size="12">
+                                &#x2022; getUpToDateStatus() &#8212; нужна ли
+                                пересборка?
+                            </text>
+                            <text x="50" y="216" fill="#c9d1d9" font-size="12">
+                                &#x2022; compileAndEmit() &#8212; компиляция +
+                                emit
+                            </text>
+                            <text x="50" y="238" fill="#c9d1d9" font-size="12">
+                                &#x2022; updateDownstream() &#8212; уведомить
+                                зависимые
+                            </text>
+                            <text x="50" y="260" fill="#c9d1d9" font-size="12">
+                                &#x2022; Параллельно до 4 BuildTask'ов
+                                (--builders N)
+                            </text>
+
+                            <rect
+                                x="495"
+                                y="105"
+                                width="440"
+                                height="175"
+                                rx="10"
+                                fill="#161b22"
+                                stroke="#3fb950"
+                                stroke-width="2"
+                                filter="url(#s1)"
+                            />
+                            <rect
+                                x="500"
+                                y="80"
+                                width="120"
+                                height="20"
+                                rx="4"
+                                fill="#3fb95022"
+                                stroke="#3fb95044"
+                            />
+                            <text
+                                x="560"
+                                y="95"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                ПАКЕТ incremental/
+                            </text>
+                            <text
+                                x="715"
+                                y="140"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-weight="700"
+                                font-size="15"
+                            >
+                                Incremental.Program
+                            </text>
+                            <line
+                                x1="515"
+                                y1="150"
+                                x2="915"
+                                y2="150"
+                                stroke="#30363d"
+                            />
+                            <text x="520" y="172" fill="#c9d1d9" font-size="12">
+                                &#x2022; programToSnapshot() &#8212; diff
+                                старого/нового Program
+                            </text>
+                            <text x="520" y="194" fill="#c9d1d9" font-size="12">
+                                &#x2022; collectAllAffectedFiles() &#8212;
+                                транзитивное замыкание
+                            </text>
+                            <text x="520" y="216" fill="#c9d1d9" font-size="12">
+                                &#x2022; emitFilesIncremental() &#8212; emit
+                                только изменённого
+                            </text>
+                            <text x="520" y="238" fill="#c9d1d9" font-size="12">
+                                &#x2022; emitBuildInfo() &#8212; сериализовать
+                                snapshot в JSON
+                            </text>
+                            <text x="520" y="260" fill="#8b949e" font-size="11">
+                                Хранит: FileInfo x N, refMap, diagnostics...
+                            </text>
+
+                            <!-- Arrow: orchestrator -> incremental (передаёт старый снапшот) -->
+                            <path
+                                d="M465 195 L485 195"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#a1)"
+                            />
+                            <text
+                                x="455"
+                                y="188"
+                                fill="#8b949e"
+                                font-size="10"
+                                text-anchor="end"
+                            >
+                                передаёт
+                            </text>
+                            <text
+                                x="455"
+                                y="210"
+                                fill="#8b949e"
+                                font-size="10"
+                                text-anchor="end"
+                            >
+                                старый снапшот
+                            </text>
+
+                            <!-- Bottom row -->
+                            <rect
+                                x="25"
+                                y="340"
+                                width="280"
+                                height="55"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#8b949e"
+                                stroke-width="1.5"
+                                filter="url(#s1)"
+                            />
+                            <text
+                                x="165"
+                                y="362"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                compiler.Program
+                            </text>
+                            <text
+                                x="165"
+                                y="381"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                SourceFiles, TypeChecker, binder
+                            </text>
+
+                            <rect
+                                x="340"
+                                y="340"
+                                width="280"
+                                height="55"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#d2a8ff"
+                                stroke-width="1.5"
+                                filter="url(#s1)"
+                            />
+                            <text
+                                x="480"
+                                y="362"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                .tsbuildinfo (JSON)
+                            </text>
+                            <text
+                                x="480"
+                                y="381"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Сериализованный BuildInfo на диске
+                            </text>
+
+                            <rect
+                                x="655"
+                                y="340"
+                                width="280"
+                                height="55"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                                filter="url(#s1)"
+                            />
+                            <text
+                                x="795"
+                                y="362"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                Orchestrator.Watch()
+                            </text>
+                            <text
+                                x="795"
+                                y="381"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Watch mode: цикл DoCycle()
+                            </text>
+
+                            <!-- Arrow: incremental -> compiler.Program (оборачивает) -->
+                            <path
+                                d="M495 280 L495 310 L165 310 L165 330"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#a2)"
+                            />
+                            <text
+                                x="330"
+                                y="305"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                NewProgram() оборачивает compiler.Program в
+                                snapshot
+                            </text>
+
+                            <!-- Arrow: incremental -> .tsbuildinfo (write) -->
+                            <path
+                                d="M600 280 L600 305 L480 305 L480 330"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#a2)"
+                            />
+                            <text
+                                x="540"
+                                y="300"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                emitBuildInfo()
+                            </text>
+
+                            <!-- Arrow: .tsbuildinfo -> orchestrator (read) -->
+                            <path
+                                d="M340 367 L310 367"
+                                stroke="#d2a8ff"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#a4)"
+                            />
+                            <text
+                                x="280"
+                                y="360"
+                                fill="#8b949e"
+                                font-size="10"
+                                text-anchor="end"
+                            >
+                                loadOrStore-
+                            </text>
+                            <text
+                                x="280"
+                                y="380"
+                                fill="#8b949e"
+                                font-size="10"
+                                text-anchor="end"
+                            >
+                                BuildInfo()
+                            </text>
+
+                            <!-- Arrow: watch mode -> orchestrator (cyclic) -->
+                            <path
+                                d="M655 367 L625 367"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                                fill="none"
+                                stroke-dasharray="6,3"
+                                marker-end="url(#a3)"
+                            />
+
+                            <!-- Bottom label -->
+                            <rect
+                                x="380"
+                                y="450"
+                                width="200"
+                                height="20"
+                                rx="4"
+                                fill="#d2a8ff22"
+                                stroke="#d2a8ff44"
+                            />
+                            <text
+                                x="480"
+                                y="464"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Файловая система
+                            </text>
+
+                            <text
+                                x="480"
+                                y="510"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Оркестратор решает
+                                <tspan fill="#c9d1d9" font-weight="600">
+                                    какой проект
+                                </tspan>
+                                собирать. Инкрементал решает
+                                <tspan fill="#c9d1d9" font-weight="600">
+                                    какие файлы
+                                </tspan>
+                                в проекте перекомпилировать.
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><span class="icon">&#x1F4C1;</span> Ключевые файлы</h3>
+                    <table>
+                        <tr>
+                            <th>Файл</th>
+                            <th>Назначение</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/build/orchestrator.go</code
+                                >
+                            </td>
+                            <td>
+                                Входная точка: GenerateGraph, buildOrClean,
+                                DoCycle (watch)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code>internal/execute/build/buildtask.go</code>
+                            </td>
+                            <td>
+                                Один проект в графе: проверка статуса,
+                                компиляция, emit
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>internal/execute/build/host.go</code></td>
+                            <td>
+                                Per-cycle host с кэшами (mTimes, configCache,
+                                sourceFiles)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/build/uptodatestatus.go</code
+                                >
+                            </td>
+                            <td>
+                                Перечисление всех статусов актуальности (16
+                                типов)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/program.go</code
+                                >
+                            </td>
+                            <td>
+                                Incremental.Program — обёртка над
+                                compiler.Program + снапшот
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/snapshot.go</code
+                                >
+                            </td>
+                            <td>
+                                Снапшот: FileInfo x N, refMap, diagnostics,
+                                emitSignatures
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/programtosnapshot.go</code
+                                >
+                            </td>
+                            <td>
+                                Сравнение старого и нового Program &#8594;
+                                changedFilesSet
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/affectedfileshandler.go</code
+                                >
+                            </td>
+                            <td>
+                                Транзитивное распространение изменений по графу
+                                импортов
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/emitfileshandler.go</code
+                                >
+                            </td>
+                            <td>
+                                Инкрементальный emit: только
+                                изменённые/затронутые файлы
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/buildInfo.go</code
+                                >
+                            </td>
+                            <td>
+                                BuildInfo — JSON-сериализуемая структура для
+                                .tsbuildinfo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/snapshottobuildinfo.go</code
+                                >
+                            </td>
+                            <td>snapshot &#8594; BuildInfo (сериализация)</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code
+                                    >internal/execute/incremental/buildinfotosnapshot.go</code
+                                >
+                            </td>
+                            <td>BuildInfo &#8594; snapshot (десериализация)</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code>internal/outputpaths/outputpaths.go</code>
+                            </td>
+                            <td>
+                                GetBuildInfoFileName() — вычисление пути к
+                                .tsbuildinfo
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB: Оркестратор -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="tab-content" id="tab-orchestrator">
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F3D7;</span> Граф проектов:
+                        GenerateGraph
+                    </h3>
+                    <p>
+                        Оркестратор получает список tsconfig-файлов из командной
+                        строки и строит направленный ациклический граф (DAG)
+                        проектов через поле <code>references</code>.
+                    </p>
+
+                    <div class="diagram">
+                        <svg
+                            viewBox="0 0 860 280"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="
+                                font-family:
+                                    -apple-system, BlinkMacSystemFont,
+                                    sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="dag1"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#58a6ff"
+                                    />
+                                </marker>
+                                <marker
+                                    id="dag2"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#d29922"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <!-- Nodes -->
+                            <rect
+                                x="30"
+                                y="40"
+                                width="200"
+                                height="75"
+                                rx="10"
+                                fill="#1f6feb22"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="130"
+                                y="66"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                lib/tsconfig.json
+                            </text>
+                            <text
+                                x="130"
+                                y="86"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                BuildTask A
+                            </text>
+                            <text
+                                x="130"
+                                y="104"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="10"
+                            >
+                                &#x2714; UpToDate
+                            </text>
+
+                            <rect
+                                x="330"
+                                y="40"
+                                width="200"
+                                height="75"
+                                rx="10"
+                                fill="#1f6feb22"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="430"
+                                y="66"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                core/tsconfig.json
+                            </text>
+                            <text
+                                x="430"
+                                y="86"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                BuildTask B
+                            </text>
+                            <text
+                                x="430"
+                                y="104"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="10"
+                            >
+                                &#x2714; UpToDate
+                            </text>
+
+                            <rect
+                                x="630"
+                                y="40"
+                                width="200"
+                                height="75"
+                                rx="10"
+                                fill="#d2992222"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="730"
+                                y="66"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                app/tsconfig.json
+                            </text>
+                            <text
+                                x="730"
+                                y="86"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                BuildTask C
+                            </text>
+                            <text
+                                x="730"
+                                y="104"
+                                text-anchor="middle"
+                                fill="#f85149"
+                                font-size="10"
+                            >
+                                &#x27F3; InputFileNewer
+                            </text>
+
+                            <!-- Forward edges (references) -->
+                            <path
+                                d="M230 77 L320 77"
+                                stroke="#58a6ff"
+                                stroke-width="1.8"
+                                fill="none"
+                                marker-end="url(#dag1)"
+                            />
+                            <text
+                                x="260"
+                                y="70"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                references
+                            </text>
+                            <path
+                                d="M530 77 L620 77"
+                                stroke="#58a6ff"
+                                stroke-width="1.8"
+                                fill="none"
+                                marker-end="url(#dag1)"
+                            />
+                            <text
+                                x="560"
+                                y="70"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                references
+                            </text>
+
+                            <!-- Reverse edges (downStream, watch-mode only) -->
+                            <path
+                                d="M330 115 L240 115"
+                                stroke="#d29922"
+                                stroke-width="1"
+                                fill="none"
+                                stroke-dasharray="5,3"
+                                marker-end="url(#dag2)"
+                            />
+                            <path
+                                d="M630 115 L540 115"
+                                stroke="#d29922"
+                                stroke-width="1"
+                                fill="none"
+                                stroke-dasharray="5,3"
+                                marker-end="url(#dag2)"
+                            />
+
+                            <!-- Legend (moved below graph) -->
+                            <text x="30" y="175" fill="#c9d1d9" font-size="12">
+                                Топологический порядок сборки:
+                                <tspan fill="#58a6ff" font-weight="700">
+                                    lib
+                                </tspan>
+                                &#8594;
+                                <tspan fill="#58a6ff" font-weight="700">
+                                    core
+                                </tspan>
+                                &#8594;
+                                <tspan fill="#58a6ff" font-weight="700">
+                                    app
+                                </tspan>
+                            </text>
+                            <text x="30" y="200" fill="#d29922" font-size="12">
+                                &#x2500;&#x2500;&#x2192; upStream (прямые
+                                зависимости, ждать завершения)
+                            </text>
+                            <text x="30" y="220" fill="#8b949e" font-size="12">
+                                - - &#x2192; downStream (обратные рёбра, только
+                                в watch mode)
+                            </text>
+                            <line
+                                x1="30"
+                                y1="238"
+                                x2="830"
+                                y2="238"
+                                stroke="#30363d"
+                                stroke-width="1"
+                            />
+
+                            <text x="30" y="260" fill="#8b949e" font-size="11">
+                                Каждый BuildTask ждёт закрытия канала done от
+                                всех upstream перед началом своей сборки. Сигнал
+                                завершения — close(done).
+                            </text>
+                        </svg>
+                    </div>
+
+                    <div class="grid2" style="margin-top: 16px">
+                        <div>
+                            <strong style="font-size: 0.95em"
+                                >Алгоритм построения:</strong
+                            >
+                            <ol
+                                style="
+                                    margin: 8px 0 0 20px;
+                                    color: var(--text-dim);
+                                    font-size: 0.9em;
+                                "
+                            >
+                                <li>
+                                    Для каждого tsconfig создаётся
+                                    <code>BuildTask</code>
+                                </li>
+                                <li>
+                                    Рекурсивно обходятся
+                                    <code>references</code> — создаются task'и
+                                    для подпроектов
+                                </li>
+                                <li>
+                                    DFS по графу для поиска циклов (ошибка, если
+                                    найден)
+                                </li>
+                                <li>
+                                    Топологическая сортировка — порядок сборки
+                                </li>
+                                <li>
+                                    Каждый task ждёт
+                                    <code>upstream.done</code> перед стартом
+                                </li>
+                            </ol>
+                        </div>
+                        <div>
+                            <strong style="font-size: 0.95em"
+                                >Параллелизм:</strong
+                            >
+                            <ul
+                                style="
+                                    margin: 8px 0 0 20px;
+                                    color: var(--text-dim);
+                                    font-size: 0.9em;
+                                "
+                            >
+                                <li>
+                                    До 4 параллельных task'ов (настраивается
+                                    через <code>--builders N</code>)
+                                </li>
+                                <li>
+                                    Task запускается, когда все upstream task'и
+                                    завершены
+                                </li>
+                                <li>
+                                    Сигнал завершения — закрытие канала
+                                    <code>done chan struct{}</code>
+                                </li>
+                                <li>
+                                    Результат агрегируется в
+                                    <code>orchestratorResult</code>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F50D;</span> getUpToDateStatus —
+                        проверка актуальности проекта
+                    </h3>
+                    <p>
+                        Главная функция принятия решения: нужно ли
+                        перекомпилировать проект? Возвращает один из
+                        <strong>16 статусов</strong>.
+                    </p>
+
+                    <div class="grid3" style="margin: 16px 0">
+                        <div>
+                            <strong
+                                style="color: var(--accent2); font-size: 0.9em"
+                                >&#x23ED; Пропустить</strong
+                            >
+                            <p style="margin-top: 4px">
+                                <span class="status-tag st-skip">UpToDate</span
+                                ><br />
+                                <span class="status-tag st-skip"
+                                    >UpToDateWithUpstreamTypes</span
+                                ><br />
+                                <span class="status-tag st-skip"
+                                    >UpToDateWithInputFileText</span
+                                >
+                            </p>
+                        </div>
+                        <div>
+                            <strong style="color: var(--warn); font-size: 0.9em"
+                                >&#x1F504; Псевдо-сборка<br />(только
+                                timestamp)</strong
+                            >
+                            <p style="margin-top: 4px">
+                                <span class="status-tag st-pseudo"
+                                    >UpToDateWithUpstreamTypes</span
+                                ><br />
+                                <span class="status-tag st-pseudo"
+                                    >UpToDateWithInputFileText</span
+                                ><br />
+                                <span
+                                    style="
+                                        font-size: 0.8em;
+                                        color: var(--text-dim);
+                                    "
+                                    >(режим без --incremental)</span
+                                >
+                            </p>
+                        </div>
+                        <div>
+                            <strong
+                                style="color: var(--danger); font-size: 0.9em"
+                                >&#x1F528; Полная пересборка</strong
+                            >
+                            <p style="margin-top: 4px">
+                                <span class="status-tag st-rebuild"
+                                    >InputFileNewer</span
+                                >
+                                <span class="status-tag st-rebuild"
+                                    >OutputMissing</span
+                                >
+                                <span class="status-tag st-rebuild"
+                                    >OutOfDateOptions</span
+                                >
+                                <span class="status-tag st-rebuild"
+                                    >OutOfDateRoots</span
+                                >
+                                <span class="status-tag st-rebuild"
+                                    >ForceBuild</span
+                                >
+                                <span class="status-tag st-rebuild"
+                                    >TsVersionOutputOfDate</span
+                                >
+                            </p>
+                        </div>
+                    </div>
+
+                    <details style="margin-top: 12px">
+                        <summary
+                            style="
+                                cursor: pointer;
+                                color: var(--accent);
+                                font-weight: 500;
+                            "
+                        >
+                            Алгоритм проверки (по шагам)
+                        </summary>
+                        <div
+                            style="
+                                margin-top: 12px;
+                                padding-left: 16px;
+                                border-left: 2px solid var(--border);
+                            "
+                        >
+                            <div
+                                class="flow-steps"
+                                style="flex-direction: column; gap: 2px"
+                            >
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >1</span
+                                    >
+                                    <span
+                                        >Проверить, что tsconfig существует и
+                                        содержит файлы</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >2</span
+                                    >
+                                    <span
+                                        >Проверить upstream: есть ли ошибки у
+                                        зависимостей</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >3</span
+                                    >
+                                    <span
+                                        ><strong
+                                            >Прочитать
+                                            <code>.tsbuildinfo</code></strong
+                                        >
+                                        через
+                                        <code
+                                            >loadOrStoreBuildInfo()</code
+                                        ></span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >4</span
+                                    >
+                                    <span
+                                        >Проверить версию tsgo:
+                                        <code
+                                            >BuildInfo.Version ==
+                                            core.Version()</code
+                                        ></span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >5</span
+                                    >
+                                    <span
+                                        >Проверить флаги ошибок в BuildInfo
+                                        (<code>Errors</code>,
+                                        <code>SemanticErrors</code>)</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >6</span
+                                    >
+                                    <span
+                                        >Проверить pending emit и опции
+                                        компилятора (режим
+                                        <code>--incremental</code>)</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >7</span
+                                    >
+                                    <span
+                                        ><strong
+                                            >Для каждого входного файла:</strong
+                                        >
+                                        если mtime новее самого старого output —
+                                        вычислить
+                                        <strong>xxh3-хэш</strong> содержимого и
+                                        сравнить с
+                                        BuildInfo.FileInfos[].Version</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >8</span
+                                    >
+                                    <span
+                                        >Проверить, не изменился ли набор
+                                        root-файлов</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >9</span
+                                    >
+                                    <span
+                                        >Сравнить mtime output-файлов с input
+                                        (для не-incremental режима)</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >10</span
+                                    >
+                                    <span
+                                        >Проверить upstream .d.ts — если они
+                                        новее наших output, мы устарели</span
+                                    >
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 4px 0;
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            color: var(--text-dim);
+                                            min-width: 24px;
+                                            text-align: right;
+                                        "
+                                        >11</span
+                                    >
+                                    <span
+                                        >Проверить времена tsconfig и extended
+                                        config'ов</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F504;</span> Watch mode: DoCycle
+                    </h3>
+                    <div class="flow-steps" style="align-items: stretch">
+                        <div class="flow-step">
+                            <strong>1. updateWatch()</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Захватить текущие mtime всех отслеживаемых
+                                файлов</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>2. resetCaches()</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Очистить VFS, configCache, sourceFiles</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>3. hasUpdate()</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Сравнить сохранённые mtime с текущими</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>4. buildOrClean()</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Пересобрать изменившиеся проекты</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>5. Sleep</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >watchInterval (~250ms)</span
+                            >
+                        </div>
+                    </div>
+                    <p
+                        style="
+                            margin-top: 16px;
+                            font-size: 0.9em;
+                            color: var(--text-dim);
+                        "
+                    >
+                        <strong>Оптимизация:</strong> если config-файл изменился
+                        — перестраивается граф через
+                        <code>GenerateGraphReusingOldTasks()</code>. Если только
+                        входные файлы изменились — сбрасывается статус через
+                        <code>resetStatus()</code>. Если ничего не изменилось —
+                        восстанавливается старый mtime-кэш и цикл пропускается.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB: Инкрементал -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="tab-content" id="tab-incremental">
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F4F8;</span> Снапшот (snapshot) —
+                        ядро инкрементальной компиляции
+                    </h3>
+                    <p>
+                        Снапшот — это состояние проекта
+                        <em>на момент прошлой компиляции</em>. Он хранит всё,
+                        что нужно для определения «что изменилось».
+                    </p>
+
+                    <div class="grid2">
+                        <div>
+                            <strong style="color: var(--accent)"
+                                >Сериализуемые поля (в .tsbuildinfo):</strong
+                            >
+                            <table style="margin-top: 8px">
+                                <tr>
+                                    <td><code>fileInfos</code></td>
+                                    <td>
+                                        На каждый файл: version (xxh3-хэш),
+                                        signature (хэш .d.ts),
+                                        affectsGlobalScope, impliedNodeFormat
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>options</code></td>
+                                    <td>
+                                        CompilerOptions на момент прошлой сборки
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>referencedMap</code></td>
+                                    <td>
+                                        Для каждого файла — множество файлов, на
+                                        которые он ссылается (imports,
+                                        triple-slash refs)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>semanticDiagnosticsPerFile</code>
+                                    </td>
+                                    <td>
+                                        Кэш семантических диагностик (для
+                                        быстрого вывода без перепроверки)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>emitDiagnosticsPerFile</code></td>
+                                    <td>Кэш диагностик emit'а .d.ts</td>
+                                </tr>
+                                <tr>
+                                    <td><code>changedFilesSet</code></td>
+                                    <td>
+                                        Файлы, изменившиеся в последней
+                                        компиляции
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>affectedFilesPendingEmit</code>
+                                    </td>
+                                    <td>
+                                        Файлы, требующие emit + какой тип emit'а
+                                        (JS, d.ts, или оба)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>emitSignatures</code></td>
+                                    <td>
+                                        Хэши сгенерированных .d.ts для
+                                        отслеживания изменений
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>hasErrors</code></td>
+                                    <td>Были ли ошибки (даже с --noCheck)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>checkPending</code></td>
+                                    <td>Ожидает ли семантическая проверка</td>
+                                </tr>
+                                <tr>
+                                    <td><code>latestChangedDtsFile</code></td>
+                                    <td>
+                                        Путь к последнему изменившемуся .d.ts
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <strong style="color: var(--accent2)"
+                                >Не-сериализуемые поля (in-memory only):</strong
+                            >
+                            <table style="margin-top: 8px">
+                                <tr>
+                                    <td><code>buildInfoEmitPending</code></td>
+                                    <td>
+                                        Нужно ли записать .tsbuildinfo
+                                        (atomic.Bool)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>hasChangedDtsFile</code></td>
+                                    <td>
+                                        Изменился ли хоть один .d.ts в этом
+                                        цикле
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>hasErrorsFromOldState</code></td>
+                                    <td>
+                                        Были ли ошибки в старом состоянии (для
+                                        сравнения)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code
+                                            >allFilesExcludingDefaultLibraryFile</code
+                                        >
+                                    </td>
+                                    <td>
+                                        Кэш списка файлов (ленивый, sync.Once)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><code>hasEmitDiagnostics</code></td>
+                                    <td>Есть ли диагностики emit'а</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F504;</span> programToSnapshot —
+                        сравнение старого и нового Program
+                    </h3>
+                    <p>
+                        Вызывается при создании
+                        <code>incremental.NewProgram()</code>. Для каждого файла
+                        в новом Program параллельно сравниваются:
+                    </p>
+
+                    <div class="diagram">
+                        <svg
+                            viewBox="0 0 880 300"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="
+                                font-family:
+                                    -apple-system, BlinkMacSystemFont,
+                                    sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="psa1"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#3fb950"
+                                    />
+                                </marker>
+                                <marker
+                                    id="psa2"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#58a6ff"
+                                    />
+                                </marker>
+                                <marker
+                                    id="psa3"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#c9d1d9"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <!-- Old Program -->
+                            <rect
+                                x="20"
+                                y="30"
+                                width="240"
+                                height="120"
+                                rx="10"
+                                fill="#3fb95022"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="140"
+                                y="58"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                Old Program
+                            </text>
+                            <text
+                                x="140"
+                                y="78"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Предыдущий compiler.Program
+                            </text>
+                            <text
+                                x="140"
+                                y="96"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                + его snapshot
+                            </text>
+                            <text
+                                x="140"
+                                y="118"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-size="10"
+                            >
+                                fileInfos, diagnostics, refMap...
+                            </text>
+
+                            <!-- New Program -->
+                            <rect
+                                x="620"
+                                y="30"
+                                width="240"
+                                height="120"
+                                rx="10"
+                                fill="#1f6feb22"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="740"
+                                y="58"
+                                text-anchor="middle"
+                                fill="#58a6ff"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                New Program
+                            </text>
+                            <text
+                                x="740"
+                                y="78"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Текущий compiler.Program
+                            </text>
+                            <text
+                                x="740"
+                                y="96"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                SourceFiles с новыми текстами
+                            </text>
+
+                            <!-- Diff box -->
+                            <rect
+                                x="310"
+                                y="30"
+                                width="260"
+                                height="120"
+                                rx="10"
+                                fill="#d2a8ff22"
+                                stroke="#d2a8ff"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="440"
+                                y="58"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                programToSnapshot()
+                            </text>
+                            <line
+                                x1="330"
+                                y1="68"
+                                x2="550"
+                                y2="68"
+                                stroke="#30363d"
+                            />
+                            <text x="335" y="88" fill="#c9d1d9" font-size="11">
+                                Для каждого файла (parallel):
+                            </text>
+                            <text x="335" y="106" fill="#c9d1d9" font-size="11">
+                                1. xxh3-хэш текста &#8594; version
+                            </text>
+                            <text x="335" y="124" fill="#c9d1d9" font-size="11">
+                                2. Сравнить globalScope, refs, signature
+                            </text>
+                            <text x="335" y="142" fill="#c9d1d9" font-size="11">
+                                3. Изменилось &#8594; в changedFilesSet
+                            </text>
+
+                            <!-- Arrows into diff box -->
+                            <path
+                                d="M260 90 L300 90"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#psa1)"
+                            />
+                            <path
+                                d="M570 90 L610 90"
+                                stroke="#58a6ff"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#psa2)"
+                            />
+
+                            <!-- Result box -->
+                            <rect
+                                x="200"
+                                y="200"
+                                width="480"
+                                height="80"
+                                rx="10"
+                                fill="#161b22"
+                                stroke="#c9d1d9"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="440"
+                                y="228"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                Результат: новый snapshot
+                            </text>
+                            <text
+                                x="440"
+                                y="250"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                changedFilesSet: {файлы с изменившимся
+                                содержимым}
+                            </text>
+                            <text
+                                x="440"
+                                y="270"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Неизменённые файлы: копируются старые
+                                diagnostics и signatures
+                            </text>
+
+                            <!-- Arrow from diff to result -->
+                            <path
+                                d="M440 150 L440 190"
+                                stroke="#c9d1d9"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#psa3)"
+                            />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F310;</span> Транзитивное
+                        распространение изменений
+                    </h3>
+                    <p>
+                        После того как <code>changedFilesSet</code> определён,
+                        <code>collectAllAffectedFiles()</code> рекурсивно
+                        находит все файлы, на которые изменения повлияли:
+                    </p>
+
+                    <div class="diagram">
+                        <svg
+                            viewBox="0 0 860 380"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="
+                                font-family:
+                                    -apple-system, BlinkMacSystemFont,
+                                    sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="ta1"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#f85149"
+                                    />
+                                </marker>
+                                <marker
+                                    id="ta2"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#d29922"
+                                    />
+                                </marker>
+                                <marker
+                                    id="ta3"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#3fb950"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <!-- ===== TOP: changed source file ===== -->
+                            <rect
+                                x="300"
+                                y="10"
+                                width="260"
+                                height="52"
+                                rx="8"
+                                fill="#f8514922"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="430"
+                                y="32"
+                                text-anchor="middle"
+                                fill="#f85149"
+                                font-weight="700"
+                                font-size="14"
+                            >
+                                utils.ts (изменился)
+                            </text>
+                            <text
+                                x="430"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                .d.ts сигнатура изменилась?
+                            </text>
+
+                            <!-- Vertical line + horizontal fork -->
+                            <path
+                                d="M430 62 L430 85"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                                fill="none"
+                            />
+                            <path
+                                d="M290 85 L570 85"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                                fill="none"
+                            />
+                            <path
+                                d="M290 85 L290 105"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#ta1)"
+                            />
+                            <path
+                                d="M570 85 L570 105"
+                                stroke="#f85149"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#ta1)"
+                            />
+
+                            <!-- Fork label -->
+                            <text
+                                x="430"
+                                y="82"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                referencedBy (обратный граф импортов)
+                            </text>
+
+                            <!-- ===== MIDDLE LEFT: Component.tsx ===== -->
+                            <rect
+                                x="120"
+                                y="110"
+                                width="320"
+                                height="58"
+                                rx="8"
+                                fill="#d2992222"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="280"
+                                y="133"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                Component.tsx
+                            </text>
+                            <text
+                                x="280"
+                                y="153"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                import { helper } from './utils'
+                            </text>
+
+                            <!-- ===== MIDDLE RIGHT: service.ts ===== -->
+                            <rect
+                                x="500"
+                                y="110"
+                                width="320"
+                                height="58"
+                                rx="8"
+                                fill="#d2992222"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="660"
+                                y="133"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                service.ts
+                            </text>
+                            <text
+                                x="660"
+                                y="153"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                import { Type } from './utils'
+                            </text>
+
+                            <!-- ===== BOTTOM: arrows with labels ===== -->
+                            <!-- Left branch: Component -> signature changed -> App -->
+                            <path
+                                d="M280 168 L280 200"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#ta2)"
+                            />
+                            <text x="295" y="188" fill="#d29922" font-size="10">
+                                .d.ts сигнатура изменилась
+                            </text>
+                            <text x="295" y="201" fill="#d29922" font-size="10">
+                                рекурсивно проверяем дальше
+                            </text>
+
+                            <!-- Right branch: service -> signature NOT changed -> STOP -->
+                            <path
+                                d="M660 168 L660 200"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                                fill="none"
+                                marker-end="url(#ta3)"
+                            />
+                            <text x="675" y="188" fill="#3fb950" font-size="10">
+                                .d.ts сигнатура НЕ изменилась
+                            </text>
+                            <text x="675" y="201" fill="#3fb950" font-size="10">
+                                СТОП: потребители не затрагиваются
+                            </text>
+
+                            <!-- ===== BOTTOM LEFT: App.tsx ===== -->
+                            <rect
+                                x="120"
+                                y="210"
+                                width="320"
+                                height="52"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#d29922"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="280"
+                                y="233"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                App.tsx
+                            </text>
+                            <text
+                                x="280"
+                                y="252"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                import Comp from './Component'
+                            </text>
+                            <!-- ===== BOTTOM RIGHT: test.ts (STOP) ===== -->
+                            <rect
+                                x="500"
+                                y="210"
+                                width="320"
+                                height="52"
+                                rx="8"
+                                fill="#3fb95022"
+                                stroke="#3fb950"
+                                stroke-width="1.5"
+                            />
+                            <text
+                                x="660"
+                                y="233"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                test.ts — НЕ затронут
+                            </text>
+                            <text
+                                x="660"
+                                y="252"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                СТОП: сигнатура та же, каскад обрывается
+                            </text>
+
+                            <!-- ===== LEGEND ===== -->
+                            <line
+                                x1="30"
+                                y1="288"
+                                x2="830"
+                                y2="288"
+                                stroke="#30363d"
+                                stroke-width="1"
+                            />
+
+                            <rect
+                                x="30"
+                                y="304"
+                                width="14"
+                                height="12"
+                                rx="2"
+                                fill="#f8514922"
+                                stroke="#f85149"
+                                stroke-width="1"
+                            />
+                            <text x="52" y="315" fill="#8b949e" font-size="11">
+                                Исходный файл изменился — его .d.ts
+                                перевычисляется
+                            </text>
+
+                            <rect
+                                x="430"
+                                y="304"
+                                width="14"
+                                height="12"
+                                rx="2"
+                                fill="#d2992222"
+                                stroke="#d29922"
+                                stroke-width="1"
+                            />
+                            <text x="450" y="315" fill="#8b949e" font-size="11">
+                                Потребитель с изменившейся сигнатурой — каскад
+                                продолжается
+                            </text>
+
+                            <rect
+                                x="30"
+                                y="326"
+                                width="14"
+                                height="12"
+                                rx="2"
+                                fill="#3fb95022"
+                                stroke="#3fb950"
+                                stroke-width="1"
+                            />
+                            <text x="52" y="337" fill="#8b949e" font-size="11">
+                                Потребитель с той же сигнатурой — стоп-условие,
+                                каскад обрывается
+                            </text>
+
+                            <rect
+                                x="430"
+                                y="326"
+                                width="14"
+                                height="12"
+                                rx="2"
+                                fill="#161b22"
+                                stroke="#30363d"
+                                stroke-width="1"
+                            />
+                            <text x="450" y="337" fill="#8b949e" font-size="11">
+                                Не затронут (до него не дошло)
+                            </text>
+
+                            <text x="30" y="366" fill="#8b949e" font-size="11">
+                                Дополнительно: если файл влияет на глобальную
+                                область видимости (ambient declaration) — все
+                                файлы проекта считаются затронутыми.
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F4E4;</span> Инкрементальный emit
+                    </h3>
+                    <div class="flow-steps" style="align-items: stretch">
+                        <div class="flow-step">
+                            <strong>collectAllAffectedFiles</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Вычислить транзитивное замыкание</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>emitFilesIncremental</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Для каждого файла с pendingEmit: вызвать
+                                program.Emit с фильтром (JS / d.ts / оба)</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>Собрать кэшированные диагностики</strong
+                            ><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >Для файлов без re-emit — взять из
+                                snapshot</span
+                            >
+                        </div>
+                        <div class="flow-arrow">&#8594;</div>
+                        <div class="flow-step">
+                            <strong>emitBuildInfo</strong><br />
+                            <span
+                                style="font-size: 0.8em; color: var(--text-dim)"
+                                >snapshot &#8594; BuildInfo &#8594; JSON &#8594;
+                                .tsbuildinfo</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB: Кэш -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="tab-content" id="tab-cache">
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F4BE;</span> .tsbuildinfo —
+                        структура файла
+                    </h3>
+                    <p>
+                        Формат: <strong>JSON</strong>. Имя файла:
+                        <code>&lt;tsconfig-name&gt;.tsbuildinfo</code>. Это
+                        полный слепок состояния проекта после компиляции.
+                    </p>
+
+                    <div class="grid2">
+                        <div>
+                            <strong>Где находится файл:</strong>
+                            <pre
+                                style="margin-top: 8px; font-size: 0.82em"
+                            >// Упрощённая логика GetBuildInfoFileName():
+<span class="comment">// 1. Если задан явно:</span>
+<span class="keyword">if</span> tsBuildInfoFile != "" &#8594; использовать его
+
+<span class="comment">// 2. Если есть OutDir:</span>
+<span class="keyword">if</span> OutDir != "" && RootDir != "":
+  OutDir / relative(RootDir &#8594; configBaseName) + <span class="str">".tsbuildinfo"</span>
+
+<span class="comment">// Пример:</span>
+<span class="comment">//   tsconfig: /src/app/tsconfig.json</span>
+<span class="comment">//   rootDir:  /src</span>
+<span class="comment">//   outDir:   /dist</span>
+<span class="comment">//   &#8594; /dist/app/tsconfig.tsbuildinfo</span>
+
+<span class="comment">// 3. По умолчанию: рядом с tsconfig</span>
+configFileWithoutExtension + <span class="str">".tsbuildinfo"</span>
+<span class="comment">//   &#8594; /src/app/tsconfig.tsbuildinfo</span></pre>
+                        </div>
+                        <div>
+                            <strong>JSON-схема BuildInfo:</strong>
+                            <pre style="margin-top: 8px; font-size: 0.82em">{
+  <span class="str">"version"</span>: <span class="str">"6.0.0-dev"</span>,          <span class="comment">// версия tsgo</span>
+  <span class="str">"errors"</span>: <span class="keyword">false</span>,
+  <span class="str">"semanticErrors"</span>: <span class="keyword">false</span>,
+  <span class="str">"checkPending"</span>: <span class="keyword">false</span>,
+  <span class="str">"root"</span>: [ [<span class="num">1</span>,<span class="num">5</span>], <span class="num">7</span> ],       <span class="comment">// ID root-файлов</span>
+  <span class="str">"fileNames"</span>: [<span class="str">"src/a.ts"</span>, ...],
+  <span class="str">"fileInfos"</span>: [
+    { <span class="str">"version"</span>: <span class="str">"a1b2c3..."</span>,        <span class="comment">// xxh3 хэш текста</span>
+      <span class="str">"signature"</span>: <span class="str">"d4e5f6..."</span>,      <span class="comment">// хэш .d.ts</span>
+      <span class="str">"affectsGlobalScope"</span>: <span class="keyword">false</span> }
+  ],
+  <span class="str">"referencedMap"</span>: [                    <span class="comment">// граф импортов</span>
+    { <span class="str">"file"</span>: <span class="num">1</span>, <span class="str">"refs"</span>: <span class="num">1</span> }        <span class="comment">// fileId &#8594; listId</span>
+  ],
+  <span class="str">"fileIdsList"</span>: [[<span class="num">2</span>,<span class="num">3</span>,<span class="num">5</span>], ...],  <span class="comment">// дедупликация</span>
+  <span class="str">"options"</span>: { ... },                    <span class="comment">// CompilerOptions</span>
+  <span class="str">"semanticDiagnosticsPerFile"</span>: [...],
+  <span class="str">"emitDiagnosticsPerFile"</span>: [...],
+  <span class="str">"changeFileSet"</span>: [<span class="num">4</span>],
+  <span class="str">"affectedFilesPendingEmit"</span>: [...],
+  <span class="str">"latestChangedDtsFile"</span>: <span class="str">"src/a.ts"</span>,
+  <span class="str">"emitSignatures"</span>: [...],
+  <span class="str">"resolvedRoot"</span>: [...]
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F5DC;</span> Оптимизации формата
+                    </h3>
+                    <table>
+                        <tr>
+                            <th>Приём</th>
+                            <th>Описание</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Числовые fileId</strong></td>
+                            <td>
+                                Имена файлов хранятся один раз в массиве
+                                <code>fileNames[]</code>, везде используются
+                                числовые ID. Экономит место при повторяющихся
+                                ссылках.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Дедупликация списков</strong></td>
+                            <td>
+                                Списки fileId (например, reference-множества)
+                                хранятся в <code>fileIdsList</code> и
+                                переиспользуются через индексы.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Run-length кодирование root</strong>
+                            </td>
+                            <td>
+                                Последовательные ID:
+                                <code>[1, 5]</code> означает «ID с 1 по 5».
+                                Одиночный ID — просто число.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Относительные пути</strong></td>
+                            <td>
+                                Все пути относительно директории .tsbuildinfo.
+                                Экономит место и делает файл переносимым.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>omitzero</strong></td>
+                            <td>
+                                Пустые/нулевые поля не сериализуются (тег
+                                <code>json:"...,omitzero"</code>).
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>xxh3-хэши</strong></td>
+                            <td>
+                                128-битный xxh3 (не криптографический, но
+                                быстрый и с низкой вероятностью коллизий).
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3><span class="icon">&#x1F9E0;</span> In-memory кэши</h3>
+                    <p>
+                        Несколько уровней кэширования в памяти с разным временем
+                        жизни:
+                    </p>
+
+                    <table>
+                        <tr>
+                            <th>Кэш</th>
+                            <th>Где</th>
+                            <th>Время жизни</th>
+                            <th>Что хранит</th>
+                        </tr>
+                        <tr>
+                            <td><code>snapshot.fileInfos</code></td>
+                            <td><code>incremental/snapshot.go</code></td>
+                            <td>Пока жив Program (один цикл компиляции)</td>
+                            <td>
+                                На каждый файл: version, signature, globalScope
+                                — синхронизированная map
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <code>snapshot.semanticDiagnosticsPerFile</code>
+                            </td>
+                            <td><code>incremental/snapshot.go</code></td>
+                            <td>
+                                Сеанс компиляции &#8594; сериализуется в
+                                .tsbuildinfo
+                            </td>
+                            <td>
+                                Диагностики для неизменённых файлов (пропускаем
+                                type-check)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>snapshot.emitSignatures</code></td>
+                            <td><code>incremental/snapshot.go</code></td>
+                            <td>
+                                Сеанс компиляции &#8594; сериализуется в
+                                .tsbuildinfo
+                            </td>
+                            <td>
+                                Хэши .d.ts — чтобы знать, изменился ли контракт
+                                файла
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>host.mTimes</code></td>
+                            <td><code>build/host.go</code></td>
+                            <td>Один build/watch цикл</td>
+                            <td>
+                                Кэш mtime файлов:
+                                <code>SyncMap[Path, time.Time]</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>host.extendedConfigCache</code></td>
+                            <td><code>build/host.go</code></td>
+                            <td>Между циклами (очищается в resetCaches)</td>
+                            <td>Распарсенные цепочки extends</td>
+                        </tr>
+                        <tr>
+                            <td><code>host.sourceFiles</code></td>
+                            <td><code>build/host.go</code></td>
+                            <td>Между циклами (очищается в resetCaches)</td>
+                            <td>Распарсенные .d.ts и .json файлы</td>
+                        </tr>
+                        <tr>
+                            <td><code>host.resolvedReferences</code></td>
+                            <td><code>build/host.go</code></td>
+                            <td>
+                                <strong>Persistent</strong> — живёт между
+                                циклами watch
+                            </td>
+                            <td>
+                                Разрешённые project references (очищается только
+                                при изменении tsconfig)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>buildInfoEntry</code></td>
+                            <td>
+                                <code>build/buildtask.go</code> (поле BuildTask)
+                            </td>
+                            <td><strong>Persistent</strong> — пока task жив</td>
+                            <td>
+                                In-memory копия распарсенного .tsbuildinfo для
+                                быстрой проверки актуальности
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>VFS cache</code></td>
+                            <td><code>cachedvfs.FS</code></td>
+                            <td>Один цикл (ClearCache каждый раз)</td>
+                            <td>
+                                Содержимое прочитанных файлов (избегает
+                                повторных syscall'ов)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB: Жизненный цикл -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="tab-content" id="tab-lifecycle">
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x23F1;</span> Жизненный цикл кэша
+                    </h3>
+
+                    <div class="diagram">
+                        <svg
+                            viewBox="0 0 960 450"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style="
+                                font-family:
+                                    -apple-system, BlinkMacSystemFont,
+                                    sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="lca1"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#58a6ff"
+                                    />
+                                </marker>
+                                <marker
+                                    id="lca2"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#3fb950"
+                                    />
+                                </marker>
+                                <marker
+                                    id="lca3"
+                                    markerWidth="10"
+                                    markerHeight="7"
+                                    refX="10"
+                                    refY="3.5"
+                                    orient="auto"
+                                >
+                                    <polygon
+                                        points="0 0, 10 3.5, 0 7"
+                                        fill="#d29922"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <!-- Timeline -->
+                            <line
+                                x1="30"
+                                y1="200"
+                                x2="930"
+                                y2="200"
+                                stroke="#30363d"
+                                stroke-width="2"
+                            />
+                            <text
+                                x="480"
+                                y="195"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="10"
+                            >
+                                ВРЕМЯ
+                            </text>
+
+                            <!-- Phase 1: First build -->
+                            <circle cx="140" cy="200" r="14" fill="#58a6ff" />
+                            <text
+                                x="140"
+                                y="175"
+                                text-anchor="middle"
+                                fill="#58a6ff"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                tsc --build
+                            </text>
+                            <text
+                                x="140"
+                                y="230"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Первая сборка
+                            </text>
+                            <line
+                                x1="140"
+                                y1="244"
+                                x2="140"
+                                y2="310"
+                                stroke="#30363d"
+                                stroke-width="1"
+                                stroke-dasharray="4,3"
+                            />
+                            <rect
+                                x="40"
+                                y="310"
+                                width="200"
+                                height="85"
+                                rx="8"
+                                fill="#161b22"
+                                stroke="#30363d"
+                            />
+                            <text
+                                x="140"
+                                y="332"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-size="11"
+                            >
+                                &#x2022; Полный парсинг
+                            </text>
+                            <text
+                                x="140"
+                                y="352"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-size="11"
+                            >
+                                &#x2022; Полный type-check
+                            </text>
+                            <text
+                                x="140"
+                                y="372"
+                                text-anchor="middle"
+                                fill="#c9d1d9"
+                                font-size="11"
+                            >
+                                &#x2022; Полный emit всех файлов
+                            </text>
+                            <text
+                                x="140"
+                                y="390"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-size="10"
+                            >
+                                &#x2192; запись .tsbuildinfo на диск
+                            </text>
+
+                            <!-- Phase 2: No changes -->
+                            <circle cx="400" cy="200" r="14" fill="#3fb950" />
+                            <text
+                                x="400"
+                                y="175"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                tsc --build
+                            </text>
+                            <text
+                                x="400"
+                                y="230"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                Без изменений
+                            </text>
+                            <line
+                                x1="400"
+                                y1="244"
+                                x2="400"
+                                y2="310"
+                                stroke="#30363d"
+                                stroke-width="1"
+                                stroke-dasharray="4,3"
+                            />
+                            <rect
+                                x="290"
+                                y="310"
+                                width="220"
+                                height="85"
+                                rx="8"
+                                fill="#3fb95022"
+                                stroke="#3fb950"
+                            />
+                            <text
+                                x="400"
+                                y="332"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="11"
+                            >
+                                &#x2714; Чтение .tsbuildinfo
+                            </text>
+                            <text
+                                x="400"
+                                y="352"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="11"
+                            >
+                                &#x2714; Проверка xxh3-хэшей
+                            </text>
+                            <text
+                                x="400"
+                                y="372"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="11"
+                            >
+                                &#x2714; Статус: UpToDate
+                            </text>
+                            <text
+                                x="400"
+                                y="390"
+                                text-anchor="middle"
+                                fill="#3fb950"
+                                font-size="10"
+                            >
+                                &#x2192; Сборка пропущена (&lt;10ms)
+                            </text>
+
+                            <!-- Phase 3: One file changed -->
+                            <circle cx="680" cy="200" r="14" fill="#d29922" />
+                            <text
+                                x="680"
+                                y="175"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-weight="700"
+                                font-size="13"
+                            >
+                                tsc --build
+                            </text>
+                            <text
+                                x="680"
+                                y="230"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                1 файл изменён
+                            </text>
+                            <line
+                                x1="680"
+                                y1="244"
+                                x2="680"
+                                y2="310"
+                                stroke="#30363d"
+                                stroke-width="1"
+                                stroke-dasharray="4,3"
+                            />
+                            <rect
+                                x="565"
+                                y="310"
+                                width="230"
+                                height="85"
+                                rx="8"
+                                fill="#d2992222"
+                                stroke="#d29922"
+                            />
+                            <text
+                                x="680"
+                                y="332"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-size="11"
+                            >
+                                &#x2022; changedFilesSet = {utils.ts}
+                            </text>
+                            <text
+                                x="680"
+                                y="352"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-size="11"
+                            >
+                                &#x2022; affectedFiles = транзитивное замыкание
+                            </text>
+                            <text
+                                x="680"
+                                y="372"
+                                text-anchor="middle"
+                                fill="#d29922"
+                                font-size="11"
+                            >
+                                &#x2022; Перекомпиляция только затронутых
+                            </text>
+                            <text
+                                x="680"
+                                y="390"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-size="10"
+                            >
+                                &#x2192; обновление .tsbuildinfo
+                            </text>
+
+                            <!-- Arrows between phases -->
+                            <path
+                                d="M170 200 L376 200"
+                                stroke="#58a6ff"
+                                stroke-width="1.8"
+                                fill="none"
+                                marker-end="url(#lca1)"
+                            />
+                            <path
+                                d="M430 200 L656 200"
+                                stroke="#3fb950"
+                                stroke-width="1.8"
+                                fill="none"
+                                marker-end="url(#lca2)"
+                            />
+
+                            <!-- Watch mode continuation (dashed arrow from phase 3 onward) -->
+                            <path
+                                d="M720 200 L760 200"
+                                stroke="#d29922"
+                                stroke-width="1.5"
+                                fill="none"
+                                stroke-dasharray="6,3"
+                                marker-end="url(#lca3)"
+                            />
+
+                            <!-- Watch mode label -->
+                            <rect
+                                x="770"
+                                y="170"
+                                width="160"
+                                height="60"
+                                rx="20"
+                                fill="#d2a8ff22"
+                                stroke="#d2a8ff"
+                                stroke-width="1"
+                                stroke-dasharray="4,2"
+                            />
+                            <text
+                                x="850"
+                                y="194"
+                                text-anchor="middle"
+                                fill="#d2a8ff"
+                                font-weight="700"
+                                font-size="12"
+                            >
+                                Watch Mode
+                            </text>
+                            <text
+                                x="850"
+                                y="214"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="11"
+                            >
+                                DoCycle() ~250ms
+                            </text>
+
+                            <!-- Bottom summary -->
+                            <line
+                                x1="30"
+                                y1="420"
+                                x2="930"
+                                y2="420"
+                                stroke="#30363d"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="480"
+                                y="442"
+                                text-anchor="middle"
+                                fill="#8b949e"
+                                font-size="12"
+                            >
+                                Кэш .tsbuildinfo
+                                <tspan fill="#c9d1d9" font-weight="600">
+                                    не имеет срока давности
+                                </tspan>
+                                — действителен пока не изменились исходные
+                                файлы, опции компилятора или версия tsgo
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F5D1;</span> Когда кэш
+                        инвалидируется
+                    </h3>
+
+                    <div class="grid2">
+                        <div>
+                            <strong style="color: var(--danger)"
+                                >Полная инвалидация (пересборка с нуля):</strong
+                            >
+                            <ul style="margin-top: 8px">
+                                <li>
+                                    Версия tsgo изменилась (<code
+                                        >BuildInfo.Version !=
+                                        core.Version()</code
+                                    >)
+                                </li>
+                                <li>Изменились compilerOptions</li>
+                                <li>Изменился набор root-файлов</li>
+                                <li>Опция <code>--force</code></li>
+                                <li>Output-файлы отсутствуют</li>
+                                <li>Входной файл отсутствует</li>
+                                <li>.tsbuildinfo отсутствует или повреждён</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong style="color: var(--accent)"
+                                >Частичная инвалидация:</strong
+                            >
+                            <ul style="margin-top: 8px">
+                                <li>
+                                    Изменился текст файла (другой xxh3-хэш)
+                                    &#8594; файл в changedFilesSet
+                                </li>
+                                <li>
+                                    Изменился .d.ts &#8594; транзитивное
+                                    распространение по графу импортов
+                                </li>
+                                <li>
+                                    Изменился globalScope &#8594; все файлы
+                                    затронуты
+                                </li>
+                                <li>
+                                    Удалился globally-scoped файл &#8594; все
+                                    файлы затронуты
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">&#x1F4CA;</span> Статистика:
+                        насколько быстрее
+                    </h3>
+                    <p>Приблизительные оценки для проекта из ~1000 файлов:</p>
+
+                    <table>
+                        <tr>
+                            <th>Сценарий</th>
+                            <th>Без инкрементального режима</th>
+                            <th>С инкрементальным режимом</th>
+                            <th>Ускорение</th>
+                        </tr>
+                        <tr>
+                            <td>Нет изменений (tsc --build)</td>
+                            <td>~15s (полный type-check + emit)</td>
+                            <td>
+                                <strong>&lt; 100ms</strong> (проверка хэшей +
+                                UpToDate)
+                            </td>
+                            <td style="color: var(--accent2)">~150x</td>
+                        </tr>
+                        <tr>
+                            <td>1 файл изменён</td>
+                            <td>~15s</td>
+                            <td>
+                                <strong>~1-3s</strong> (только изменённый файл +
+                                затронутые потребители)
+                            </td>
+                            <td style="color: var(--accent2)">~5-15x</td>
+                        </tr>
+                        <tr>
+                            <td>Изменился global .d.ts</td>
+                            <td>~15s</td>
+                            <td>
+                                <strong>~15s</strong> (все файлы затронуты —
+                                эквивалентно полной сборке)
+                            </td>
+                            <td style="color: var(--warn)">~1x</td>
+                        </tr>
+                        <tr>
+                            <td>Watch mode (250ms цикл)</td>
+                            <td>N/A</td>
+                            <td>
+                                <strong>&lt; 10ms</strong> на цикл без изменений
+                                (только stat + хэши)
+                            </td>
+                            <td>—</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            Сгенерировано на основе анализа исходного кода tsgo (<code
+                >internal/execute/build/</code
+            >
+            + <code>internal/execute/incremental/</code>).<br />
+            Пути актуальны на момент анализа. Репозиторий:
+            <code>github.com/microsoft/typescript-go</code>
+        </footer>
+
+        <script>
+            document
+                .querySelectorAll("nav.tabs button")
+                .forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        document
+                            .querySelectorAll("nav.tabs button")
+                            .forEach(function (b) {
+                                b.classList.remove("active");
+                            });
+                        document
+                            .querySelectorAll(".tab-content")
+                            .forEach(function (c) {
+                                c.classList.remove("active");
+                            });
+                        btn.classList.add("active");
+                        document
+                            .getElementById("tab-" + btn.dataset.tab)
+                            .classList.add("active");
+                    });
+                });
+        </script>
+    </body>
+</html>
