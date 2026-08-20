@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "scanner-and-parser-review/README.md",
+                "file": "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications"
             }
           }
         ],
@@ -212,20 +212,29 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "3ce6a79d24686e95",
+  "active": "6aa586dec4cf14ad",
   "lastOpenFiles": [
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.15480.d01628b4052b",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.15480.eb6363e22a04",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.48be1caf179c",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.6aa6ea1e8805",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.5f17a339d2fc",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.9d33d6d21683",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.fb42f177ed58",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.f4c65dacf30f",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.e142f69cfbec",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.0f6fe0224c76",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.f29e347786f3",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.00760068404f",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.03c4ae113892",
+    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
+    "scanner-and-parser-review/README.md",
     "Extend TSGO/tsgo-ast-sharing-proposal.md",
     "Extend TSGO/tsgo-monorepo-caching.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.15480.0304e12a2709",
     "Extend TSGO/tsgo_project_roadmap_en.md",
     "Extend TSGO/PDCP_Core_ArkTS_RU.md",
     "Extend TSGO/tsgo_project_roadmap_en(1).md",
     "Без названия 1.md",
     "Без названия.md",
-    "scanner-and-parser-review/README.md",
     "Untitled 2.md",
     "Untitled.md",
     "Untitled 1.md",
@@ -239,17 +248,8 @@
     "scanner-and-parser-review/013-ets-options.md",
     "scanner-and-parser-review/005-struct-declarations.md",
     "tsgo/ArkTS/ETS_INVENTORY.md",
-    "scanner-and-parser-review",
     "Plan/tsgo项目路标计划.md",
     "Plan/build-system-design.md",
-    "Plan/hvigor_manual.html",
-    "Plan/incremental-build-overview.html",
-    "Plan/analysis-k1ngqaquuu-critique.md",
-    "Plan",
-    "tsgo/ArkTS/old",
-    "Specifications/ArkTSSpecification.pdf",
-    "tsgo/ArkTS",
-    "Specifications/ArkTSSpecification.txt",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
     "Untitled.canvas"
   ]
