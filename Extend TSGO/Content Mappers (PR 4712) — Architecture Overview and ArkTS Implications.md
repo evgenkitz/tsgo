@@ -6,29 +6,21 @@ Upstream `microsoft/typescript-go` PR [#4712](https://github.com/microsoft/types
 
 ## Executive Summary
 
-Content mappers are upstream's sanctioned extension mechanism for tsgo: a tsconfig-declared npm package transforms "unsupported" files (`.vue`, `.ets`, …) into virtual TypeScript with span-mapped positions (364 files, +21,267 / −1,282, merged into upstream main 2026-08-19; API protocol 5 → 7).
+Content mappers are upstream's sanctioned extension mechanism for tsgo: a tsconfig-declared npm package transforms "unsupported" files (`.vue`, `.svelte`, `.mdx`, …) into virtual TypeScript with span-mapped positions (364 files, +21,267 / −1,282, merged into upstream main 2026-08-19; API protocol 5 → 7). Since the Go server cannot dynamically link third-party code (the old tsc plugin API is gone), integration happens through external child processes: tsgo spawns the mapper, sends it the file text, and parses the returned virtual TypeScript, mapping positions back through the span map.
 
-**Verdict: content mappers are not a replacement for the in-compiler ArkTS pipeline — they are a source of reusable in-process mechanisms and a future editor-side option.**
+**Verdict: content mappers are not a replacement for the in-compiler ArkTS pipeline — they are a source of reusable in-process mechanisms.**
 
 1. **Do not re-architect ArkTS onto the mapper model.** It cuts exactly what the port is built on: bind/check semantics (a mapper receives only file text — checker parity is impossible), JS emit (upstream excludes mapped files deliberately, `emitter.go:477`), and the cross-file UI transform (ViewPU needs imported symbols). It also contradicts the core architecture principle of the project: ArkUI transforms are consolidated *inside* the tsgo process precisely to eliminate the AST-over-IPC bottleneck — an external mapper reintroduces it.
-2. **Upstream impact on the fork's architecture.** The PR restructures surfaces the ArkTS fork extends: the file loader (+294 in `fileloader.go`), emitter, AST, module resolver, tsconfig parsing (+207), the API wire protocol (5 → 7, `SourceFile` gains span-map fields), and splits out `internal/ipc` and `internal/spanmap`. §3.2 maps the intersections with the fork's own extensions.
-3. **Reusable mechanisms** (in-process, no architecture change): **span maps** for synthesized UI-transform regions (replacing `core.UndefinedTextRange()`); **`virtualFileName` / supplemental outputs** for canonical-vs-virtual file identity; **diagnostic directives** for diagnostics inside generated code.
-4. **Optional experiment**: a mapper wrapper around the ported Go logic to measure how many ArkTS checks survive the mapper-diagnostics model. The ets-go precedent (Effect TypeScript) shows the real cost of that path: 4 compiler bug fixes + 1 API request. Research, not a plan.
-5. **Editor-side option**: if DevEco's LSP migrates onto tsgo, `.ets` through a content-mapper contribution gets hover/rename/completion/references for free — removing the need to port language-service features into the fork.
+2. **Reusable mechanisms** (in-process, no architecture change): **span maps** for synthesized UI-transform regions (replacing `core.UndefinedTextRange()`); **`virtualFileName` / supplemental outputs** for canonical-vs-virtual file identity; **diagnostic directives** for diagnostics inside generated code.
+3. **Optional experiment**: a mapper wrapper around the ported Go logic to measure how many ArkTS checks survive the mapper-diagnostics model. The ets-go precedent (Effect TypeScript) shows the real cost of that path: 4 compiler bug fixes + 1 API request. Research, not a plan.
 
 **Bottom line:** content mappers do not change the ArkTS integration architecture; they are an upstream capability to absorb and a store of mechanisms that replace fork-specific workarounds.
 
 ---
 
-## 1. What Content Mappers Are
-
-Content mappers are upstream's sanctioned answer to "TypeScript cannot load files it doesn't understand" (`.vue`, `.svelte`, `.mdx`, …). Since the Go server cannot dynamically link third-party code (the old tsc plugin API is gone), integration happens through **external child processes**: a project declares an npm package as a *content mapper* for certain file extensions; at program construction tsgo spawns that package, sends it the file text, and receives back **virtual TypeScript text** plus a **span map** that relates virtual positions to original positions. The virtual text is parsed, bound, checked, and served by the language service like any normal `.ts` file; positions in diagnostics and LSP results are mapped back to the original document through the span map.
-
-Diff scale: **364 files, +21,267 / −1,282**. All major subsystems are touched: compiler (`fileloader.go` +294, `program.go` +173), a new `internal/spanmap` package (+778), a new `internal/contentmapper` package (host + IPC implementation ≈ +2,000), LSP (`server.go` +560, `lsconv/converters.go` +307, and every LS feature file), tsconfig parsing (+207 in `tsconfigparsing.go` alone), build/incremental/watch, and the API encoder (protocol version 5 → 7).
-
 ---
 
-## 2. Architecture
+## 1. Architecture
 
 ```mermaid
 flowchart LR
@@ -56,7 +48,7 @@ flowchart LR
 
 Solid edges carry data; dashed edges carry configuration and control.
 
-### 2.1 Configuration surface
+### 1.1 Configuration surface
 
 **tsconfig** — top-level array, alongside `files`/`include`/`exclude`, inherited through `extends` (`internal/tsoptions/tsconfigparsing.go:31,1169–1205`):
 
@@ -87,7 +79,7 @@ Solid edges carry data; dashed edges carry configuration and control.
 
 `name@version` forms the mapper **identity**; processes are consolidated by identity, so all projects sharing a mapper version share one process.
 
-### 2.2 Process and protocol model
+### 1.2 Process and protocol model
 
 Per identity, tsgo lazily spawns the mapper (argv from `exec`, cwd = package directory) and talks **JSON-RPC over STDIO**, reusing `internal/ipc`. The content-mapper protocol has its **own version (1)** — separate from the API protocol (7). Four methods (`internal/contentmapper/hostimpl.go:31–42`):
 
@@ -124,7 +116,7 @@ sequenceDiagram
 
 `VirtualExtension` is restricted to `.js/.jsx/.mjs/.cjs/.ts/.tsx/.mts/.cts/.json` (`contentmapper.go`). Failure handling is explicit: transform errors become diagnostics; a mapper that fails 5 times is disabled for the rest of the run with a program-level diagnostic (`fileloader.go:32–34`); timings (spawn/initialize/openProject/closeProject/transform) are instrumented for `--stats`.
 
-### 2.3 Span maps (`internal/spanmap`, +778)
+### 1.3 Span maps (`internal/spanmap`, +778)
 
 Unlike source maps (point correspondences; "no origin" implicit), a span map records **explicit half-open segments** for the parts of the virtual text that correspond to the original. Any virtual position **not covered by a segment is synthesized** — content with no original counterpart. An empty map therefore means "fully synthesized output". All positions are absolute offsets (`core.TextPos`), matching the compiler's `TextRange` model.
 
@@ -149,38 +141,31 @@ flowchart TB
 - **Feature**: a 20-bit mask per segment selecting which LS operations may use it — hover, signature help, completion, definition, type definition, implementation, references, document highlights, rename, call hierarchy, code actions, formatting, inlay hints, semantic tokens, folding, selection ranges, linked editing, auto-insert, document symbols, code lens. **Diagnostics deliberately bypass the mask** (they may not opt out) and text edits require exact `Verbatim` geometry.
 - **Fidelity** of a query result: `Exact` (within one verbatim segment — safe for edits written back to the original), `Atom`, `Approximate` (crossed boundaries), `None` (synthesized gap). Bidirectional queries (`VirtualToOriginal*` and `OriginalToVirtual*`) plus `Validate()`.
 
-### 2.4 Program integration
+### 1.4 Program integration
 
 `fileloader.go` folds the mapper extensions into supported extensions and into the **module resolver** (a `.vue` import resolves like a module); on load, files with mapped extensions are transformed before parsing, with parse-cache keys that preserve the mapper context (`ContentMapperParseOptions`, `fileloader.go:89–98`). Mapper-authored syntax diagnostics and the program's own diagnostics are aggregated; **diagnostic directives** (`Ignore`/`Expect` per virtual range, with an `unusedCode` for unsatisfied expectations) let a mapper suppress or require specific tsgo diagnostics inside synthesized regions — e.g. Vue's `expect-error` in template expressions.
 
-### 2.5 Emit
+### 1.5 Emit
 
 Deliberate asymmetry (`internal/compiler/emitter.go:477–481`): **content-mapped files are not emitted to JS** — runtime output is owned by the mapper or the build tool. **Declaration emit is supported** (`App.d.svelte.ts`-style canonical names); declaration *maps* are disabled because mapped positions would point into in-memory text (`emitter.go:227–230`, with a comment reserving span-map double-mapping as future work). **Supplemental outputs** (e.g. per-module generated declarations) get compiler-assigned numbered `.d.ts` names, with collision detection.
 
-### 2.6 Incremental builds and watch
+### 1.6 Incremental builds and watch
 
 `TransformIdentity` — `xxh3(identity ‖ mapper options ‖ declared compiler options)` (`contentmapper.go`) — is folded into cache keys and `.tsbuildinfo`, so a mapper-version or relevant-option change invalidates exactly the affected transforms. Build mode propagates mapper failures into build exit status; `dynamicConfig`/`watchedFiles` integrate with `--watch` and `--build --watch`; process lifetimes are tied to project sessions.
 
-### 2.7 Security
+### 1.7 Security
 
 Content mappers are **arbitrary code execution by design** (they run from the project's `node_modules`), so they are double-gated: the compiler option `RunExternalCode` (`internal/execute/tsc/compile.go:86–91`) — without it `NewContentMapperHost` returns nil and **no mapped files load at all** — and, on the editor side, VS Code passes `runExternalCode` only in trusted workspaces (`js/ts.contentMappers.enabled`, experimental, default true).
 
-### 2.8 LSP and API surface
+### 1.8 LSP and API surface
 
-The server registers **per-feature dynamic capabilities** for mapped documents — the same 20-feature matrix as the span-map `Feature` mask in §2.3, plus document lifecycle (did-open/change/close) and diagnostics (`lsp/server.go:324–347`); every LS feature maps its results through the span map. The extension API adds `registerContentMappers` (`_extension/src/contentMapperContributions.ts`), including contributions for **inferred projects**. API protocol goes 5 → 7; `SourceFile` gains `originalText`, `spanMap`, `contentMapper`, `virtualFileName`, `diagnosticDirectives`, `supplementalSourceFileNames`, `canonicalSourceFileName`.
-
-### 2.9 Post-merge status (as of 2026-08-20)
-
-- No follow-up fix PRs had landed on upstream main as of 2026-08-20, and no open issues matched a "content mapper" search; the only adjacent merge is #4915 "Generate TS API from Go source" (same day) — API-surface generation work.
-- **Community validation**: andrewbranch built a real Vue mapper from `@vue/language-core` and ran the vuejs/language-tools corpus (222 fixtures): **210 produce identical output to `vue-tsc`**. A second independent experiment — [mikearnaldi/ets-go](https://github.com/mikearnaldi/ets-go) (Effect TypeScript) — exercised the seam end-to-end and contributed **4 bug-fix patches plus 1 new API request** that were folded into the PR before merge. Both are evidence that the seam works for real dialects, and that a dialect integration should expect to hit compiler-side friction requiring upstream changes.
-- **Known open LS edge**: position mapping at span boundaries (completion at the end of a span) — author's fix is "stashed, more complicated than I'd like" as of the merge; expect follow-up work in this area.
-- **Emit exclusion is intentional but not frozen**: upstream explicitly asks for real-world use cases before lifting it (suggested workaround: `--rewriteRelativeImportExtensions` for `foo.X` → `foo.d.ts`/`foo.js`).
+The server registers **per-feature dynamic capabilities** for mapped documents — the same 20-feature matrix as the span-map `Feature` mask in §1.3, plus document lifecycle (did-open/change/close) and diagnostics (`lsp/server.go:324–347`); every LS feature maps its results through the span map. The extension API adds `registerContentMappers` (`_extension/src/contentMapperContributions.ts`), including contributions for **inferred projects**. API protocol goes 5 → 7; `SourceFile` gains `originalText`, `spanMap`, `contentMapper`, `virtualFileName`, `diagnosticDirectives`, `supplementalSourceFileNames`, `canonicalSourceFileName`.
 
 ---
 
-## 3. Assessment for the tsgo-arkts Port
+## 2. Assessment for the tsgo-arkts Port
 
-### 3.1 Content mappers are NOT a replacement for the in-compiler ArkTS pipeline
+### 2.1 Content mappers are NOT a replacement for the in-compiler ArkTS pipeline
 
 Three structural reasons, plus one architectural-principle reason:
 
@@ -204,18 +189,7 @@ Symbols, types, and check results exist only inside the program — they never c
 3. **Emit is excluded upstream on purpose.** Mapped files do not emit JS. The hvigor integration is built on tsgo's own emit (`.ets` → JS + sourcemaps → es2abc bookkeeping in `internal/buildapi/`); a mapper path would hand emit back to an external tool, i.e. regress to the ets2bundle model.
 4. **Architecture-principle conflict.** The project's core architecture consolidates ArkUI AST transforms **inside the tsgo process** specifically to eliminate the cross-process bottleneck (AST over IPC). An external content mapper doing ArkTS transforms is exactly that bottleneck reintroduced: re-architecting the build path around content mappers would invert a deliberate architectural decision.
 
-### 3.2 Upstream impact on the fork's architecture
-
-The fork's base predates both `internal/ipc` (restructured in this PR) and `internal/spanmap` (new). The API encoder protocol goes 5 → 7 (fork is at 5, `internal/api/encoder/encoder.go:65`), and `SourceFile`'s wire shape grows — the build-driving daemon (`internal/buildapi/session.go` implements `api.Handler` in-process) and the hvigor-side client speak this protocol and must be re-verified against version 7 when upstream is synced. Where the PR meets the fork's own extensions:
-
-| Upstream (PR 4712) | Fork (ArkTS) | Collision |
-|---|---|---|
-| `fileloader.go` +294 | parse options `EtsAnnotationsEnable/EtsCustomComponent/EtsOptions/EtsLoaderPath/NoTransformedKitInParser` at `fileloader.go:372–379` | PR adds `ContentMapperParseOptions` to the same option struct and same file |
-| `emitter.go` +24 | UI transformer chain for `ScriptKindETS` (`emitter.go:140–152`) and `StripStructTransformer` in decl emit (`emitter.go:253–256`) | same file, adjacent regions |
-| `ast.go` +137, `module/resolver.go` +23, `tsoptions/*` +207 | ArkTS hooks in `ast/`, `module/`, `core/arkts.go` (EtsOptions), `tsconfigparsing` | textual/structural conflicts expected |
-| `lsp/server.go` +560, `lsconv/converters.go` +307 | LS currently untouched in the fork | low direct risk, high future relevance |
-
-### 3.3 Upstream mechanisms reusable in the fork
+### 2.2 Upstream mechanisms reusable in the fork
 
 These are in-process compiler mechanisms — no architecture change required — that directly replace current fork-specific workarounds and shrink the diff against upstream:
 
@@ -224,17 +198,13 @@ These are in-process compiler mechanisms — no architecture change required —
 - **Diagnostic directives** instead of ad-hoc suppression around generated declarations — cf. the lookup guard at `internal/binder/nameresolver.go:173–179` ("Generated declarations (e.g. ArkTS UI transform output) have no symbol").
 - **`contentMapperExtensions` seam for `.ets` inclusion** — upstream now has an official mechanism for "extra extensions in the program"; where possible, the fork's `.ets` inclusion in `fileloader.go` should route through the same seam rather than parallel patches.
 
-### 3.4 Optional research experiment (explicitly NOT a build-path plan)
+### 2.3 Optional research experiment (explicitly NOT a build-path plan)
 
-A cheap experiment to inform long-term fork-minimization: package the already-ported Go ArkTS logic as a separate binary behind a thin mapper, and measure how many ArkTS-specific checks survive the mapper-diagnostics model. If most do, a *hybrid* becomes thinkable — mapper for syntax/editor, fork reduced to checker hooks only. If not (expected), the result still documents precisely why in-compiler integration is required. **Precedent exists**: the ets-go experiment (Effect TypeScript, §2.9) is exactly this shape and its cost was measurable — 4 upstream bug fixes plus 1 API request. This experiment does not touch the build pipeline; it is research, not a plan.
-
-### 3.5 Editor-side upside
-
-If DevEco's language service ever migrates onto tsgo, `.ets` files can be exposed through a content-mapper contribution: the per-feature registration matrix (§2.8) then provides hover/completion/rename/references/etc. in original coordinates for free. That removes the need to port language-service features into the fork at all — and a reason to keep LS untouched in the fork for now while upstream's extension API (`registerContentMappers`) evolves.
+A cheap experiment to inform long-term fork-minimization: package the already-ported Go ArkTS logic as a separate binary behind a thin mapper, and measure how many ArkTS-specific checks survive the mapper-diagnostics model. If most do, a *hybrid* becomes thinkable — mapper for syntax/editor, fork reduced to checker hooks only. If not (expected), the result still documents precisely why in-compiler integration is required. **The seam is validated by real integrations**: a Vue mapper built from `@vue/language-core` matches `vue-tsc` on 210 of 222 fixtures, and the independent [ets-go](https://github.com/mikearnaldi/ets-go) experiment (Effect TypeScript) is exactly this shape — its cost was 4 upstream bug fixes plus 1 API request. This experiment does not touch the build pipeline; it is research, not a plan.
 
 ---
 
-## 4. References
+## 3. References
 
 - PR: <https://github.com/microsoft/typescript-go/pull/4712> (merged `01b9e721f3d7f8037d700daff94f5808c1afb97e`, 2026-08-19)
 - Design track: <https://github.com/microsoft/TypeScript/issues/63800>
