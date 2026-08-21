@@ -171,7 +171,7 @@ Three structural reasons, plus one architectural-principle reason:
 flowchart LR
     subgraph inproc["in-compiler ArkTS (current)"]
         direction LR
-        P1["parse"] --> P2["bind"] --> P3["check (92 ArkTS rules)"] --> P4["UI transform"] --> P5["emit"]
+        P1["parse"] --> P2["bind"] --> P3["check (ArkTS rules)"] --> P4["UI transform"] --> P5["emit"]
     end
     subgraph cm["content-mapper model"]
         direction LR
@@ -183,7 +183,7 @@ flowchart LR
 Symbols, types, and check results exist only inside the program — they never cross the mapper boundary.
 
 1. **No semantics across the boundary.** `transform` receives only `{fileName, content}` and returns text. The ArkTS UI transform (ViewPU generation in `internal/transformers/arktsuitransforms/`) consumes bind/check information — decorator semantics, imported symbols, struct constraints, `$$` bindings — that exists only inside the program. A mapper cannot reproduce it.
-2. **No checker parity.** Mapper diagnostics are positioned syntax errors; ArkTS type rules (no-`any`, struct rules, Sendable constraints — the 92-rule linter unified in the checker) require type information. A mapper could only emit them by embedding the entire old ArkTS checker — the very fork the port retires.
+2. **No checker parity.** Mapper diagnostics are positioned syntax errors; ArkTS type rules (no-`any`, struct rules, Sendable constraints — the rule linter unified in the checker) require type information. A mapper could only emit them by embedding the entire old ArkTS checker — the very fork the port retires.
 3. **Emit is excluded upstream on purpose.** Mapped files do not emit JS. The hvigor integration is built on tsgo's own emit (`.ets` → JS + sourcemaps → es2abc bookkeeping in `internal/buildapi/`); a mapper path would hand emit back to an external tool, i.e. regress to the ets2bundle model.
 4. **Architecture-principle conflict.** The project's core architecture consolidates ArkUI AST transforms **inside the tsgo process** specifically to eliminate the cross-process bottleneck (AST over IPC). An external content mapper doing ArkTS transforms is exactly that bottleneck reintroduced: re-architecting the build path around content mappers would invert a deliberate architectural decision.
 

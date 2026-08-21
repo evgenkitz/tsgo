@@ -39,14 +39,10 @@
             "id": "6aa586dec4cf14ad",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications"
+              "title": "Новая вкладка"
             }
           }
         ],
@@ -212,8 +208,21 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "6aa586dec4cf14ad",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
+    "Extend TSGO/Hvigor x TSGO_RU.md",
+    "Extend TSGO/Hvigor x TSGO 统一编译机制设计_RU.md",
+    "Extend TSGO/Hvigor x TSGO 统一编译机制设计_RU.md.tmp.1960.e1f50b484b3c",
+    "Extend TSGO/TSGO side - input handle_RU.md",
+    "Extend TSGO/TSGO side - input handle_RU.md.tmp.1960.bece909f15bd",
+    "Extend TSGO/TSGO side - orchestration_RU.md.tmp.1960.d79d9d76ad34",
+    "Extend TSGO/TSGO side - orchestration_RU.md",
+    "Extend TSGO/TSGO side - orchestration_RU.md.tmp.1960.ae0cfe840cd9",
+    "Extend TSGO/TSGO side - orchestration.md",
+    "Extend TSGO/Hvigor x TSGO 统一编译机制设计.md",
+    "Extend TSGO/TSGO side - input handle.md",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications_RU.md",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications_RU.md.tmp.1960.d24a59a5fb67",
     "Extend TSGO/build-system-design.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.c00f4b8895a6",
@@ -221,11 +230,6 @@
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.c0bcb80a565b",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.db79508f739d",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.ec018aabd32a",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.e9c7adc05861",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.50838ac349d3",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.ea6b7bc808de",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.8d8d72a85918",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.a72f38a704ec",
     "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
     "scanner-and-parser-review/README.md",
     "Extend TSGO/tsgo-ast-sharing-proposal.md",
@@ -242,14 +246,6 @@
     "scanner-and-parser-review/007-ets-component-expression.md",
     "scanner-and-parser-review/006-function-method-decorator-mods.md",
     "scanner-and-parser-review/012-kit-import-resolution.md",
-    "scanner-and-parser-review/004-annotation-declarations.md",
-    "scanner-and-parser-review/003-context-flags.md",
-    "scanner-and-parser-review/017-arkui-loop-components.md",
-    "scanner-and-parser-review/013-ets-options.md",
-    "scanner-and-parser-review/005-struct-declarations.md",
-    "tsgo/ArkTS/ETS_INVENTORY.md",
-    "Plan/tsgo项目路标计划.md",
-    "Plan/build-system-design.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
     "Untitled.canvas"
   ]
