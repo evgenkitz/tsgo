@@ -18,8 +18,6 @@ Content mappers are upstream's sanctioned extension mechanism for tsgo: a tsconf
 
 ---
 
----
-
 ## 1. Architecture
 
 ```mermaid
@@ -81,7 +79,7 @@ Solid edges carry data; dashed edges carry configuration and control.
 
 ### 1.2 Process and protocol model
 
-Per identity, tsgo lazily spawns the mapper (argv from `exec`, cwd = package directory) and talks **JSON-RPC over STDIO**, reusing `internal/ipc`. The content-mapper protocol has its **own version (1)** — separate from the API protocol (7). Four methods (`internal/contentmapper/hostimpl.go:31–42`):
+Per identity, tsgo lazily spawns the mapper (argv from `exec`, cwd = package directory) and talks **JSON-RPC over STDIO**, reusing `internal/ipc`. The content-mapper protocol has its **own version (1)** — separate from the API protocol (7). Four methods (`internal/contentmapper/hostimpl.go:39–42`):
 
 - **`initialize`** — request: `{ protocolVersion: 1, positionEncodings: ["utf-8","utf-16"] }` (locale is also passed); response selects `positionEncoding` and a **`diagnosticSource`**: a prefix for every mapper-authored diagnostic code. The prefix must be non-empty, must not be `typescript`/`tsc`, and must not equal the mapped extension (so mapper diagnostics and tsgo diagnostics never collide, `hostimpl.go:1096–1125`).
 - **`openProject` / `closeProject`** — project-scoped lifecycle; with `dynamicConfig: true` the mapper may return a `configIdentity` (changes invalidate cached transforms) and `watchedFiles` (fed into watch mode).
@@ -200,7 +198,7 @@ These are in-process compiler mechanisms — no architecture change required —
 
 ### 2.3 Optional research experiment (explicitly NOT a build-path plan)
 
-A cheap experiment to inform long-term fork-minimization: package the already-ported Go ArkTS logic as a separate binary behind a thin mapper, and measure how many ArkTS-specific checks survive the mapper-diagnostics model. If most do, a *hybrid* becomes thinkable — mapper for syntax/editor, fork reduced to checker hooks only. If not (expected), the result still documents precisely why in-compiler integration is required. **The seam is validated by real integrations**: a Vue mapper built from `@vue/language-core` matches `vue-tsc` on 210 of 222 fixtures, and the independent [ets-go](https://github.com/mikearnaldi/ets-go) experiment (Effect TypeScript) is exactly this shape — its cost was 4 upstream bug fixes plus 1 API request. This experiment does not touch the build pipeline; it is research, not a plan.
+A cheap experiment to inform long-term fork-minimization: package the already-ported Go ArkTS logic as a separate binary behind a thin mapper, and measure how many ArkTS-specific checks survive the mapper-diagnostics model. If most do, a *hybrid* becomes thinkable — mapper for syntax/editor, fork reduced to checker hooks only. If not (expected), the result still documents precisely why in-compiler integration is required. **The seam is validated by real integrations**: a Vue mapper built from `@vue/language-core` matches `vue-tsc` on 210 of 222 fixtures, and the independent [ets-go](https://github.com/mikearnaldi/ets-go) experiment (Effect TypeScript) is exactly this shape — its cost was 4 upstream bug fixes plus 1 API request.
 
 ---
 
