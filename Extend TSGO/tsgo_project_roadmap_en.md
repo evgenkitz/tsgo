@@ -194,13 +194,13 @@
 
 ## 6. Success Metrics (KPI)
 
-| Metric | Baseline (Current) | Target (TDCP) | Improvement | Measurement |
-|--------|-------------------|---------------|-------------|-------------|
-| Full Compilation Time | ~16 min | ≤ 5 min | **3.2x** | CI pipeline statistics |
-| Incremental Compilation Time | ~6 min | ≤ 2 min | **3x** | IDE response time |
-| Peak Memory | 20-30 GB | ≤ 10 GB | **50-67%↓** | System monitoring |
-| ArkTS Syntax Coverage | 0% | 10% | — | Syntax check tests |
-| Artifact Consistency | — | 100% | — | Binary diff |
+| Metric                       | Baseline (Current) | Target (TDCP) | Improvement | Measurement            |
+| ---------------------------- | ------------------ | ------------- | ----------- | ---------------------- |
+| Full Compilation Time        | ~16 min            | ≤ 5 min       | **3.2x**    | CI pipeline statistics |
+| Incremental Compilation Time | ~6 min             | ≤ 2 min       | **3x**      | IDE response time      |
+| Peak Memory                  | 20-30 GB           | ≤ 10 GB       | **50-67%↓** | System monitoring      |
+| ArkTS Syntax Coverage        | 0%                 | 10%           | —           | Syntax check tests     |
+| Artifact Consistency         | —                  | 100%          | —           | Binary diff            |
 
 ---
 
