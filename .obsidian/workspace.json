@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Extend TSGO/TSGO side - input handle_RU.md",
+                "file": "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TSGO side - input handle_RU"
+              "title": "(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained"
             }
           }
         ],
@@ -212,35 +212,38 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "6aa586dec4cf14ad",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
-    "Extend TSGO/TSGO side - input handle.md",
+    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications_RU.md",
+    "Extend TSGO/ARKTS_SPECIFICATION.md",
+    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
+    "_TASKS_/Test.md",
+    "Extend TSGO/tsgo-ast-sharing-proposal.md",
+    "Extend TSGO/tsgo_project_roadmap_en.md",
     "Extend TSGO/tsgo Integration Analysis of Rollup Solution Options.md",
     "Extend TSGO/Sugestions on organizational desigin of labor.png",
     "Extend TSGO/PDCP_Core_ArkTS_RU.md",
     "Extend TSGO/Hvigor x TSGO_RU.md",
-    "Extend TSGO/TSGO side - orchestration_RU.md",
-    "Extend TSGO/TSGO side - input handle_RU.md",
     "Extend TSGO/Hvigor x TSGO 统一编译机制设计.md",
-    "Extend TSGO/tsgo_project_roadmap_en.md",
+    "Extend TSGO/Content Mappers (PR 4712) overview.md",
+    "Extend TSGO/build-system-design.md",
+    "Extend TSGO/TSGO side - input handle_RU.md",
+    "Extend TSGO/TSGO side - input handle.md",
+    "Extend TSGO/TSGO side - orchestration_RU.md",
     "Extend TSGO/TSGO side - orchestration.md",
     "Extend TSGO/Hvigor x TSGO 统一编译机制设计_RU.md",
     "Extend TSGO/Hvigor x TSGO 统一编译机制设计_RU.md.tmp.1960.e1f50b484b3c",
     "Extend TSGO/TSGO side - input handle_RU.md.tmp.1960.bece909f15bd",
     "Extend TSGO/TSGO side - orchestration_RU.md.tmp.1960.d79d9d76ad34",
     "Extend TSGO/TSGO side - orchestration_RU.md.tmp.1960.ae0cfe840cd9",
-    "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications_RU.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications_RU.md.tmp.1960.d24a59a5fb67",
-    "Extend TSGO/build-system-design.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.c00f4b8895a6",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.641c5d1266f3",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.c0bcb80a565b",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.db79508f739d",
     "Extend TSGO/Content Mappers (PR 4712) — Architecture Overview and ArkTS Implications.md.tmp.1960.ec018aabd32a",
-    "Extend TSGO/(API & IPC) Performance Analysis Are the Performance Advantages of tsgo vs. tsc Retained.md",
     "scanner-and-parser-review/README.md",
-    "Extend TSGO/tsgo-ast-sharing-proposal.md",
     "Extend TSGO/tsgo-monorepo-caching.md",
     "Extend TSGO/tsgo_project_roadmap_en(1).md",
     "Без названия 1.md",
@@ -248,9 +251,6 @@
     "Untitled 2.md",
     "Untitled.md",
     "Untitled 1.md",
-    "scanner-and-parser-review/002-scanner-ast-ext.md",
-    "scanner-and-parser-review/007-ets-component-expression.md",
-    "scanner-and-parser-review/006-function-method-decorator-mods.md",
     "Untitled.canvas"
   ]
 }
