@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Extend TSGO/declaration-files-handoff.ru.md",
+                "file": "Extend TSGO/declaration-files-feature-inventory.en.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "declaration-files-handoff.ru"
+              "title": "declaration-files-feature-inventory.en"
             }
           },
           {
@@ -212,11 +212,11 @@
       "github-sync:Sync with Remote": false
     }
   },
-  "active": "aa0eca485c064355",
+  "active": "3ce6a79d24686e95",
   "lastOpenFiles": [
+    "Extend TSGO/declaration-files-handoff.ru.md",
     "Extend TSGO/declaration-files-feature-inventory.en.md",
     "Extend TSGO/declaration-files-handoff.en.md",
-    "Extend TSGO/declaration-files-handoff.ru.md",
     "Extend TSGO/declaration-files-feature-inventory.en.md.tmp.10480.caef8f9f54c7",
     "Extend TSGO/declaration-files-feature-inventory.en.md.tmp.10480.a25298628f94",
     "Extend TSGO/declaration-files-feature-inventory.en.md.tmp.10480.4fbde5dc676e",
